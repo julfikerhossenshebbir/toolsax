@@ -32,8 +32,8 @@ async function getTool(id: string): Promise<Tool | undefined> {
   return tools.find((tool) => tool.id === id);
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const tool = await getTool(params.id);
+export async function generateMetadata({ params: { id } }: Props): Promise<Metadata> {
+  const tool = await getTool(id);
 
   if (!tool) {
     return {
