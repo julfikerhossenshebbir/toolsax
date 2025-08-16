@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, Github } from 'lucide-react';
+import { Search, Github, Coffee } from 'lucide-react';
 import { Button } from './ui/button';
 import { ThemeToggle } from './ThemeToggle';
 
@@ -35,6 +35,11 @@ export default function AppHeader() {
         <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" onClick={handleSearchClick} aria-label="Search">
               <Search className="w-5 h-5" />
+            </Button>
+            <Button variant="ghost" size="icon" asChild aria-label="Buy Me A Coffee">
+              <a href="https://buymeacoffee.com/helloanaroul" target="_blank" rel="noopener noreferrer">
+                <Coffee className="w-5 h-5" />
+              </a>
             </Button>
             <Button variant="ghost" size="icon" asChild aria-label="GitHub">
               <a href="https://github.com/FirebaseExtended/ai-studio-nextjs-tools" target="_blank" rel="noopener noreferrer">
