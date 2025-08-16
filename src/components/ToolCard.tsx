@@ -25,7 +25,7 @@ const ToolCard = ({ tool, stats }: ToolCardProps) => {
           </div>
           <div className="flex-grow">
             <h3 className="font-semibold text-base">{tool.name}</h3>
-            <p className="text-sm text-muted-foreground truncate">{tool.description}</p>
+            <p className="text-sm text-muted-foreground truncate max-w-[250px]">{tool.description}</p>
           </div>
           <div className="flex-shrink-0 flex flex-col items-end text-xs text-muted-foreground gap-1.5">
             <div className="flex items-center gap-1.5">
