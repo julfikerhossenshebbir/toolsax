@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { Search, Github } from 'lucide-react';
 import { Button } from './ui/button';
 import { ThemeToggle } from './ThemeToggle';
-import { Separator } from './ui/separator';
 
 const Logo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -42,7 +41,6 @@ export default function AppHeader() {
                 <Github className="w-5 h-5" />
               </a>
             </Button>
-            <Separator orientation="vertical" className="h-6" />
             <ThemeToggle />
         </div>
       </div>
