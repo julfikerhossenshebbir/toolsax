@@ -7,8 +7,16 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 import GridBackground from '@/components/GridBackground';
 
 export const metadata: Metadata = {
-  title: 'Toolsax - Find Your Perfect Tool',
-  description: 'A curated directory of the best tools for design, development, productivity, and marketing.',
+  metadataBase: new URL('https://toolsax.com'),
+  title: 'Toolsax - Free Online Tools for Developers & Designers',
+  description: 'An expanding collection of free online tools including case converters, password generators, QR code creators, and more. Fast, secure, and easy to use.',
+  keywords: ['online tools', 'developer tools', 'designer tools', 'free tools', 'case converter', 'password generator', 'qr code generator', 'json formatter'],
+  openGraph: {
+    title: 'Toolsax - Free Online Tools for Developers & Designers',
+    description: 'An expanding collection of free online tools for professionals.',
+    type: 'website',
+    url: 'https://toolsax.com',
+  },
 };
 
 export default function RootLayout({
