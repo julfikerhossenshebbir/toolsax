@@ -33,7 +33,15 @@ export default function QrCodeGenerator() {
       <CardHeader>
         <CardTitle>QR Code Generator</CardTitle>
         <CardDescription>
-          Create a QR code from any text or URL. The QR code will be generated in real-time as you type. You can then download it as a high-quality PNG image. This tool is perfect for sharing website links, contact information, Wi-Fi credentials, or any other text-based data in a scannable format.
+          <div className="space-y-2">
+            <p>Generate and download a QR code for any URL or text. It's a simple way to share information in a scannable format. Follow these steps:</p>
+            <ol className="list-decimal list-inside space-y-1 pl-4">
+              <li><strong>Enter Your Data:</strong> In the text area on the left, type or paste the URL, contact information, Wi-Fi credentials, or any other text you want to encode.</li>
+              <li><strong>Live Preview:</strong> As you type, a live preview of the QR code will be generated on the right.</li>
+              <li><strong>Download Your QR Code:</strong> Once you are satisfied with the QR code, click the "Download PNG" button.</li>
+              <li><strong>Save the Image:</strong> Your browser will download the QR code as a high-quality PNG file, which you can use in your print materials, on your website, or for any other purpose.</li>
+            </ol>
+          </div>
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col md:flex-row gap-6 items-start">

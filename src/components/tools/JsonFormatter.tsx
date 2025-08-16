@@ -51,7 +51,20 @@ export default function JsonFormatter() {
       <CardHeader>
         <CardTitle>JSON Formatter</CardTitle>
         <CardDescription>
-          Paste your JSON data into the editor, click "Format", and watch as it's instantly beautified for better readability. This tool helps you validate, format, and debug your JSON with ease, highlighting syntax errors to help you quickly identify and fix issues.
+            <div className="space-y-2">
+                <p>Clean up and validate your JSON data to make it readable and easy to debug. Here's a step-by-step guide to using the tool:</p>
+                <ol className="list-decimal list-inside space-y-1 pl-4">
+                    <li><strong>Paste Your JSON:</strong> Enter or paste your raw, unformatted JSON data into the "Input JSON" text area on the left.</li>
+                    <li><strong>Format the Data:</strong> Click the "Format JSON" button. The tool will process your input and display a beautified, indented version in the "Formatted Output" box on the right.</li>
+                    <li><strong>Review the Output:</strong>
+                        <ul className="list-disc list-inside pl-6">
+                            <li>If your JSON is valid, it will appear neatly structured.</li>
+                            <li>If there is an error in your JSON, a descriptive error message will appear below, and the output box will indicate the problem.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Copy or Clear:</strong> If formatting is successful, use the copy icon in the output box to copy the formatted JSON. Use the "Clear" button to empty both input and output fields and start over.</li>
+                </ol>
+            </div>
         </CardDescription>
       </CardHeader>
       <CardContent>

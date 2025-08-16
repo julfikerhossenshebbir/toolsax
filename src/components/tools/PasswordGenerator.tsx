@@ -65,7 +65,16 @@ export default function PasswordGenerator() {
       <CardHeader>
         <CardTitle>Password Generator</CardTitle>
         <CardDescription>
-          Generate strong, secure, and random passwords to enhance your online security. Customize the length and character types (uppercase, lowercase, numbers, and symbols) to meet specific requirements. The generated password appears in the input field, ready to be copied. Use the refresh button to create a new one instantly.
+            <div className="space-y-2">
+                <p>Create strong, unique passwords to protect your online accounts. Here’s how to use the generator:</p>
+                <ol className="list-decimal list-inside space-y-1 pl-4">
+                    <li><strong>Instant Generation:</strong> A secure password is automatically generated for you as soon as you load the page.</li>
+                    <li><strong>Customize Length:</strong> Drag the slider to set the desired password length, from 8 to 64 characters. The password will update in real-time.</li>
+                    <li><strong>Set Character Types:</strong> Use the switches to include or exclude Uppercase letters, Lowercase letters, Numbers, and Symbols. The password will regenerate with each change to meet your security requirements.</li>
+                    <li><strong>Generate a New Password:</strong> If you're not happy with the current password, click the refresh icon to generate a new one with your selected settings.</li>
+                    <li><strong>Copy Your Password:</strong> Once you have a password you're satisfied with, click the copy icon to instantly save it to your clipboard.</li>
+                </ol>
+            </div>
         </CardDescription>
       </CardHeader>
       <CardContent>

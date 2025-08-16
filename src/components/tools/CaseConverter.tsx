@@ -41,7 +41,22 @@ export default function CaseConverter() {
       <CardHeader>
         <CardTitle>Case Converter</CardTitle>
         <CardDescription>
-          This tool allows you to transform text into various case formats including sentence case, lower case, upper case, and capitalized case. It's perfect for writers, developers, and anyone who needs to quickly adjust text capitalization for consistency or formatting. Simply type or paste your content into the text area and select your desired conversion.
+          <div className="space-y-2">
+            <p>Easily transform your text into different case formats with just a few clicks. Follow these simple steps to use the tool:</p>
+            <ol className="list-decimal list-inside space-y-1 pl-4">
+              <li><strong>Enter Your Text:</strong> Type or paste the text you want to convert into the text area below.</li>
+              <li><strong>Choose a Case:</strong> Click one of the buttons for your desired format:
+                <ul className="list-disc list-inside pl-6">
+                  <li><strong>Sentence case:</strong> Converts the text so the first letter of each sentence is capitalized.</li>
+                  <li><strong>lower case:</strong> Transforms all characters into lowercase.</li>
+                  <li><strong>UPPER CASE:</strong> Transforms all characters into uppercase.</li>
+                  <li><strong>Capitalized Case:</strong> Capitalizes the first letter of every word.</li>
+                </ul>
+              </li>
+              <li><strong>View the Result:</strong> The text in the box will instantly update with the new formatting.</li>
+              <li><strong>Manage Your Text:</strong> Use the copy icon to copy the result to your clipboard, or the trash icon to clear the text area. You can also monitor the character and word count at the bottom.</li>
+            </ol>
+          </div>
         </CardDescription>
       </CardHeader>
       <CardContent>
