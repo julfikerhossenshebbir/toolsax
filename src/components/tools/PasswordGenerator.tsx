@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -55,9 +55,9 @@ export default function PasswordGenerator() {
     });
   };
   
-  useState(() => {
+  useEffect(() => {
     generatePassword();
-  });
+  }, [length, includeUppercase, includeLowercase, includeNumbers, includeSymbols]);
 
   return (
     <Card>
@@ -77,7 +77,7 @@ export default function PasswordGenerator() {
           <Button variant="outline" size="icon" onClick={handleCopy} disabled={!password}>
             <Copy className="h-5 w-5" />
           </Button>
-          <Button size="icon" onClick={generatePassword}>
+          <Button size="icon" onClick={() => generatePassword()}>
             <RefreshCw className="h-5 w-5" />
           </Button>
         </div>
