@@ -7,13 +7,13 @@ import { getDatabase, ref, runTransaction, onValue, type Database } from "fireba
 import { v4 as uuidv4 } from 'uuid';
 
 const firebaseConfig = {
-  // apiKey: "YOUR_API_KEY",
-  // authDomain: "YOUR_AUTH_DOMAIN",
-  // databaseURL: "YOUR_DATABASE_URL",
-  // projectId: "YOUR_PROJECT_ID",
-  // storageBucket: "YOUR_STORAGE_BUCKET",
-  // messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  // appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCjlDeMVCox4fujNWO2nzku-EiAsOUWX9s",
+  authDomain: "hand-gram.firebaseapp.com",
+  databaseURL: "https://hand-gram-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "hand-gram",
+  storageBucket: "hand-gram.appspot.com",
+  messagingSenderId: "21742056984",
+  appId: "1:21742056984:web:206e8d9c8b858498d8756d"
 };
 
 let app: FirebaseApp | undefined;
