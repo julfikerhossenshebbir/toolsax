@@ -1,5 +1,3 @@
-import { HandMetal } from 'lucide-react';
-
 const Header = () => {
   return (
     <header className="py-10 sm:py-20 text-center">

@@ -59,10 +59,12 @@ export const incrementViews = () => {
   incrementCounter('stats/views');
 };
 
-export const incrementClicks = () => {
-  if (!isFirebaseConfigured) return;
+export const incrementClicks = (toolId: string) => {
+  if (!db) return;
   incrementCounter('stats/tool_clicks');
+  incrementCounter(`tools/${toolId}/clicks`);
 };
+
 
 export const initializeUser = () => {
     if (!db || typeof window === 'undefined') return;
