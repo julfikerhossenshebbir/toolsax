@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -6,7 +7,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Copy, Trash2, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function JsonFormatter() {
   const [inputJson, setInputJson] = useState('');
@@ -27,8 +27,13 @@ export default function JsonFormatter() {
       setIsError(false);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Invalid JSON format.';
-      setOutput(`Error: ${errorMessage}`);
+      setOutput('');
       setIsError(true);
+      toast({
+        variant: 'destructive',
+        title: 'Invalid JSON',
+        description: errorMessage,
+      });
     }
   };
 
@@ -59,7 +64,7 @@ export default function JsonFormatter() {
                     <li><strong>Review the Output:</strong>
                         <ul className="list-disc list-inside pl-6">
                             <li>If your JSON is valid, it will appear neatly structured.</li>
-                            <li>If there is an error in your JSON, a descriptive error message will appear below, and the output box will indicate the problem.</li>
+                            <li>If there is an error in your JSON, a descriptive error message will appear in a notification.</li>
                         </ul>
                     </li>
                     <li><strong>Copy or Clear:</strong> If formatting is successful, use the copy icon in the output box to copy the formatted JSON. Use the "Clear" button to empty both input and output fields and start over.</li>
@@ -109,14 +114,6 @@ export default function JsonFormatter() {
             <Trash2 className="mr-2 h-4 w-4" /> Clear
           </Button>
         </div>
-
-        {isError && (
-          <Alert variant="destructive" className="mt-4">
-            <AlertDescription>
-              {output}
-            </AlertDescription>
-          </Alert>
-        )}
       </CardContent>
     </Card>
   );
