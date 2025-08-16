@@ -73,12 +73,12 @@ export function SearchWithSuggestions({ value, onValueChange }: SearchWithSugges
             onFocus={handleFocus}
             onBlur={() => setIsOpen(value.length > 0 && suggestions.length > 0)}
             placeholder="Search for a tool or get inspired..."
-            className="w-full pl-12 pr-4 py-3 h-14 text-base rounded-full border-2 border-border focus:border-primary transition-colors duration-300 shadow-lg"
+            className="w-full pl-12 pr-4 py-3 h-14 text-base rounded-full border-2 bg-card border-border focus:border-primary transition-colors duration-300 shadow-lg"
           />
         </div>
         {isOpen && (
           <div className="absolute top-full mt-2 w-full z-10">
-            <CommandList className="rounded-lg border bg-background shadow-lg">
+            <CommandList className="rounded-lg border bg-card shadow-lg">
               {isPending && suggestions.length === 0 ? (
                 <div className="p-4 space-y-2">
                     <Skeleton className="h-6 w-3/4" />

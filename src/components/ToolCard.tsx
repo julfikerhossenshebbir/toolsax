@@ -17,7 +17,7 @@ const ToolCard = ({ tool, stats }: ToolCardProps) => {
     <Link href={`/${tool.id}`} passHref>
       <Card 
         onClick={() => incrementClicks(tool.id)}
-        className="h-full flex flex-col group transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 bg-card p-4"
+        className="h-full flex flex-col group transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 bg-card/50 hover:bg-card p-4"
       >
         <CardHeader className="flex-row gap-4 items-start p-0">
             <div className="w-12 h-12 flex-shrink-0 bg-primary/10 rounded-lg flex items-center justify-center">

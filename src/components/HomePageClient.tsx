@@ -49,8 +49,8 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
                   onClick={() => setSelectedCategory(category)}
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors
                     ${selectedCategory === category 
-                      ? 'bg-foreground text-background' 
-                      : 'bg-muted text-muted-foreground hover:bg-accent'
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'bg-card text-muted-foreground hover:bg-accent'
                     }`}
                 >
                   {category}
