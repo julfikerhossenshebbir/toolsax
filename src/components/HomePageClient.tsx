@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -7,12 +8,21 @@ import Header from './Header';
 import { incrementViews } from '@/lib/firebase';
 import FirebaseStats from './FirebaseStats';
 import { Input } from './ui/input';
-import { Search } from 'lucide-react';
+import { Search, Wrench, Lock, Code, Palette, LayoutGrid } from 'lucide-react';
 import { Button } from './ui/button';
+import Icon from './Icon';
 
 interface HomePageClientProps {
   tools: Tool[];
 }
+
+const categoryIcons: { [key: string]: React.ComponentType<{ className?: string }> } = {
+    All: LayoutGrid,
+    Utilities: Wrench,
+    Security: Lock,
+    Development: Code,
+    Design: Palette,
+};
 
 export default function HomePageClient({ tools }: HomePageClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -55,16 +65,20 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
               />
             </div>
             <div id="category-pills-container" className="flex flex-wrap items-center justify-center gap-2">
-              {categories.map((category) => (
-                <Button 
-                  key={category}
-                  variant={selectedCategory === category ? 'default' : 'outline'}
-                  onClick={() => setSelectedCategory(category)}
-                  className="rounded-full"
-                >
-                  {category}
-                </Button>
-              ))}
+              {categories.map((category) => {
+                const CategoryIcon = categoryIcons[category] || LayoutGrid;
+                return (
+                    <Button 
+                    key={category}
+                    variant={selectedCategory === category ? 'default' : 'outline'}
+                    onClick={() => setSelectedCategory(category)}
+                    className="rounded-full"
+                    >
+                        <CategoryIcon className="w-4 h-4 mr-2" />
+                        {category}
+                    </Button>
+                )
+            })}
             </div>
         </div>
     </section>
