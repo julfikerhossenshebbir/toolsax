@@ -1,0 +1,99 @@
+
+[
+  {
+    "id": "pixel-perfector",
+    "name": "Pixel Perfector",
+    "description": "An AI-powered image optimizer that reduces file size without quality loss.",
+    "link": "https://example.com/pixel-perfector",
+    "category": "Design",
+    "icon": "Image"
+  },
+  {
+    "id": "code-weaver",
+    "name": "Code Weaver",
+    "description": "A collaborative code editor with real-time editing and integrated debugging.",
+    "link": "https://example.com/code-weaver",
+    "category": "Development",
+    "icon": "CodeXml"
+  },
+  {
+    "id": "focus-flow",
+    "name": "Focus Flow",
+    "description": "A Pomodoro timer and task manager to boost your daily productivity.",
+    "link": "https://example.com/focus-flow",
+    "category": "Productivity",
+    "icon": "Timer"
+  },
+  {
+    "id": "market-muse",
+    "name": "Market Muse",
+    "description": "AI-driven content strategy and keyword research for marketers.",
+    "link": "https://example.com/market-muse",
+    "category": "Marketing",
+    "icon": "LineChart"
+  },
+  {
+    "id": "vector-vibe",
+    "name": "Vector Vibe",
+    "description": "Create stunning SVG illustrations and icons with an intuitive online editor.",
+    "link": "https://example.com/vector-vibe",
+    "category": "Design",
+    "icon": "PenTool"
+  },
+  {
+    "id": "api-sentinel",
+    "name": "API Sentinel",
+    "description": "Monitor and test your APIs with automated checks and performance reports.",
+    "link": "https://example.com/api-sentinel",
+    "category": "Development",
+    "icon": "ShieldCheck"
+  },
+  {
+    "id": "task-trove",
+    "name": "Task Trove",
+    "description": "A flexible project management tool with Kanban boards, lists, and calendars.",
+    "link": "https://example.com/task-trove",
+    "category": "Productivity",
+    "icon": "KanbanSquare"
+  },
+  {
+    "id": "social-spark",
+    "name": "Social Spark",
+    "description": "Schedule social media posts and analyze engagement across all platforms.",
+    "link": "https://example.com/social-spark",
+    "category": "Marketing",
+    "icon": "Share2"
+  },
+  {
+    "id": "color-crafter",
+    "name": "Color Crafter",
+    "description": "Generate beautiful color palettes and gradients for your design projects.",
+    "link": "https://example.com/color-crafter",
+    "category": "Design",
+    "icon": "Palette"
+  },
+  {
+    "id": "dev-deploy",
+    "name": "Dev Deploy",
+    "description": "Automate your deployment pipeline with seamless Git integration.",
+    "link": "https://example.com/dev-deploy",
+    "category": "Development",
+    "icon": "GitBranchPlus"
+  },
+  {
+    "id": "notion-next",
+    "name": "Notion Next",
+    "description": "The all-in-one workspace for your notes, tasks, wikis, and databases.",
+    "link": "https://example.com/notion-next",
+    "category": "Productivity",
+    "icon": "BookOpen"
+  },
+  {
+    "id": "lead-launcher",
+    "name": "Lead Launcher",
+    "description": "Create high-converting landing pages with a simple drag-and-drop builder.",
+    "link": "https://example.com/lead-launcher",
+    "category": "Marketing",
+    "icon": "Rocket"
+  }
+]

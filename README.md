@@ -1,5 +1,3 @@
-# Firebase Studio
+# Toolsax
 
-This is a NextJS starter in Firebase Studio.
-
-To get started, take a look at src/app/page.tsx.
+A Next.js application to discover and explore various tools.
