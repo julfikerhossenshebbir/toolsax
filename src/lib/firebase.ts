@@ -41,10 +41,10 @@ if (isFirebaseConfigured && isFirebaseEnabled && getApps().length === 0) {
 
 const getUserId = (): string => {
   if (typeof window === 'undefined') return '';
-  let userId = localStorage.getItem('toolsax_user_id');
+  let userId = localStorage.getItem('zeroone_user_id');
   if (!userId) {
     userId = uuidv4();
-    localStorage.setItem('toolsax_user_id', userId);
+    localStorage.setItem('zeroone_user_id', userId);
   }
   return userId;
 };

@@ -40,10 +40,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: `${tool.name} | Toolsax`,
+    title: `${tool.name} | ZeroOne`,
     description: tool.description,
     openGraph: {
-      title: `${tool.name} | Toolsax`,
+      title: `${tool.name} | ZeroOne`,
       description: tool.description,
       type: 'website',
     },
@@ -91,10 +91,10 @@ export default async function ToolPage({ params }: Props) {
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-2xl mb-4">
-            <Icon name={tool.icon} className="w-10 h-10 text-primary" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mb-4">
+            <Icon name={tool.icon} className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="text-4xl font-extrabold tracking-tighter font-headline">{tool.name}</h1>
+          <h1 className="text-3xl font-extrabold tracking-tighter font-headline">{tool.name}</h1>
           <Badge variant="secondary" className="mt-3 text-sm">{tool.category}</Badge>
         </div>
 

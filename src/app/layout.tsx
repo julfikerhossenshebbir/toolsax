@@ -6,7 +6,7 @@ import AppFooter from '@/components/AppFooter';
 import { ThemeProvider } from '@/components/ThemeProvider';
 
 export const metadata: Metadata = {
-  title: 'Toolsax - Find Your Perfect Tool',
+  title: 'ZeroOne - Find Your Perfect Tool',
   description: 'A curated directory of the best tools for design, development, productivity, and marketing.',
 };
 

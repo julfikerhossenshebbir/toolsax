@@ -8,7 +8,7 @@ import { Download } from 'lucide-react';
 import QRCode from 'qrcode';
 
 export default function QrCodeGenerator() {
-  const [text, setText] = useState('https://toolsax.com');
+  const [text, setText] = useState('https://zeroone.com');
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {

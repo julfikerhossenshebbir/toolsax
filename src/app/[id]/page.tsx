@@ -40,10 +40,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: `${tool.name} | Toolsax`,
+    title: `${tool.name} | ZeroOne`,
     description: tool.description,
     openGraph: {
-      title: `${tool.name} | Toolsax`,
+      title: `${tool.name} | ZeroOne`,
       description: tool.description,
       type: 'website',
     },
