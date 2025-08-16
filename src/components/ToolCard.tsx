@@ -16,7 +16,9 @@ interface ToolCardProps {
 }
 
 const AD_VIEW_LIMIT = 3;
-const AD_STORAGE_KEY = 'toolsax_ad_views';
+const AD_COOLDOWN_MINUTES = 5;
+const AD_STORAGE_KEY_COUNT = 'toolsax_ad_views';
+const AD_STORAGE_KEY_TIMESTAMP = 'toolsax_last_ad_timestamp';
 
 const ToolCard = ({ tool }: ToolCardProps) => {
   const [clicks, setClicks] = useState<number | null>(null);
@@ -38,9 +40,15 @@ const ToolCard = ({ tool }: ToolCardProps) => {
     e.preventDefault();
     incrementClicks(tool.id);
 
-    const adViews = parseInt(localStorage.getItem(AD_STORAGE_KEY) || '0', 10);
+    const adViews = parseInt(localStorage.getItem(AD_STORAGE_KEY_COUNT) || '0', 10);
+    const lastAdTimestamp = parseInt(localStorage.getItem(AD_STORAGE_KEY_TIMESTAMP) || '0', 10);
+    
+    const now = new Date().getTime();
+    const fiveMinutesInMillis = AD_COOLDOWN_MINUTES * 60 * 1000;
 
-    if (adViews < AD_VIEW_LIMIT) {
+    const isCooldownOver = now - lastAdTimestamp > fiveMinutesInMillis;
+
+    if (adViews < AD_VIEW_LIMIT && isCooldownOver) {
       setShowAd(true);
     } else {
       router.push(`/${tool.id}`);
@@ -48,8 +56,9 @@ const ToolCard = ({ tool }: ToolCardProps) => {
   };
 
   const handleContinueToTool = () => {
-    const currentViews = parseInt(localStorage.getItem(AD_STORAGE_KEY) || '0', 10);
-    localStorage.setItem(AD_STORAGE_KEY, (currentViews + 1).toString());
+    const currentViews = parseInt(localStorage.getItem(AD_STORAGE_KEY_COUNT) || '0', 10);
+    localStorage.setItem(AD_STORAGE_KEY_COUNT, (currentViews + 1).toString());
+    localStorage.setItem(AD_STORAGE_KEY_TIMESTAMP, new Date().getTime().toString());
     setShowAd(false);
     router.push(`/${tool.id}`);
   };
