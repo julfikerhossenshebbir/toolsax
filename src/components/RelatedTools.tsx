@@ -17,7 +17,7 @@ export default function RelatedTools({ allTools, currentTool }: RelatedToolsProp
     return (
         <div className="mt-16">
             <h2 className="text-3xl font-bold tracking-tight mb-6">Related Tools</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {related.map(tool => (
                     <ToolCard key={tool.id} tool={tool} />
                 ))}
