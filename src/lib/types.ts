@@ -3,7 +3,7 @@ export interface Tool {
   name: string;
   description: string;
   link: string;
-  category: 'Design' | 'Development' | 'Productivity' | 'Marketing' | 'Utilities';
+  category: 'Design' | 'Development' | 'Productivity' | 'Marketing' | 'Utilities' | 'Security';
   icon: string;
 }
 

@@ -1,26 +1,42 @@
 
 [
   {
-    "id": "json-formatter",
-    "name": "JSON Formatter",
-    "description": "Format, validate, and beautify JSON data.",
-    "link": "https://web.com/json-formatter",
-    "category": "Development",
-    "icon": "Braces"
+    "id": "case-converter",
+    "name": "Case Converter",
+    "description": "Convert text to uppercase, lowercase, etc.",
+    "link": "/tool/case-converter",
+    "category": "Utilities",
+    "icon": "CaseUpper"
   },
   {
     "id": "password-generator",
     "name": "Password Generator",
     "description": "Create secure, random passwords.",
-    "link": "https://web.com/password-generator",
+    "link": "/tool/password-generator",
     "category": "Security",
     "icon": "Lock"
+  },
+  {
+    "id": "qr-generator",
+    "name": "QR Code Generator",
+    "description": "Create custom QR codes for URLs or text.",
+    "link": "/tool/qr-generator",
+    "category": "Utilities",
+    "icon": "QrCode"
+  },
+  {
+    "id": "json-formatter",
+    "name": "JSON Formatter",
+    "description": "Format, validate, and beautify JSON data.",
+    "link": "/tool/json-formatter",
+    "category": "Development",
+    "icon": "Braces"
   },
   {
     "id": "lorem-ipsum-generator",
     "name": "Lorem Ipsum Generator",
     "description": "Generate placeholder text for your designs.",
-    "link": "https://web.com/lorem-ipsum",
+    "link": "/tool/lorem-ipsum-generator",
     "category": "Utilities",
     "icon": "FileText"
   },
@@ -28,7 +44,7 @@
     "id": "color-converter",
     "name": "Color Converter",
     "description": "Convert between HEX, RGB, and HSL values.",
-    "link": "https://web.com/color-converter",
+    "link": "/tool/color-converter",
     "category": "Design",
     "icon": "Palette"
   },
@@ -36,39 +52,23 @@
     "id": "image-compressor",
     "name": "Image Compressor",
     "description": "Reduce file size of JPG & PNG images.",
-    "link": "https://web.com/image-compressor",
+    "link": "/tool/image-compressor",
     "category": "Utilities",
     "icon": "Minimize2"
-  },
-    {
-    "id": "qr-generator",
-    "name": "QR Code Generator",
-    "description": "Create custom QR codes for URLs or text.",
-    "link": "https://web.com/qr-generator",
-    "category": "Utilities",
-    "icon": "QrCode"
   },
   {
     "id": "markdown-editor",
     "name": "Markdown Editor",
     "description": "Write and preview Markdown in real-time.",
-    "link": "https://web.com/markdown-editor",
+    "link": "/tool/markdown-editor",
     "category": "Development",
     "icon": "FileSignature"
-  },
-  {
-    "id": "case-converter",
-    "name": "Case Converter",
-    "description": "Convert text to uppercase, lowercase, etc.",
-    "link": "https://web.com/case-converter",
-    "category": "Utilities",
-    "icon": "CaseUpper"
   },
   {
     "id": "unit-converter",
     "name": "Unit Converter",
     "description": "Convert length, weight, temperature, etc.",
-    "link": "https://web.com/unit-converter",
+    "link": "/tool/unit-converter",
     "category": "Utilities",
     "icon": "Ruler"
   }
