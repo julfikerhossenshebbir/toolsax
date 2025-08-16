@@ -2,13 +2,13 @@
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogContent,
   AlertDialogDescription,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
@@ -43,6 +43,20 @@ export function AdModal({ isOpen, onClose, onContinue }: AdModalProps) {
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
+        <Button
+            variant="ghost"
+            size="icon"
+            onClick={onContinue}
+            disabled={countdown > 0}
+            className="absolute top-4 right-4 rounded-full h-8 w-8"
+        >
+            {countdown > 0 ? (
+                <span className="text-xs font-semibold">{countdown}</span>
+            ) : (
+                <X className="h-5 w-5" />
+            )}
+            <span className="sr-only">Continue to tool</span>
+        </Button>
         <AlertDialogHeader>
           <AlertDialogTitle>Advertisement</AlertDialogTitle>
           <AlertDialogDescription>
@@ -59,11 +73,6 @@ export function AdModal({ isOpen, onClose, onContinue }: AdModalProps) {
                 data-ai-hint="advertisement banner"
             />
         </div>
-        <AlertDialogFooter>
-          <AlertDialogAction onClick={onContinue} disabled={countdown > 0}>
-            {countdown > 0 ? `Continue in ${countdown}s` : 'Continue to Tool'}
-          </AlertDialogAction>
-        </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );
