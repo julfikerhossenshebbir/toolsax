@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -6,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Copy, Trash2, Pilcrow } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -13,6 +15,7 @@ const LOREM_IPSUM_TEXT = 'Lorem ipsum dolor sit amet, consectetur adipiscing eli
 
 export default function LoremIpsumGenerator() {
   const [paragraphs, setParagraphs] = useState(5);
+  const [format, setFormat] = useState('text');
   const [generatedText, setGeneratedText] = useState('');
   const { toast } = useToast();
 
@@ -25,7 +28,16 @@ export default function LoremIpsumGenerator() {
         });
         return;
     }
-    const result = Array(paragraphs).fill(LOREM_IPSUM_TEXT).join('\n\n');
+    
+    let result = '';
+    const paragraphsArray = Array(paragraphs).fill(LOREM_IPSUM_TEXT);
+
+    if (format === 'html') {
+        result = paragraphsArray.map(p => `<p>${p}</p>`).join('\n');
+    } else {
+        result = paragraphsArray.join('\n\n');
+    }
+
     setGeneratedText(result);
   };
 
@@ -40,6 +52,7 @@ export default function LoremIpsumGenerator() {
   const handleClear = () => {
       setGeneratedText('');
       setParagraphs(5);
+      setFormat('text');
   };
 
   return (
@@ -50,7 +63,8 @@ export default function LoremIpsumGenerator() {
           <div className="space-y-2">
             <p>Quickly generate placeholder text for your design mockups, wireframes, or development projects. Follow these simple steps:</p>
             <ol className="list-decimal list-inside space-y-1 pl-4">
-              <li><strong>Set the Amount:</strong> Enter the number of paragraphs you need in the "Number of Paragraphs" input field.</li>
+              <li><strong>Set the Amount:</strong> Enter the number of paragraphs you need.</li>
+              <li><strong>Choose the Format:</strong> Select whether you want plain "Text" or "HTML" wrapped in paragraph tags.</li>
               <li><strong>Generate Text:</strong> Click the "Generate" button. The placeholder text will appear in the text area below.</li>
               <li><strong>Copy or Clear:</strong> Use the copy icon to copy the generated text to your clipboard. Use the trash icon to clear the output and start over.</li>
             </ol>
@@ -58,7 +72,7 @@ export default function LoremIpsumGenerator() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col sm:flex-row gap-4 mb-4">
+        <div className="flex flex-col sm:flex-row gap-6 mb-4">
             <div className="flex-grow space-y-2">
                 <Label htmlFor="paragraphs">Number of Paragraphs</Label>
                 <Input
@@ -69,6 +83,19 @@ export default function LoremIpsumGenerator() {
                     min="1"
                     className="max-w-xs"
                 />
+            </div>
+            <div className="space-y-2">
+                <Label>Output Format</Label>
+                <RadioGroup value={format} onValueChange={setFormat} className="flex gap-4">
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="text" id="format-text" />
+                        <Label htmlFor="format-text">Text</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="html" id="format-html" />
+                        <Label htmlFor="format-html">HTML</Label>
+                    </div>
+                </RadioGroup>
             </div>
             <div className="flex items-end">
                 <Button onClick={handleGenerate}>
@@ -83,7 +110,7 @@ export default function LoremIpsumGenerator() {
               readOnly
               value={generatedText}
               placeholder="Your generated Lorem Ipsum text will appear here..."
-              className="min-h-[250px] text-base bg-muted"
+              className="min-h-[250px] text-base bg-muted font-mono"
             />
             {generatedText && (
                 <div className="absolute top-2 right-2 flex gap-1">
@@ -102,3 +129,4 @@ export default function LoremIpsumGenerator() {
     </Card>
   );
 }
+
