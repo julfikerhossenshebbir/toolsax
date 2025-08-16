@@ -7,7 +7,7 @@ export default function AppFooter() {
       <footer className="border-t">
         <div className="container flex h-14 items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} ZeroOne. All rights reserved.
+            &copy; {new Date().getFullYear()} Toolsax. All rights reserved.
           </p>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" asChild>

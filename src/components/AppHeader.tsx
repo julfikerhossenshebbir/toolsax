@@ -29,7 +29,7 @@ export default function AppHeader() {
       <div className="container flex h-14 items-center">
         <Link href="/" className="flex items-center gap-2 mr-auto">
           <Logo />
-          <span className="font-bold text-lg">ZeroOne</span>
+          <span className="font-bold text-lg">Toolsax</span>
         </Link>
         
         <div className="flex items-center gap-2">

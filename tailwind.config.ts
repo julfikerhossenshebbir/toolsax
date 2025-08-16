@@ -17,7 +17,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
+        body: ['Lexend', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',
