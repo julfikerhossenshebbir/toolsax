@@ -57,13 +57,16 @@ export default function PasswordGenerator() {
   
   useEffect(() => {
     generatePassword();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [length, includeUppercase, includeLowercase, includeNumbers, includeSymbols]);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Password Generator</CardTitle>
-        <CardDescription>Create a strong and secure password.</CardDescription>
+        <CardDescription>
+          Create strong, secure, and random passwords by customizing length and character types.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex gap-2 mb-6">

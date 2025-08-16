@@ -96,9 +96,6 @@ export default async function ToolPage({ params }: Props) {
           </div>
           <h1 className="text-4xl font-extrabold tracking-tighter font-headline">{tool.name}</h1>
           <Badge variant="secondary" className="mt-3 text-sm">{tool.category}</Badge>
-          <p className="mt-3 text-lg text-muted-foreground max-w-2xl mx-auto">
-            {tool.description}
-          </p>
         </div>
 
         <ToolComponent />

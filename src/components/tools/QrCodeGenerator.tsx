@@ -32,7 +32,9 @@ export default function QrCodeGenerator() {
     <Card>
       <CardHeader>
         <CardTitle>QR Code Generator</CardTitle>
-        <CardDescription>Enter text or a URL to generate a QR code.</CardDescription>
+        <CardDescription>
+          Generate a QR code from any text or URL. You can download the generated QR code as a PNG image.
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col md:flex-row gap-6 items-start">
         <div className="flex-grow w-full">

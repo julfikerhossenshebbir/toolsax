@@ -4,7 +4,7 @@
     "id": "case-converter",
     "name": "Case Converter",
     "description": "Convert text to uppercase, lowercase, etc.",
-    "link": "/tool/case-converter",
+    "link": "/case-converter",
     "category": "Utilities",
     "icon": "CaseUpper"
   },
@@ -12,7 +12,7 @@
     "id": "password-generator",
     "name": "Password Generator",
     "description": "Create secure, random passwords.",
-    "link": "/tool/password-generator",
+    "link": "/password-generator",
     "category": "Security",
     "icon": "Lock"
   },
@@ -20,7 +20,7 @@
     "id": "qr-generator",
     "name": "QR Code Generator",
     "description": "Create custom QR codes for URLs or text.",
-    "link": "/tool/qr-generator",
+    "link": "/qr-generator",
     "category": "Utilities",
     "icon": "QrCode"
   },
@@ -28,7 +28,7 @@
     "id": "json-formatter",
     "name": "JSON Formatter",
     "description": "Format, validate, and beautify JSON data.",
-    "link": "/tool/json-formatter",
+    "link": "/json-formatter",
     "category": "Development",
     "icon": "Braces"
   },
@@ -36,7 +36,7 @@
     "id": "lorem-ipsum-generator",
     "name": "Lorem Ipsum Generator",
     "description": "Generate placeholder text for your designs.",
-    "link": "/tool/lorem-ipsum-generator",
+    "link": "/lorem-ipsum-generator",
     "category": "Utilities",
     "icon": "FileText"
   },
@@ -44,7 +44,7 @@
     "id": "color-converter",
     "name": "Color Converter",
     "description": "Convert between HEX, RGB, and HSL values.",
-    "link": "/tool/color-converter",
+    "link": "/color-converter",
     "category": "Design",
     "icon": "Palette"
   },
@@ -52,7 +52,7 @@
     "id": "image-compressor",
     "name": "Image Compressor",
     "description": "Reduce file size of JPG & PNG images.",
-    "link": "/tool/image-compressor",
+    "link": "/image-compressor",
     "category": "Utilities",
     "icon": "Minimize2"
   },
@@ -60,7 +60,7 @@
     "id": "markdown-editor",
     "name": "Markdown Editor",
     "description": "Write and preview Markdown in real-time.",
-    "link": "/tool/markdown-editor",
+    "link": "/markdown-editor",
     "category": "Development",
     "icon": "FileSignature"
   },
@@ -68,7 +68,7 @@
     "id": "unit-converter",
     "name": "Unit Converter",
     "description": "Convert length, weight, temperature, etc.",
-    "link": "/tool/unit-converter",
+    "link": "/unit-converter",
     "category": "Utilities",
     "icon": "Ruler"
   }

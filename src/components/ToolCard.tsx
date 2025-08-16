@@ -14,7 +14,7 @@ interface ToolCardProps {
 
 const ToolCard = ({ tool, stats }: ToolCardProps) => {
   return (
-    <Link href={`/tool/${tool.id}`} passHref>
+    <Link href={`/${tool.id}`} passHref>
       <Card 
         onClick={() => incrementClicks(tool.id)}
         className="h-full flex flex-col group transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 bg-card p-4"

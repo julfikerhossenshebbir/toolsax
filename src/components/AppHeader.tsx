@@ -16,6 +16,7 @@ export default function AppHeader() {
         const searchBox = document.getElementById('search-box');
         if (searchBox) {
             searchBox.focus();
+            searchBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     };
 
