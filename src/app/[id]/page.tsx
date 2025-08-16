@@ -14,6 +14,7 @@ import PasswordGenerator from '@/components/tools/PasswordGenerator';
 import QrCodeGenerator from '@/components/tools/QrCodeGenerator';
 import JsonFormatter from '@/components/tools/JsonFormatter';
 import PdfMerger from '@/components/tools/PdfMerger';
+import LoremIpsumGenerator from '@/components/tools/LoremIpsumGenerator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type Props = {
@@ -65,6 +66,7 @@ const ToolComponents: { [key: string]: React.ComponentType } = {
   'qr-generator': QrCodeGenerator,
   'json-formatter': JsonFormatter,
   'pdf-merger': PdfMerger,
+  'lorem-ipsum-generator': LoremIpsumGenerator,
 };
 
 
