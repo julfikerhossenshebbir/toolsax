@@ -141,7 +141,7 @@ export default function PdfMerger() {
           <div className="space-y-3">
               <h3 className="font-semibold text-lg">Files to Merge ({files.length})</h3>
                <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId="pdf-files">
+                <Droppable droppableId="pdf-files" isDropDisabled={false}>
                   {(provided) => (
                     <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
                       {files.map((file, index) => (
