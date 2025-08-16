@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import AppHeader from '@/components/AppHeader';
 import AppFooter from '@/components/AppFooter';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import GridBackground from '@/components/GridBackground';
 
 export const metadata: Metadata = {
   title: 'Toolsax - Find Your Perfect Tool',
@@ -23,6 +24,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col bg-background">
+        <GridBackground />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
