@@ -6,28 +6,22 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ToolCard from './ToolCard';
 import { SearchWithSuggestions } from './SearchWithSuggestions';
 import Header from './Header';
-import { incrementClicks, incrementViews } from '@/lib/firebase';
+import { incrementViews } from '@/lib/firebase';
 import FirebaseStats from './FirebaseStats';
 
 interface HomePageClientProps {
   tools: Tool[];
 }
 
-const categories = ['All', 'Design', 'Development', 'Productivity', 'Marketing'];
+const categories = ['All', 'Design', 'Development', 'Productivity', 'Marketing', 'Utilities'];
 
 export default function HomePageClient({ tools }: HomePageClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [localClickCount, setLocalClickCount] = useState(0);
 
   useEffect(() => {
     incrementViews();
   }, []);
-
-  const handleToolClick = () => {
-    setLocalClickCount(prev => prev + 1);
-    incrementClicks();
-  };
   
   const filteredTools = useMemo(() => {
     return tools.filter((tool) => {
@@ -41,13 +35,13 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Header clickCount={localClickCount} />
+      <Header />
       
       <div className="my-8 space-y-6">
         <SearchWithSuggestions value={searchQuery} onValueChange={setSearchQuery} />
-        <FirebaseStats />
+        
         <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full flex justify-center">
-          <TabsList className="grid grid-cols-2 sm:grid-cols-5 w-full max-w-lg">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 w-full max-w-2xl">
             {categories.map((category) => (
               <TabsTrigger key={category} value={category}>{category}</TabsTrigger>
             ))}
@@ -57,7 +51,7 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredTools.map((tool) => (
-          <ToolCard key={tool.id} tool={tool} onClick={handleToolClick} />
+          <ToolCard key={tool.id} tool={tool} />
         ))}
       </div>
 
@@ -67,6 +61,10 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
             <p className="text-muted-foreground mt-2">Try adjusting your search or filters.</p>
         </div>
       )}
+
+      <div className="mt-16">
+        <FirebaseStats />
+      </div>
     </div>
   );
 }

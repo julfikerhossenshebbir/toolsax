@@ -12,8 +12,6 @@ async function getTools(): Promise<Tool[]> {
 export default async function Home() {
   const tools = await getTools();
   return (
-    <main>
-      <HomePageClient tools={tools} />
-    </main>
+    <HomePageClient tools={tools} />
   );
 }

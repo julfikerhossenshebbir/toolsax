@@ -95,5 +95,29 @@
     "link": "https://example.com/lead-launcher",
     "category": "Marketing",
     "icon": "Rocket"
+  },
+  {
+    "id": "pdf-merge",
+    "name": "PDF Merge",
+    "description": "Combine multiple PDF files into a single document with ease.",
+    "link": "https://web.com/pdf-merge",
+    "category": "Utilities",
+    "icon": "FileStack"
+  },
+  {
+    "id": "json-formatter",
+    "name": "JSON Formatter",
+    "description": "Format and validate your JSON data with a clean and simple interface.",
+    "link": "https://web.com/json-formatter",
+    "category": "Development",
+    "icon": "Braces"
+  },
+  {
+    "id": "qr-generator",
+    "name": "QR Code Generator",
+    "description": "Create custom QR codes for URLs, text, Wi-Fi, and more.",
+    "link": "https://web.com/qr-generator",
+    "category": "Utilities",
+    "icon": "QrCode"
   }
 ]
