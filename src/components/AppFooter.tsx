@@ -5,7 +5,7 @@ import { Github, Facebook, Twitter, Send } from 'lucide-react';
 export default function AppFooter() {
     return (
       <footer className="border-t">
-        <div className="container py-6 flex items-center justify-between">
+        <div className="container py-2 flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} Toolsax. All rights reserved.
           </p>
