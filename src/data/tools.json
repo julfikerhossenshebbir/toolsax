@@ -119,5 +119,29 @@
     "link": "https://web.com/qr-generator",
     "category": "Utilities",
     "icon": "QrCode"
+  },
+  {
+    "id": "password-generator",
+    "name": "Password Generator",
+    "description": "Create secure, random passwords.",
+    "link": "https://web.com/password-generator",
+    "category": "Security",
+    "icon": "Lock"
+  },
+  {
+    "id": "lorem-ipsum-generator",
+    "name": "Lorem Ipsum Generator",
+    "description": "Generate placeholder text for your designs.",
+    "link": "https://web.com/lorem-ipsum",
+    "category": "Utilities",
+    "icon": "FileText"
+  },
+  {
+    "id": "image-compressor",
+    "name": "Image Compressor",
+    "description": "Reduce file size of JPG & PNG images.",
+    "link": "https://web.com/image-compressor",
+    "category": "Utilities",
+    "icon": "Minimize2"
   }
 ]
