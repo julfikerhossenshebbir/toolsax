@@ -11,6 +11,7 @@ import { Input } from './ui/input';
 import { Search, Wrench, Lock, Code, Palette, LayoutGrid } from 'lucide-react';
 import { Button } from './ui/button';
 import Icon from './Icon';
+import FeaturesSection from './FeaturesSection';
 
 interface HomePageClientProps {
   tools: Tool[];
@@ -95,6 +96,8 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
             <p className="text-muted-foreground mt-2">Try adjusting your search or filters.</p>
         </div>
       )}
+
+      <FeaturesSection />
 
       <div className="my-16">
         <FirebaseStats />
