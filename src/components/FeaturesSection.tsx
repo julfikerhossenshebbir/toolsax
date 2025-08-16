@@ -37,8 +37,8 @@ const features = [
 
 export default function FeaturesSection() {
   return (
-    <section className="py-24 sm:py-32">
-      <div className="mx-auto px-6 lg:px-8">
+    <section>
+      <div className="mx-auto">
         <div className="mx-auto max-w-2xl lg:text-center">
           <h2 className="text-base font-semibold leading-7 text-primary">Why Choose Toolsax?</h2>
           <p className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
