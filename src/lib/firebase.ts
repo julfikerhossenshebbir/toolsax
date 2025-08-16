@@ -19,23 +19,6 @@ const firebaseConfig = {
 let app: FirebaseApp | undefined;
 let db: Database | undefined;
 
-//
-// NOTE: The Firebase functionality has been temporarily disabled due to a
-// "permission_denied" error. To re-enable it, you must configure your
-// Firebase Realtime Database security rules to allow public read/write access.
-//
-// You can do this by visiting your Firebase project console, navigating to
-// the Realtime Database section, and updating the rules to:
-//
-// {
-//   "rules": {
-//     ".read": "true",
-//     ".write": "true"
-//   }
-// }
-//
-// After updating the rules, change the value of `isFirebaseEnabled` below to `true`.
-//
 const isFirebaseEnabled = true;
 
 
@@ -103,9 +86,8 @@ export const initializeUser = () => {
 
 export const getStats = (callback: (stats: { views: number; tool_clicks: number; users: number }) => void) => {
   if (!db) {
-    // Provide fallback data if Firebase is not configured
     callback({ views: 0, tool_clicks: 0, users: 0 });
-    return () => {}; // Return an empty unsubscribe function
+    return () => {};
   }
 
   const statsRef = ref(db, 'stats');
@@ -116,5 +98,21 @@ export const getStats = (callback: (stats: { views: number; tool_clicks: number;
 
   return unsubscribe;
 };
+
+export const getToolStats = (toolId: string, callback: (stats: { clicks: number }) => void) => {
+  if (!db) {
+    callback({ clicks: 0 });
+    return () => {};
+  }
+
+  const toolStatsRef = ref(db, `tools/${toolId}`);
+  const unsubscribe = onValue(toolStatsRef, (snapshot) => {
+    const data = snapshot.val() || { clicks: 0 };
+    callback(data);
+  });
+
+  return unsubscribe;
+};
+
 
 export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;

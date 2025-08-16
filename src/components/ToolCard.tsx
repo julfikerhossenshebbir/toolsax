@@ -1,18 +1,32 @@
 'use client';
 
 import Link from 'next/link';
-import { Tool, ToolStat } from '@/lib/types';
+import { useEffect, useState } from 'react';
+import { Tool } from '@/lib/types';
 import Icon from './Icon';
 import { Card, CardContent } from './ui/card';
-import { incrementClicks } from '@/lib/firebase';
-import { Users, Eye } from 'lucide-react';
+import { incrementClicks, getToolStats, isConfigured } from '@/lib/firebase';
+import { Eye, MousePointerClick } from 'lucide-react';
+import { Skeleton } from './ui/skeleton';
 
 interface ToolCardProps {
   tool: Tool;
-  stats?: ToolStat;
 }
 
-const ToolCard = ({ tool, stats }: ToolCardProps) => {
+const ToolCard = ({ tool }: ToolCardProps) => {
+  const [clicks, setClicks] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (isConfigured) {
+      const unsubscribe = getToolStats(tool.id, (stats) => {
+        setClicks(stats.clicks);
+      });
+      return () => unsubscribe();
+    } else {
+        setClicks(0);
+    }
+  }, [tool.id]);
+
   return (
     <Link href={`/${tool.id}`} passHref>
       <Card 
@@ -27,15 +41,15 @@ const ToolCard = ({ tool, stats }: ToolCardProps) => {
             <h3 className="font-semibold text-base">{tool.name}</h3>
             <p className="text-sm text-muted-foreground truncate max-w-[250px]">{tool.description}</p>
           </div>
-          <div className="flex-shrink-0 flex flex-col items-end text-xs text-muted-foreground gap-1.5">
-            <div className="flex items-center gap-1.5">
-                <Users className="w-3.5 h-3.5" />
-                <span>{stats?.users ?? 0}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-                <Eye className="w-3.5 h-3.5" />
-                <span>{stats?.views ?? 0}</span>
-            </div>
+          <div className="flex-shrink-0 flex items-center text-xs text-muted-foreground gap-1.5">
+            {clicks === null ? (
+              <Skeleton className="h-5 w-10" />
+            ) : (
+              <>
+                <MousePointerClick className="w-3.5 h-3.5" />
+                <span>{clicks.toLocaleString()}</span>
+              </>
+            )}
           </div>
         </CardContent>
       </Card>
