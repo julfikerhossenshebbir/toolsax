@@ -10,6 +10,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 interface AdModalProps {
   isOpen: boolean;
@@ -18,6 +19,25 @@ interface AdModalProps {
 }
 
 export function AdModal({ isOpen, onClose, onContinue }: AdModalProps) {
+  const [countdown, setCountdown] = useState(10);
+
+  useEffect(() => {
+    if (isOpen) {
+      setCountdown(10); // Reset countdown when modal opens
+      const timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev === 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer); // Cleanup on close
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
@@ -40,8 +60,8 @@ export function AdModal({ isOpen, onClose, onContinue }: AdModalProps) {
             />
         </div>
         <AlertDialogFooter>
-          <AlertDialogAction onClick={onContinue}>
-            Continue to Tool
+          <AlertDialogAction onClick={onContinue} disabled={countdown > 0}>
+            {countdown > 0 ? `Continue in ${countdown}s` : 'Continue to Tool'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
