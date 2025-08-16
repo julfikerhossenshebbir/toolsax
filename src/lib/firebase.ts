@@ -19,13 +19,33 @@ const firebaseConfig = {
 let app: FirebaseApp | undefined;
 let db: Database | undefined;
 
+//
+// NOTE: The Firebase functionality has been temporarily disabled due to a
+// "permission_denied" error. To re-enable it, you must configure your
+// Firebase Realtime Database security rules to allow public read/write access.
+//
+// You can do this by visiting your Firebase project console, navigating to
+// the Realtime Database section, and updating the rules to:
+//
+// {
+//   "rules": {
+//     ".read": "true",
+//     ".write": "true"
+//   }
+// }
+//
+// After updating the rules, change the value of `isFirebaseEnabled` below to `true`.
+//
+const isFirebaseEnabled = false;
+
+
 // Check if all necessary config values are present
 const isFirebaseConfigured =
   firebaseConfig.apiKey &&
   firebaseConfig.databaseURL &&
   firebaseConfig.projectId;
 
-if (isFirebaseConfigured && getApps().length === 0) {
+if (isFirebaseConfigured && isFirebaseEnabled && getApps().length === 0) {
   try {
     app = initializeApp(firebaseConfig);
     db = getDatabase(app);
@@ -55,7 +75,7 @@ const incrementCounter = (path: string) => {
 };
 
 export const incrementViews = () => {
-  if (!isFirebaseConfigured) return;
+  if (!isFirebaseConfigured || !isFirebaseEnabled) return;
   incrementCounter('stats/views');
 };
 
@@ -97,4 +117,4 @@ export const getStats = (callback: (stats: { views: number; tool_clicks: number;
   return unsubscribe;
 };
 
-export const isConfigured = isFirebaseConfigured;
+export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;
