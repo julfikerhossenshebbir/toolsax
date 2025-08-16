@@ -17,6 +17,7 @@ import PdfMerger from '@/components/tools/PdfMerger';
 import LoremIpsumGenerator from '@/components/tools/LoremIpsumGenerator';
 import UnitConverter from '@/components/tools/UnitConverter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft } from 'lucide-react';
 
 type Props = {
   params: { id: string };
@@ -111,7 +112,10 @@ export default async function ToolPage({ params }: Props) {
 
           <div className="text-center mt-16">
             <Link href="/">
-              <Button variant="outline">Back to All Tools</Button>
+              <Button variant="outline">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to All Tools
+              </Button>
             </Link>
           </div>
         </div>
