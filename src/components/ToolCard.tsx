@@ -30,11 +30,11 @@ const ToolCard = ({ tool, stats }: ToolCardProps) => {
           <div className="flex-shrink-0 flex flex-col items-end text-xs text-muted-foreground gap-1.5">
             <div className="flex items-center gap-1.5">
                 <Users className="w-3.5 h-3.5" />
-                <span>{stats?.users ?? 0} users</span>
+                <span>{stats?.users ?? 0}</span>
             </div>
             <div className="flex items-center gap-1.5">
                 <Eye className="w-3.5 h-3.5" />
-                <span>{stats?.views ?? 0} views</span>
+                <span>{stats?.views ?? 0}</span>
             </div>
           </div>
         </CardContent>
