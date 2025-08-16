@@ -16,7 +16,7 @@ export default function PasswordGenerator() {
   const [includeUppercase, setIncludeUppercase] = useState(true);
   const [includeLowercase, setIncludeLowercase] = useState(true);
   const [includeNumbers, setIncludeNumbers] = useState(true);
-  const [includeSymbols, setIncludeSymbols] = useState(false);
+  const [includeSymbols, setIncludeSymbols] = useState(true);
   const { toast } = useToast();
 
   const generatePassword = () => {
@@ -65,7 +65,7 @@ export default function PasswordGenerator() {
       <CardHeader>
         <CardTitle>Password Generator</CardTitle>
         <CardDescription>
-          Create strong, secure, and random passwords by customizing length and character types. This tool helps you enhance your online security by generating passwords that are difficult to guess.
+          Generate strong, secure, and random passwords to enhance your online security. Customize the length and character types (uppercase, lowercase, numbers, and symbols) to meet specific requirements. The generated password appears in the input field, ready to be copied. Use the refresh button to create a new one instantly.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -89,7 +89,7 @@ export default function PasswordGenerator() {
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <Label htmlFor="length">Password Length</Label>
-              <span className="font-bold text-primary">{length}</span>
+              <span className="font-semibold text-foreground">{length}</span>
             </div>
             <Slider
               id="length"

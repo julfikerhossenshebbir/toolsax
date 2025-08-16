@@ -3,10 +3,12 @@
 import { useState, useMemo, useEffect } from 'react';
 import type { Tool } from '@/lib/types';
 import ToolCard from './ToolCard';
-import { SearchWithSuggestions } from './SearchWithSuggestions';
 import Header from './Header';
 import { incrementViews } from '@/lib/firebase';
 import FirebaseStats from './FirebaseStats';
+import { Input } from './ui/input';
+import { Search } from 'lucide-react';
+import { Button } from './ui/button';
 
 interface HomePageClientProps {
   tools: Tool[];
@@ -36,31 +38,38 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
   }, [tools, selectedCategory, searchQuery]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4">
       <Header />
       
-      <section id="filters-section" className="mb-12 py-4 px-4">
-        <div className="w-full max-w-4xl mx-auto flex flex-col items-center gap-y-4">
-            <SearchWithSuggestions value={searchQuery} onValueChange={setSearchQuery} />
+      <section id="filters-section" className="mb-12">
+        <div className="w-full max-w-2xl mx-auto flex flex-col items-center gap-y-6">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                id="search-box"
+                type="search"
+                placeholder="Search for tools..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 h-12 text-base rounded-lg border-2 focus:border-primary transition-colors"
+              />
+            </div>
             <div id="category-pills-container" className="flex flex-wrap items-center justify-center gap-2">
               {categories.map((category) => (
-                <button 
+                <Button 
                   key={category}
+                  variant={selectedCategory === category ? 'default' : 'outline'}
                   onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors
-                    ${selectedCategory === category 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-card text-muted-foreground hover:bg-accent'
-                    }`}
+                  className="rounded-full"
                 >
                   {category}
-                </button>
+                </Button>
               ))}
             </div>
         </div>
     </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredTools.map((tool) => (
           <ToolCard key={tool.id} tool={tool} />
         ))}
@@ -73,7 +82,7 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
         </div>
       )}
 
-      <div className="mt-16">
+      <div className="my-16">
         <FirebaseStats />
       </div>
     </div>

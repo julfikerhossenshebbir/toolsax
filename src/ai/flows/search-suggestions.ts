@@ -24,7 +24,7 @@ const SearchSuggestionsOutputSchema = z.object({
 export type SearchSuggestionsOutput = z.infer<typeof SearchSuggestionsOutputSchema>;
 
 export async function generateSearchSuggestions(input: SearchSuggestionsInput): Promise<SearchSuggestionsOutput> {
-  return searchSuggestionsFlow(input);
+  return { suggestions: [] };
 }
 
 const searchSuggestionsPrompt = ai.definePrompt({
@@ -56,7 +56,7 @@ const searchSuggestionsFlow = ai.defineFlow(
     outputSchema: SearchSuggestionsOutputSchema,
   },
   async input => {
-    const {output} = await searchSuggestionsPrompt(input);
-    return output!;
+    // Return empty suggestions to disable the feature
+    return { suggestions: [] };
   }
 );

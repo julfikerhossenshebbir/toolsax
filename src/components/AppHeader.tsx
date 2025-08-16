@@ -1,34 +1,36 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, Github, User } from 'lucide-react';
+import { Search, Github } from 'lucide-react';
 import { Button } from './ui/button';
 import { ThemeToggle } from './ThemeToggle';
-
+import { Separator } from './ui/separator';
 
 const Logo = () => (
-    <User className="h-6 w-6 text-primary" />
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" fill="currentColor" />
+        <path d="M12 2L22 7V17L12 22L2 17V7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M2 7L12 12L22 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M12 22V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
 );
 
 
 export default function AppHeader() {
     const handleSearchClick = () => {
-        // Find the element with the id 'search-box'
         const searchBox = document.getElementById('search-box');
         if (searchBox) {
-            // If the element is found, focus on it
             searchBox.focus();
-            // Optional: scroll into view if it's not visible
             searchBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
+      <div className="container flex h-16 items-center">
         <Link href="/" className="flex items-center gap-2 mr-auto">
           <Logo />
-          <span className="font-bold text-xl">Handgen</span>
+          <span className="font-bold text-lg">Handgen</span>
         </Link>
         
         <div className="flex items-center gap-2">
@@ -40,6 +42,7 @@ export default function AppHeader() {
                 <Github className="w-5 h-5" />
               </a>
             </Button>
+            <Separator orientation="vertical" className="h-6" />
             <ThemeToggle />
         </div>
       </div>

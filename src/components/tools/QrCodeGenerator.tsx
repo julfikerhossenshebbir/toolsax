@@ -13,7 +13,7 @@ export default function QrCodeGenerator() {
 
   useEffect(() => {
     if (canvasRef.current) {
-        QRCode.toCanvas(canvasRef.current, text || ' ', { width: 256, margin: 2 }, (error) => {
+        QRCode.toCanvas(canvasRef.current, text || ' ', { width: 220, margin: 2, color: { light: '#ffffff', dark: '#0a0a0a' } }, (error) => {
             if (error) console.error(error);
         });
     }
@@ -33,7 +33,7 @@ export default function QrCodeGenerator() {
       <CardHeader>
         <CardTitle>QR Code Generator</CardTitle>
         <CardDescription>
-          Generate a QR code from any text or URL. You can download the generated QR code as a PNG image. This is perfect for sharing links, contact information, or Wi-Fi credentials.
+          Create a QR code from any text or URL. The QR code will be generated in real-time as you type. You can then download it as a high-quality PNG image. This tool is perfect for sharing website links, contact information, Wi-Fi credentials, or any other text-based data in a scannable format.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col md:flex-row gap-6 items-start">
@@ -42,13 +42,13 @@ export default function QrCodeGenerator() {
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Enter text or URL..."
-              className="min-h-[150px] text-base"
+              className="min-h-[220px] text-base"
             />
         </div>
-        <div className="flex-shrink-0 text-center mx-auto md:mx-0">
-            <canvas ref={canvasRef} className="rounded-lg border bg-white" />
+        <div className="flex-shrink-0 text-center mx-auto md:mx-0 p-4 bg-white rounded-lg">
+            <canvas ref={canvasRef} className="rounded-lg" />
             <Button onClick={handleDownload} className="mt-4 w-full">
-              <Download className="mr-2 h-4 w-4" /> Download
+              <Download className="mr-2 h-4 w-4" /> Download PNG
             </Button>
         </div>
       </CardContent>

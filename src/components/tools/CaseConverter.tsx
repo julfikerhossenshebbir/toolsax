@@ -41,7 +41,7 @@ export default function CaseConverter() {
       <CardHeader>
         <CardTitle>Case Converter</CardTitle>
         <CardDescription>
-          Convert text between different letter cases such as sentence case, lower case, upper case, and capitalized case. This tool is useful for writers, editors, and developers who need to quickly format text.
+          This tool allows you to transform text into various case formats including sentence case, lower case, upper case, and capitalized case. It's perfect for writers, developers, and anyone who needs to quickly adjust text capitalization for consistency or formatting. Simply type or paste your content into the text area and select your desired conversion.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -52,10 +52,10 @@ export default function CaseConverter() {
           className="min-h-[200px] text-base"
         />
         <div className="mt-4 flex flex-wrap gap-2">
-          <Button onClick={toSentenceCase}>Sentence case</Button>
-          <Button onClick={toLowerCase}>lower case</Button>
-          <Button onClick={toUpperCase}>UPPER CASE</Button>
-          <Button onClick={toCapitalizedCase}>Capitalized Case</Button>
+          <Button onClick={toSentenceCase} variant="outline">Sentence case</Button>
+          <Button onClick={toLowerCase} variant="outline">lower case</Button>
+          <Button onClick={toUpperCase} variant="outline">UPPER CASE</Button>
+          <Button onClick={toCapitalizedCase} variant="outline">Capitalized Case</Button>
         </div>
         <div className="mt-4 flex items-center justify-between border-t pt-4">
             <div className="text-sm text-muted-foreground">
