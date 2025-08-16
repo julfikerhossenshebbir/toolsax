@@ -36,7 +36,7 @@ let db: Database | undefined;
 //
 // After updating the rules, change the value of `isFirebaseEnabled` below to `true`.
 //
-const isFirebaseEnabled = false;
+const isFirebaseEnabled = true;
 
 
 // Check if all necessary config values are present
