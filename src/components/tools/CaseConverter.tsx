@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -41,7 +41,7 @@ export default function CaseConverter() {
       <CardHeader>
         <CardTitle>Case Converter</CardTitle>
         <CardDescription>
-          Convert text between different letter cases such as sentence case, lower case, upper case, and capitalized case.
+          Convert text between different letter cases such as sentence case, lower case, upper case, and capitalized case. This tool is useful for writers, editors, and developers who need to quickly format text.
         </CardDescription>
       </CardHeader>
       <CardContent>

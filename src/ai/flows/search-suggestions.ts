@@ -1,8 +1,9 @@
-// This file holds the Genkit flow for generating smart search suggestions.
-// It uses the time of day, day of the week, and trending searches to provide context-aware suggestions.
-// The flow exports: generateSearchSuggestions, SearchSuggestionsInput, and SearchSuggestionsOutput.
-
 'use server';
+/**
+ * @fileOverview A Genkit flow for generating smart search suggestions.
+ * It uses the time of day, day of the week, and trending searches to provide context-aware suggestions.
+ * The flow exports: generateSearchSuggestions, SearchSuggestionsInput, and SearchSuggestionsOutput.
+ */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
@@ -41,7 +42,8 @@ const searchSuggestionsPrompt = ai.definePrompt({
   Existing search query: {{{searchQuery}}}
 
   Provide a diverse range of suggestions that can help the user discover the tools they need.
-  Format the output as a JSON array of strings.
+  Format the output as a JSON object with a "suggestions" key containing an array of strings.
+  Example:
   {
     "suggestions": ["suggestion 1", "suggestion 2", "suggestion 3"]
   }`,

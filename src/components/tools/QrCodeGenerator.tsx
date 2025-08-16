@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
@@ -33,7 +33,7 @@ export default function QrCodeGenerator() {
       <CardHeader>
         <CardTitle>QR Code Generator</CardTitle>
         <CardDescription>
-          Generate a QR code from any text or URL. You can download the generated QR code as a PNG image.
+          Generate a QR code from any text or URL. You can download the generated QR code as a PNG image. This is perfect for sharing links, contact information, or Wi-Fi credentials.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col md:flex-row gap-6 items-start">

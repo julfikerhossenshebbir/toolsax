@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -37,6 +37,7 @@ export default function PasswordGenerator() {
         description: 'Please select at least one character type.',
         variant: 'destructive',
       });
+      setPassword('');
       return;
     }
 
@@ -57,7 +58,6 @@ export default function PasswordGenerator() {
   
   useEffect(() => {
     generatePassword();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [length, includeUppercase, includeLowercase, includeNumbers, includeSymbols]);
 
   return (
@@ -65,7 +65,7 @@ export default function PasswordGenerator() {
       <CardHeader>
         <CardTitle>Password Generator</CardTitle>
         <CardDescription>
-          Create strong, secure, and random passwords by customizing length and character types.
+          Create strong, secure, and random passwords by customizing length and character types. This tool helps you enhance your online security by generating passwords that are difficult to guess.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -80,7 +80,7 @@ export default function PasswordGenerator() {
           <Button variant="outline" size="icon" onClick={handleCopy} disabled={!password}>
             <Copy className="h-5 w-5" />
           </Button>
-          <Button size="icon" onClick={() => generatePassword()}>
+          <Button size="icon" onClick={generatePassword}>
             <RefreshCw className="h-5 w-5" />
           </Button>
         </div>

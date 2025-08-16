@@ -13,9 +13,12 @@ const Logo = () => (
 
 export default function AppHeader() {
     const handleSearchClick = () => {
+        // Find the element with the id 'search-box'
         const searchBox = document.getElementById('search-box');
         if (searchBox) {
+            // If the element is found, focus on it
             searchBox.focus();
+            // Optional: scroll into view if it's not visible
             searchBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     };

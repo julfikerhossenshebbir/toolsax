@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Tool, ToolStat } from '@/lib/types';
 import Icon from './Icon';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { incrementClicks } from '@/lib/firebase';
 import { Users } from 'lucide-react';
 
