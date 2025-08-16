@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import CaseConverter from '@/components/tools/CaseConverter';
 import PasswordGenerator from '@/components/tools/PasswordGenerator';
 import QrCodeGenerator from '@/components/tools/QrCodeGenerator';
+import JsonFormatter from '@/components/tools/JsonFormatter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type Props = {
@@ -61,6 +62,7 @@ const ToolComponents: { [key: string]: React.ComponentType } = {
   'case-converter': CaseConverter,
   'password-generator': PasswordGenerator,
   'qr-generator': QrCodeGenerator,
+  'json-formatter': JsonFormatter,
 };
 
 
