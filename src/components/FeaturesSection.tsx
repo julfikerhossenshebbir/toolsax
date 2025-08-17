@@ -40,7 +40,7 @@ export default function FeaturesSection() {
     <section className="mt-16">
       <div className="mx-auto">
         <div className="mx-auto max-w-2xl lg:text-center">
-          <h2 className="text-base font-semibold leading-7 text-primary">Why Choose Toolsax?</h2>
+          <h2 className="text-base font-semibold leading-7 text-foreground">Why Choose Toolsax?</h2>
           <p className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Everything you need to streamline your workflow
           </p>
