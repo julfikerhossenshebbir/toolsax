@@ -5,6 +5,9 @@ import AppHeader from '@/components/AppHeader';
 import AppFooter from '@/components/AppFooter';
 import { CustomThemeProvider } from '@/components/ThemeProvider';
 import GridBackground from '@/components/GridBackground';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import AppSidebar from '@/components/AppSidebar';
+import { SidebarInset } from '@/components/ui/sidebar';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://toolsax.com'),
@@ -32,15 +35,20 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className={'font-body antialiased min-h-screen flex flex-col bg-background'}>
-        <GridBackground />
-        <CustomThemeProvider>
-          <AppHeader />
-          <main className="flex-grow">
-            {children}
-          </main>
-          <AppFooter />
-          <Toaster />
-        </CustomThemeProvider>
+          <CustomThemeProvider>
+            <SidebarProvider>
+                <GridBackground />
+                <AppSidebar />
+                <div className="flex flex-col w-full">
+                    <AppHeader />
+                    <main className="flex-grow">
+                        {children}
+                    </main>
+                    <AppFooter />
+                </div>
+                <Toaster />
+            </SidebarProvider>
+          </CustomThemeProvider>
       </body>
     </html>
   );

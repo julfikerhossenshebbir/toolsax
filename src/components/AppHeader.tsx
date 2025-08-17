@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, Bell, Settings, Info, Zap, Palette } from 'lucide-react';
+import { Search, Bell, Settings } from 'lucide-react';
 import { Button } from './ui/button';
 import { SettingsPanel } from './SettingsPanel';
 import { ThemeToggle } from './ThemeToggle';
@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { useEffect, useState } from 'react';
 import { getNotificationMessage, Notification } from '@/lib/firebase';
 import Icon from './Icon';
+import { SidebarTrigger } from './ui/sidebar';
 
 const Logo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -104,12 +105,15 @@ export default function AppHeader() {
     };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center px-4">
-        <Link href="/" className="flex items-center gap-2 mr-auto">
-          <Logo />
-          <span className="font-bold text-lg">Toolsax</span>
-        </Link>
+        <div className="flex items-center gap-2 mr-auto">
+            <SidebarTrigger className="md:hidden" />
+             <Link href="/" className="flex items-center gap-2">
+                <Logo />
+                <span className="font-bold text-lg hidden sm:inline-block">Toolsax</span>
+            </Link>
+        </div>
         
         <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" onClick={handleSearchClick} aria-label="Search">

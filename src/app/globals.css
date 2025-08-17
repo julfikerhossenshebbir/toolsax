@@ -31,6 +31,12 @@ body {
     --radius: 0.5rem;
     --font-size: 16px;
     --font-body: 'Lexend';
+    --sidebar: 240 6% 97%;
+    --sidebar-foreground: 240 10% 3.9%;
+    --sidebar-border: 240 5.9% 90%;
+    --sidebar-accent: 240 4.8% 93.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-ring: 240 10% 3.9%;
   }
  
   .dark {
@@ -53,6 +59,12 @@ body {
     --border: 240 5% 20%;
     --input: 240 5% 20%;
     --ring: 0 0% 98%;
+    --sidebar: 240 6% 8%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-border: 240 5% 20%;
+    --sidebar-accent: 240 5% 12%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-ring: 0 0% 98%;
   }
 }
 
