@@ -5,6 +5,7 @@ import {
     Sheet,
     SheetContent,
     SheetHeader,
+    SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
 import Link from "next/link";
@@ -46,6 +47,7 @@ export default function AppSidebar() {
             </SheetTrigger>
             <SheetContent side="left" className="w-[300px] p-0 flex flex-col">
                 <SheetHeader className="border-b p-4">
+                    <SheetTitle className="sr-only">Main Menu</SheetTitle>
                      <div className="flex items-center gap-2">
                         <Logo />
                         <span className="font-bold text-lg">Toolsax</span>
