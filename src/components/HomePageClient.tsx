@@ -25,14 +25,32 @@ const categoryIcons: { [key: string]: React.ComponentType<{ className?: string }
     Design: Palette,
 };
 
+const searchPlaceholders = [
+    "Search for 'password generator'...",
+    "Find 'case converter'...",
+    "Look up 'JSON formatter'...",
+    "Try 'QR code generator'...",
+    "Search for 'unit converter'...",
+];
+
 export default function HomePageClient({ tools }: HomePageClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [placeholder, setPlaceholder] = useState(searchPlaceholders[0]);
 
   useEffect(() => {
     incrementViews();
   }, []);
   
+  useEffect(() => {
+    let currentPlaceholderIndex = 0;
+    const interval = setInterval(() => {
+        currentPlaceholderIndex = (currentPlaceholderIndex + 1) % searchPlaceholders.length;
+        setPlaceholder(searchPlaceholders[currentPlaceholderIndex]);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   const categories = useMemo(() => {
     const allCategories = tools.map(tool => tool.category);
     return ['All', ...[...new Set(allCategories)].sort()];
@@ -54,12 +72,12 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
       
       <section id="filters-section" className="mb-12">
         <div className="w-full mx-auto flex flex-col items-center gap-y-6">
-            <div className="relative w-full">
+            <div className="relative w-3/4">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 id="search-box"
                 type="search"
-                placeholder="Search for tools..."
+                placeholder={placeholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 h-12 text-base rounded-lg border-2 focus:border-primary transition-colors"
