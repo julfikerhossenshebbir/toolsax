@@ -1,6 +1,8 @@
+
 import { Tool } from "@/lib/types";
 import ToolCard from "./ToolCard";
 import SectionDivider from "./SectionDivider";
+import { useMemo } from "react";
 
 interface RelatedToolsProps {
     allTools: Tool[];
@@ -9,6 +11,14 @@ interface RelatedToolsProps {
 
 export default function RelatedTools({ allTools, currentTool }: RelatedToolsProps) {
     const related = allTools.filter(tool => tool.category === currentTool.category && tool.id !== currentTool.id).slice(0, 3);
+
+    const originalIndexMap = useMemo(() => {
+        const map = new Map<string, number>();
+        allTools.forEach((tool, index) => {
+            map.set(tool.id, index);
+        });
+        return map;
+    }, [allTools]);
 
     if (related.length === 0) {
         return null;
@@ -25,7 +35,11 @@ export default function RelatedTools({ allTools, currentTool }: RelatedToolsProp
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {related.map(tool => (
-                    <ToolCard key={tool.id} tool={tool} />
+                    <ToolCard 
+                        key={tool.id} 
+                        tool={tool}
+                        index={originalIndexMap.get(tool.id) ?? 0}
+                    />
                 ))}
             </div>
         </div>
