@@ -3,8 +3,6 @@ import fs from 'fs';
 import path from 'path';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { useMemo } from 'react';
-
 
 import { Tool } from '@/lib/types';
 import Icon from '@/components/Icon';
@@ -22,7 +20,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 import { getColorByIndex } from '@/lib/utils';
 import ToolActions from '@/components/ToolActions';
-import DisqusComments from '@/components/DisqusComments';
 
 type Props = {
   params: { id: string };
@@ -135,12 +132,9 @@ export default async function ToolPage({ params }: Props) {
           <ToolComponent />
 
           <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 md:flex-row justify-center items-center gap-3">
-             <ToolActions toolId={tool.id} />
+             <ToolActions tool={tool} />
           </div>
 
-          <div className="mt-12">
-            <DisqusComments tool={tool} />
-          </div>
         </div>
       </div>
       

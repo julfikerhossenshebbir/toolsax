@@ -6,30 +6,33 @@ import { Button } from './ui/button';
 import { ArrowLeft, MessageSquareWarning, Heart, MessageCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import DisqusComments from './DisqusComments';
+import { Tool } from '@/lib/types';
 
 
 interface ToolActionsProps {
-  toolId: string;
+  tool: Tool;
 }
 
-export default function ToolActions({ toolId }: ToolActionsProps) {
+export default function ToolActions({ tool }: ToolActionsProps) {
   const [isFavorite, setIsFavorite] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     // Check favorites from localStorage
     const favorites = JSON.parse(localStorage.getItem('favorite_tools') || '[]');
-    setIsFavorite(favorites.includes(toolId));
-  }, [toolId]);
+    setIsFavorite(favorites.includes(tool.id));
+  }, [tool.id]);
 
   const toggleFavorite = () => {
     const favorites = JSON.parse(localStorage.getItem('favorite_tools') || '[]');
     const newIsFavorite = !isFavorite;
 
     if (newIsFavorite) {
-      favorites.push(toolId);
+      favorites.push(tool.id);
     } else {
-      const index = favorites.indexOf(toolId);
+      const index = favorites.indexOf(tool.id);
       if (index > -1) {
         favorites.splice(index, 1);
       }
@@ -40,13 +43,6 @@ export default function ToolActions({ toolId }: ToolActionsProps) {
     toast({
       title: newIsFavorite ? 'Added to favorites!' : 'Removed from favorites.',
     });
-  };
-
-  const scrollToComments = () => {
-    const commentsSection = document.getElementById('comments');
-    if (commentsSection) {
-      commentsSection.scrollIntoView({ behavior: 'smooth' });
-    }
   };
 
   return (
@@ -75,20 +71,32 @@ export default function ToolActions({ toolId }: ToolActionsProps) {
         </TooltipContent>
       </Tooltip>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
-           <Button variant="outline" size="icon" onClick={scrollToComments}>
-            <MessageCircle className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Go to Comments</p>
-        </TooltipContent>
-      </Tooltip>
+      <Dialog>
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <DialogTrigger asChild>
+                    <Button variant="outline" size="icon">
+                        <MessageCircle className="h-4 w-4" />
+                    </Button>
+                </DialogTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>Comments</p>
+            </TooltipContent>
+        </Tooltip>
+        <DialogContent className="max-w-2xl">
+            <DialogHeader>
+                <DialogTitle>Comments on {tool.name}</DialogTitle>
+            </DialogHeader>
+            <div className="mt-4">
+                <DisqusComments tool={tool} />
+            </div>
+        </DialogContent>
+      </Dialog>
       
       <Tooltip>
         <TooltipTrigger asChild>
-          <Link href={`/report-a-bug?tool=${toolId}`}>
+          <Link href={`/report-a-bug?tool=${tool.id}`}>
             <Button variant="destructive" size="icon">
               <MessageSquareWarning className="h-4 w-4" />
             </Button>
