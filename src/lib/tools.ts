@@ -1,5 +1,7 @@
 
-[
+import { Tool } from './types';
+
+export const ALL_TOOLS: Tool[] = [
   {
     "id": "case-converter",
     "name": "Case Converter",
@@ -296,4 +298,4 @@
     "category": "Utilities",
     "icon": "MessageSquare"
   }
-]
+];

@@ -1,20 +1,17 @@
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import type { Metadata } from 'next';
-import fs from 'fs';
-import path from 'path';
 import { Tool } from '@/lib/types';
 import ReportBugForm from './ReportBugForm';
+import { ALL_TOOLS } from '@/lib/tools';
 
 export const metadata: Metadata = {
     title: 'Report a Bug | Toolsax',
     description: 'Report an issue with one of our tools.',
 };
 
-const toolsFilePath = path.join(process.cwd(), 'src', 'data', 'tools.json');
-
 async function getTools(): Promise<Tool[]> {
-  const jsonData = await fs.promises.readFile(toolsFilePath, 'utf-8');
-  return JSON.parse(jsonData);
+  return ALL_TOOLS;
 }
 
 

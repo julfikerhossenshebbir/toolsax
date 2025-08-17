@@ -1,13 +1,10 @@
-import { MetadataRoute } from 'next'
-import fs from 'fs';
-import path from 'path';
-import { Tool } from '@/lib/types';
 
-const toolsFilePath = path.join(process.cwd(), 'src', 'data', 'tools.json');
+import { MetadataRoute } from 'next'
+import { Tool } from '@/lib/types';
+import { ALL_TOOLS } from '@/lib/tools';
 
 async function getTools(): Promise<Tool[]> {
-  const jsonData = await fs.promises.readFile(toolsFilePath, 'utf-8');
-  return JSON.parse(jsonData);
+  return ALL_TOOLS;
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

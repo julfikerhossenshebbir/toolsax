@@ -1,13 +1,10 @@
-import { notFound } from 'next/navigation';
-import fs from 'fs';
-import path from 'path';
-import Link from 'next/link';
-import type { Metadata } from 'next';
 
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import { ALL_TOOLS } from '@/lib/tools';
 import { Tool } from '@/lib/types';
 import Icon from '@/components/Icon';
 import RelatedTools from '@/components/RelatedTools';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import CaseConverter from '@/components/tools/CaseConverter';
 import PasswordGenerator from '@/components/tools/PasswordGenerator';
@@ -17,7 +14,6 @@ import PdfMerger from '@/components/tools/PdfMerger';
 import LoremIpsumGenerator from '@/components/tools/LoremIpsumGenerator';
 import UnitConverter from '@/components/tools/UnitConverter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft } from 'lucide-react';
 import { getColorByIndex } from '@/lib/utils';
 import ToolActions from '@/components/ToolActions';
 
@@ -25,11 +21,8 @@ type Props = {
   params: { id: string };
 };
 
-const toolsFilePath = path.join(process.cwd(), 'src', 'data', 'tools.json');
-
 async function getTools(): Promise<Tool[]> {
-  const jsonData = await fs.promises.readFile(toolsFilePath, 'utf-8');
-  return JSON.parse(jsonData);
+  return ALL_TOOLS;
 }
 
 async function getTool(id: string): Promise<{ tool: Tool | undefined, index: number }> {
@@ -41,7 +34,8 @@ async function getTool(id: string): Promise<{ tool: Tool | undefined, index: num
   return { tool: tools[toolIndex], index: toolIndex };
 }
 
-export async function generateMetadata({ params: { id } }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = params;
   const { tool } = await getTool(id);
 
   if (!tool) {

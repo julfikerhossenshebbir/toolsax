@@ -16,6 +16,7 @@ import { useThemeSettings } from './ThemeProvider';
 import { Check, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
+import { ThemeToggle } from './ThemeToggle';
 
 const colorOptions = [
     { name: 'neutral', value: '#18181b' },
@@ -47,6 +48,13 @@ export function SettingsPanel({ children }: { children: React.ReactNode }) {
           </SheetDescription>
         </SheetHeader>
         <div className="grid gap-6 py-4">
+            <div className="space-y-3">
+                <Label>Theme</Label>
+                <div className="flex items-center justify-between rounded-lg border p-2">
+                    <span className="text-sm font-medium">Toggle Light/Dark Mode</span>
+                    <ThemeToggle />
+                </div>
+            </div>
           <div className="space-y-3">
             <Label>Primary Color</Label>
             <div className="grid grid-cols-6 gap-2">

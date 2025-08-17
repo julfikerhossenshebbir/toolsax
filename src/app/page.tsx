@@ -1,12 +1,10 @@
+
 import HomePageClient from '@/components/HomePageClient';
 import { Tool } from '@/lib/types';
-import fs from 'fs';
-import path from 'path';
+import { ALL_TOOLS } from '@/lib/tools';
 
 async function getTools(): Promise<Tool[]> {
-  const filePath = path.join(process.cwd(), 'src', 'data', 'tools.json');
-  const jsonData = await fs.promises.readFile(filePath, 'utf-8');
-  return JSON.parse(jsonData);
+  return ALL_TOOLS;
 }
 
 export default async function Home() {

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -40,6 +41,10 @@ export default function ToolActions({ tool }: ToolActionsProps) {
 
     localStorage.setItem('favorite_tools', JSON.stringify(favorites));
     setIsFavorite(newIsFavorite);
+    
+    // Dispatch a custom event to notify other components (like the header)
+    window.dispatchEvent(new Event('favoritesChanged'));
+
     toast({
       title: newIsFavorite ? 'Added to favorites!' : 'Removed from favorites.',
     });

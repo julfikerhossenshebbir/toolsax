@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { Search, Bell, Settings } from 'lucide-react';
 import { Button } from './ui/button';
 import { SettingsPanel } from './SettingsPanel';
-import { ThemeToggle } from './ThemeToggle';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { useEffect, useState } from 'react';
 import { getNotificationMessage, Notification } from '@/lib/firebase';
 import Icon from './Icon';
 import AppSidebar from './AppSidebar';
+import FavoriteTools from './FavoriteTools';
 
 const Logo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -120,7 +120,7 @@ export default function AppHeader() {
               <Search className="w-5 h-5" />
             </Button>
             <NotificationBell />
-            <ThemeToggle />
+            <FavoriteTools />
             <SettingsPanel>
                 <Button variant="ghost" size="icon" aria-label="Settings">
                     <Settings className="w-5 h-5" />
