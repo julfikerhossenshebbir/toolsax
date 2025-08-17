@@ -17,8 +17,10 @@ import PdfMerger from '@/components/tools/PdfMerger';
 import LoremIpsumGenerator from '@/components/tools/LoremIpsumGenerator';
 import UnitConverter from '@/components/tools/UnitConverter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, MessageSquareWarning } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { getColorByIndex } from '@/lib/utils';
+import { getToolLikes } from '@/lib/firebase';
+import ToolActions from '@/components/ToolActions';
 
 type Props = {
   params: { id: string };
@@ -94,11 +96,12 @@ const PlaceholderTool = ({ tool }: { tool: Tool }) => (
 export default async function ToolPage({ params }: Props) {
   const { tool, index } = await getTool(params.id);
   const allTools = await getTools();
-
+  
   if (!tool) {
     notFound();
   }
 
+  const initialLikes = await getToolLikes(tool.id);
   const ToolComponent = ToolComponents[tool.id] || (() => <PlaceholderTool tool={tool} />);
   const iconColor = getColorByIndex(index);
 
@@ -123,19 +126,8 @@ export default async function ToolPage({ params }: Props) {
 
           <ToolComponent />
 
-          <div className="text-center mt-16 flex justify-center gap-4">
-            <Link href="/">
-              <Button variant="outline">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to All Tools
-              </Button>
-            </Link>
-             <Link href={`/report-a-bug?tool=${tool.id}`}>
-                <Button variant="destructive">
-                  <MessageSquareWarning className="mr-2 h-4 w-4" />
-                  Report a Bug
-                </Button>
-            </Link>
+          <div className="text-center mt-12 flex justify-center gap-4">
+             <ToolActions toolId={tool.id} initialLikes={initialLikes} />
           </div>
         </div>
       </div>
