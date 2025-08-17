@@ -44,12 +44,6 @@ const fontOptions = [
   { name: 'Merriweather', value: 'Merriweather' },
 ];
 
-const fontSizes = [
-  { name: 'Small', value: 14 },
-  { name: 'Default', value: 16 },
-  { name: 'Large', value: 18 },
-];
-
 export function SettingsPanel({ children }: { children: React.ReactNode }) {
     const { primaryColor, setPrimaryColor, radius, setRadius, fontSize, setFontSize, font, setFont } = useThemeSettings();
 
@@ -109,18 +103,16 @@ export function SettingsPanel({ children }: { children: React.ReactNode }) {
             <span className="text-xs text-muted-foreground">{radius.toFixed(1)}rem</span>
           </div>
           <div className="space-y-3">
-            <Label>Font Size</Label>
-            <div className="flex flex-wrap gap-2">
-                {fontSizes.map((size) => (
-                    <Button
-                        key={size.name}
-                        variant={fontSize === size.value ? 'default' : 'outline'}
-                        onClick={() => setFontSize(size.value)}
-                    >
-                        {size.name}
-                    </Button>
-                ))}
-            </div>
+            <Label className="flex justify-between">
+              Font Size <span>{fontSize}px</span>
+            </Label>
+            <Slider
+              value={[fontSize]}
+              onValueChange={(value) => setFontSize(value[0])}
+              min={12}
+              max={20}
+              step={1}
+            />
           </div>
         </div>
       </SheetContent>
