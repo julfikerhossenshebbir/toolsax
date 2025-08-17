@@ -17,7 +17,7 @@ import PdfMerger from '@/components/tools/PdfMerger';
 import LoremIpsumGenerator from '@/components/tools/LoremIpsumGenerator';
 import UnitConverter from '@/components/tools/UnitConverter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, MessageSquareWarning } from 'lucide-react';
 import { getColorByIndex } from '@/lib/utils';
 
 type Props = {
@@ -123,12 +123,18 @@ export default async function ToolPage({ params }: Props) {
 
           <ToolComponent />
 
-          <div className="text-center mt-16">
+          <div className="text-center mt-16 flex justify-center gap-4">
             <Link href="/">
               <Button variant="outline">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to All Tools
               </Button>
+            </Link>
+             <Link href={`/report-a-bug?tool=${tool.id}`}>
+                <Button variant="destructive">
+                  <MessageSquareWarning className="mr-2 h-4 w-4" />
+                  Report a Bug
+                </Button>
             </Link>
           </div>
         </div>

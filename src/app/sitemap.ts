@@ -24,6 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/cookies',
     '/dmca',
     '/privacy',
+    '/report-a-bug',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
