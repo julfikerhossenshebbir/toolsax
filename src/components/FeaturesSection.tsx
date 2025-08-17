@@ -48,7 +48,7 @@ export default function FeaturesSection() {
             A comprehensive suite of tools designed for performance, security, and ease of use—all in one place.
           </p>
         </div>
-        <div className="mx-auto mt-16 max-w-none">
+        <div className="mx-auto mt-10 max-w-none">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature) => (
               <Card key={feature.title} className="hover:border-primary/80 hover:shadow-lg transition-all duration-300">
