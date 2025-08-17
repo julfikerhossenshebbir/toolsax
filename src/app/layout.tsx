@@ -5,6 +5,18 @@ import AppHeader from '@/components/AppHeader';
 import AppFooter from '@/components/AppFooter';
 import { CustomThemeProvider } from '@/components/ThemeProvider';
 import GridBackground from '@/components/GridBackground';
+import { Inter, Roboto, Lato, Montserrat, Oswald, Raleway, Poppins, Nunito, Merriweather } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const roboto = Roboto({ weight: ['400', '500', '700'], subsets: ['latin'], variable: '--font-roboto' });
+const lato = Lato({ weight: ['400', '700'], subsets: ['latin'], variable: '--font-lato' });
+const montserrat = Montserrat({ subsets: ['latin'], variable: '--font-montserrat' });
+const oswald = Oswald({ subsets: ['latin'], variable: '--font-oswald' });
+const raleway = Raleway({ subsets: ['latin'], variable: '--font-raleway' });
+const poppins = Poppins({ weight: ['400', '500', '600', '700'], subsets: ['latin'], variable: '--font-poppins' });
+const nunito = Nunito({ subsets: ['latin'], variable: '--font-nunito' });
+const merriweather = Merriweather({ weight: ['400', '700'], subsets: ['latin'], variable: '--font-merriweather' });
+
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://toolsax.com'),
@@ -31,7 +43,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased min-h-screen flex flex-col bg-background">
+      <body className={`font-body antialiased min-h-screen flex flex-col bg-background ${inter.variable} ${roboto.variable} ${lato.variable} ${montserrat.variable} ${oswald.variable} ${raleway.variable} ${poppins.variable} ${nunito.variable} ${merriweather.variable}`}>
         <GridBackground />
         <CustomThemeProvider>
           <AppHeader />

@@ -1,9 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, Github, Coffee, Bell, Settings } from 'lucide-react';
+import { Search, Bell, Settings } from 'lucide-react';
 import { Button } from './ui/button';
-import { ThemeToggle } from './ThemeToggle';
 import { SettingsPanel } from './SettingsPanel';
 
 const Logo = () => (
@@ -47,18 +46,6 @@ export default function AppHeader() {
                     <Settings className="w-5 h-5" />
                 </Button>
             </SettingsPanel>
-
-            <Button variant="ghost" size="icon" asChild aria-label="Buy Me A Coffee">
-              <a href="https://buymeacoffee.com/helloanaroul" target="_blank" rel="noopener noreferrer">
-                <Coffee className="w-5 h-5" />
-              </a>
-            </Button>
-            <Button variant="ghost" size="icon" asChild aria-label="GitHub">
-              <a href="https://github.com/FirebaseExtended/ai-studio-nextjs-tools" target="_blank" rel="noopener noreferrer">
-                <Github className="w-5 h-5" />
-              </a>
-            </Button>
-            <ThemeToggle />
         </div>
       </div>
     </header>

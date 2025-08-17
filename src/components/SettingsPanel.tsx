@@ -14,12 +14,35 @@ import { Slider } from './ui/slider';
 import { useThemeSettings } from './ThemeProvider';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from './ThemeToggle';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 const colorOptions = [
     { name: 'neutral', light: '#18181b', dark: '#fafafa' },
+    { name: 'slate', light: '#475569', dark: '#94a3b8' },
+    { name: 'stone', light: '#44403c', dark: '#a8a29e' },
+    { name: 'gray', light: '#4b5563', dark: '#9ca3af' },
+    { name: 'zinc', light: '#52525b', dark: '#a1a1aa' },
     { name: 'red', light: '#ef4444', dark: '#f87171' },
     { name: 'orange', light: '#f97316', dark: '#fb923c' },
     { name: 'green', light: '#22c55e', dark: '#4ade80' },
+    { name: 'blue', light: '#3b82f6', dark: '#60a5fa' },
+    { name: 'indigo', light: '#6366f1', dark: '#818cf8' },
+    { name: 'purple', light: '#8b5cf6', dark: '#a78bfa' },
+    { name: 'pink', light: '#ec4899', dark: '#f472b6' },
+];
+
+const fontOptions = [
+  { name: 'Lexend', value: 'Lexend' },
+  { name: 'Inter', value: 'Inter' },
+  { name: 'Roboto', value: 'Roboto' },
+  { name: 'Lato', value: 'Lato' },
+  { name: 'Montserrat', value: 'Montserrat' },
+  { name: 'Oswald', value: 'Oswald' },
+  { name: 'Raleway', value: 'Raleway' },
+  { name: 'Poppins', value: 'Poppins' },
+  { name: 'Nunito', value: 'Nunito' },
+  { name: 'Merriweather', value: 'Merriweather' },
 ];
 
 const fontSizes = [
@@ -29,12 +52,12 @@ const fontSizes = [
 ];
 
 export function SettingsPanel({ children }: { children: React.ReactNode }) {
-    const { primaryColor, setPrimaryColor, radius, setRadius, fontSize, setFontSize } = useThemeSettings();
+    const { primaryColor, setPrimaryColor, radius, setRadius, fontSize, setFontSize, font, setFont } = useThemeSettings();
 
   return (
     <Sheet>
       <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent>
+      <SheetContent className="w-[340px]">
         <SheetHeader>
           <SheetTitle>Customize Theme</SheetTitle>
           <SheetDescription>
@@ -43,8 +66,12 @@ export function SettingsPanel({ children }: { children: React.ReactNode }) {
         </SheetHeader>
         <div className="grid gap-6 py-4">
           <div className="space-y-3">
+            <Label>Theme</Label>
+            <ThemeToggle />
+          </div>
+          <div className="space-y-3">
             <Label>Primary Color</Label>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-6 gap-2">
               {colorOptions.map((color) => (
                 <Button
                   key={color.name}
@@ -59,6 +86,21 @@ export function SettingsPanel({ children }: { children: React.ReactNode }) {
                 </Button>
               ))}
             </div>
+          </div>
+          <div className="space-y-3">
+            <Label>Font Family</Label>
+            <Select value={font} onValueChange={setFont}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a font" />
+              </SelectTrigger>
+              <SelectContent>
+                {fontOptions.map((fontOption) => (
+                  <SelectItem key={fontOption.value} value={fontOption.value}>
+                    {fontOption.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-3">
             <Label>Border Radius</Label>

@@ -11,6 +11,8 @@ interface CustomThemeContextType {
   setRadius: (radius: number) => void;
   fontSize: number;
   setFontSize: (size: number) => void;
+  font: string;
+  setFont: (font: string) => void;
 }
 
 const CustomThemeContext = React.createContext<CustomThemeContextType | undefined>(undefined);
@@ -20,14 +22,17 @@ export function CustomThemeProvider({ children, ...props }: ThemeProviderProps) 
   const [primaryColor, setPrimaryColor] = React.useState('neutral');
   const [radius, setRadius] = React.useState(0.5);
   const [fontSize, setFontSize] = React.useState(16);
+  const [font, setFont] = React.useState('Lexend');
 
   React.useEffect(() => {
     const savedColor = localStorage.getItem('theme-primary-color');
     const savedRadius = localStorage.getItem('theme-radius');
     const savedFontSize = localStorage.getItem('theme-font-size');
+    const savedFont = localStorage.getItem('theme-font');
     if (savedColor) setPrimaryColor(savedColor);
     if (savedRadius) setRadius(parseFloat(savedRadius));
     if (savedFontSize) setFontSize(parseInt(savedFontSize, 10));
+    if (savedFont) setFont(savedFont);
   }, []);
 
   const handleSetPrimaryColor = (color: string) => {
@@ -44,37 +49,60 @@ export function CustomThemeProvider({ children, ...props }: ThemeProviderProps) 
     setFontSize(newSize);
     localStorage.setItem('theme-font-size', newSize.toString());
   };
+
+  const handleSetFont = (newFont: string) => {
+    setFont(newFont);
+    localStorage.setItem('theme-font', newFont);
+  }
   
   React.useEffect(() => {
     document.body.style.setProperty('--radius', `${radius}rem`);
     document.documentElement.style.fontSize = `${fontSize}px`;
+    document.body.style.setProperty('--font-body', font);
 
     const isDark = theme === 'dark';
 
     const colors: {[key: string]: {light: string, dark: string}} = {
       neutral: { light: '240 10% 3.9%', dark: '0 0% 98%' },
-      neutral_foreground: { light: '0 0% 98%', dark: '240 10% 3.9%' },
-      red: { light: '0 84.2% 60.2%', dark: '0 72.2% 50.6%' },
-      red_foreground: { light: '0 0% 98%', dark: '0 85.7% 97.3%' },
-      orange: { light: '25.3 93.2% 54.9%', dark: '24.6 95% 53.1%' },
-      orange_foreground: { light: '24 9.8% 10%', dark: '20 14.3% 4.1%' },
-      green: { light: '142.1 76.2% 36.3%', dark: '142.1 70.6% 45.3%' },
-      green_foreground: { light: '144.9 80.4% 97.3%', dark: '144.9 80.4% 97.3%' },
-    };
+      slate: { light: '215 28% 47%', dark: '215 14% 65%' },
+      stone: { light: '25 15% 35%', dark: '25 8% 65%' },
+      gray: { light: '220 9% 46%', dark: '215 10% 65%' },
+      zinc: { light: '224 14% 40%', dark: '220 10% 68%' },
+      red: { light: '0 84.2% 60.2%', dark: '0 80% 65%' },
+      orange: { light: '25.3 93.2% 54.9%', dark: '25.3 90% 60%' },
+      green: { light: '142.1 76.2% 36.3%', dark: '142.1 65% 50%' },
+      blue: { light: '221 83% 53%', dark: '221 83% 65%' },
+      indigo: { light: '243 75% 59%', dark: '243 75% 70%' },
+      purple: { light: '262 84% 60%', dark: '262 84% 75%' },
+      pink: { light: '336 84% 60%', dark: '336 84% 75%' },
 
+      neutral_foreground: { light: '0 0% 98%', dark: '240 10% 3.9%' },
+      slate_foreground: { light: '0 0% 98%', dark: '215 28% 15%' },
+      stone_foreground: { light: '0 0% 98%', dark: '25 15% 15%' },
+      gray_foreground: { light: '0 0% 98%', dark: '220 9% 15%' },
+      zinc_foreground: { light: '0 0% 98%', dark: '224 14% 15%' },
+      red_foreground: { light: '0 0% 98%', dark: '0 85.7% 97.3%' },
+      orange_foreground: { light: '24 9.8% 10%', dark: '20 14.3% 4.1%' },
+      green_foreground: { light: '144.9 80.4% 97.3%', dark: '144.9 80.4% 97.3%' },
+      blue_foreground: { light: '0 0% 98%', dark: '221 83% 20%' },
+      indigo_foreground: { light: '0 0% 98%', dark: '243 75% 25%' },
+      purple_foreground: { light: '0 0% 98%', dark: '262 84% 25%' },
+      pink_foreground: { light: '0 0% 98%', dark: '336 84% 25%' },
+    };
+    
     const selectedColor = colors[primaryColor] || colors.neutral;
     const primaryValue = isDark ? selectedColor.dark : selectedColor.light;
-    const primaryForegroundValue = isDark ? (colors[`${primaryColor}_foreground`]?.dark || colors.neutral_foreground.dark) : (colors[`${primaryColor}_foreground`]?.light || colors.neutral_foreground.light);
+    const primaryForegroundValue = isDark ? (colors[`${primaryColor}_foreground` as keyof typeof colors]?.dark || colors.neutral_foreground.dark) : (colors[`${primaryColor}_foreground` as keyof typeof colors]?.light || colors.neutral_foreground.light);
     
     document.documentElement.style.setProperty('--primary', primaryValue);
     document.documentElement.style.setProperty('--primary-foreground', primaryForegroundValue);
 
-  }, [primaryColor, radius, fontSize, theme]);
+  }, [primaryColor, radius, fontSize, theme, font]);
 
 
   return (
-    <NextThemesProvider {...props}>
-        <CustomThemeContext.Provider value={{ primaryColor, setPrimaryColor: handleSetPrimaryColor, radius, setRadius: handleSetRadius, fontSize, setFontSize: handleSetFontSize }}>
+    <NextThemesProvider attribute="class" defaultTheme="system" enableSystem {...props}>
+        <CustomThemeContext.Provider value={{ primaryColor, setPrimaryColor: handleSetPrimaryColor, radius, setRadius: handleSetRadius, fontSize, setFontSize: handleSetFontSize, font, setFont: handleSetFont }}>
             {children}
         </CustomThemeContext.Provider>
     </NextThemesProvider>
