@@ -131,7 +131,7 @@ export default async function ToolPage({ params }: Props) {
 
           <ToolComponent />
 
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 md:flex-row justify-center items-center gap-3">
+          <div className="mt-12 flex justify-center items-center gap-3">
              <ToolActions tool={tool} />
           </div>
 
