@@ -18,6 +18,7 @@ import LoremIpsumGenerator from '@/components/tools/LoremIpsumGenerator';
 import UnitConverter from '@/components/tools/UnitConverter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
+import { getColorByIndex } from '@/lib/utils';
 
 type Props = {
   params: { id: string };
@@ -30,13 +31,17 @@ async function getTools(): Promise<Tool[]> {
   return JSON.parse(jsonData);
 }
 
-async function getTool(id: string): Promise<Tool | undefined> {
+async function getTool(id: string): Promise<{ tool: Tool | undefined, index: number }> {
   const tools = await getTools();
-  return tools.find((tool) => tool.id === id);
+  const toolIndex = tools.findIndex((tool) => tool.id === id);
+  if (toolIndex === -1) {
+    return { tool: undefined, index: -1 };
+  }
+  return { tool: tools[toolIndex], index: toolIndex };
 }
 
 export async function generateMetadata({ params: { id } }: Props): Promise<Metadata> {
-  const tool = await getTool(id);
+  const { tool } = await getTool(id);
 
   if (!tool) {
     return {
@@ -87,7 +92,7 @@ const PlaceholderTool = ({ tool }: { tool: Tool }) => (
 
 
 export default async function ToolPage({ params }: Props) {
-  const tool = await getTool(params.id);
+  const { tool, index } = await getTool(params.id);
   const allTools = await getTools();
 
   if (!tool) {
@@ -95,14 +100,22 @@ export default async function ToolPage({ params }: Props) {
   }
 
   const ToolComponent = ToolComponents[tool.id] || (() => <PlaceholderTool tool={tool} />);
+  const iconColor = getColorByIndex(index);
+
 
   return (
     <>
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-secondary rounded-2xl mb-4">
-              <Icon name={tool.icon} className="w-8 h-8 text-foreground" />
+            <div 
+              className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
+              style={{ 
+                backgroundColor: iconColor.bg,
+                color: iconColor.text
+              }}
+            >
+              <Icon name={tool.icon} className="w-8 h-8" />
             </div>
             <h1 className="text-3xl font-extrabold tracking-tighter">{tool.name}</h1>
             <Badge variant="secondary" className="mt-3 text-sm">{tool.category}</Badge>

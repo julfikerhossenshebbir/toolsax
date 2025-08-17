@@ -10,9 +10,11 @@ import { incrementClicks, getToolStats, isConfigured } from '@/lib/firebase';
 import { MousePointerClick } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 import { AdModal } from './AdModal';
+import { getColorByIndex } from '@/lib/utils';
 
 interface ToolCardProps {
   tool: Tool;
+  index: number;
 }
 
 const AD_VIEW_LIMIT = 3;
@@ -20,10 +22,12 @@ const AD_COOLDOWN_MINUTES = 5;
 const AD_STORAGE_KEY_COUNT = 'toolsax_ad_views';
 const AD_STORAGE_KEY_TIMESTAMP = 'toolsax_last_ad_timestamp';
 
-const ToolCard = ({ tool }: ToolCardProps) => {
+const ToolCard = ({ tool, index }: ToolCardProps) => {
   const [clicks, setClicks] = useState<number | null>(null);
   const [showAd, setShowAd] = useState(false);
   const router = useRouter();
+  
+  const iconColor = getColorByIndex(index);
 
   useEffect(() => {
     if (isConfigured) {
@@ -78,8 +82,14 @@ const ToolCard = ({ tool }: ToolCardProps) => {
           className="h-full flex flex-col group transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1.5 bg-card hover:border-primary"
         >
           <CardContent className="p-4 flex items-center gap-4">
-            <div className="w-10 h-10 flex-shrink-0 bg-secondary rounded-lg flex items-center justify-center">
-              <Icon name={tool.icon} className="w-5 h-5 text-foreground" />
+            <div 
+              className="w-10 h-10 flex-shrink-0 rounded-lg flex items-center justify-center"
+              style={{ 
+                backgroundColor: iconColor.bg,
+                color: iconColor.text
+              }}
+            >
+              <Icon name={tool.icon} className="w-5 h-5" />
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-base truncate">{tool.name}</h3>

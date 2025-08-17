@@ -67,6 +67,15 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
     });
   }, [tools, selectedCategory, searchQuery]);
 
+  // Create a map to get the original index of each filtered tool
+  const originalIndexMap = useMemo(() => {
+    const map = new Map<string, number>();
+    tools.forEach((tool, index) => {
+      map.set(tool.id, index);
+    });
+    return map;
+  }, [tools]);
+
   return (
     <div className="container mx-auto px-4">
       <Header />
@@ -105,7 +114,11 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredTools.map((tool) => (
-          <ToolCard key={tool.id} tool={tool} />
+          <ToolCard 
+            key={tool.id} 
+            tool={tool} 
+            index={originalIndexMap.get(tool.id) ?? 0}
+          />
         ))}
       </div>
 
