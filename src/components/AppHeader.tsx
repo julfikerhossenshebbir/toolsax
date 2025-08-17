@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, Github, Coffee } from 'lucide-react';
+import { Search, Github, Coffee, Bell, Settings } from 'lucide-react';
 import { Button } from './ui/button';
 import { ThemeToggle } from './ThemeToggle';
+import { SettingsPanel } from './SettingsPanel';
 
 const Logo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -36,6 +37,17 @@ export default function AppHeader() {
             <Button variant="ghost" size="icon" onClick={handleSearchClick} aria-label="Search">
               <Search className="w-5 h-5" />
             </Button>
+            <Button variant="ghost" size="icon" asChild aria-label="Notifications">
+              <a href="#" >
+                <Bell className="w-5 h-5" />
+              </a>
+            </Button>
+            <SettingsPanel>
+                <Button variant="ghost" size="icon" aria-label="Settings">
+                    <Settings className="w-5 h-5" />
+                </Button>
+            </SettingsPanel>
+
             <Button variant="ghost" size="icon" asChild aria-label="Buy Me A Coffee">
               <a href="https://buymeacoffee.com/helloanaroul" target="_blank" rel="noopener noreferrer">
                 <Coffee className="w-5 h-5" />

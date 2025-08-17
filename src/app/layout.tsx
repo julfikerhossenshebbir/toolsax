@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import AppHeader from '@/components/AppHeader';
 import AppFooter from '@/components/AppFooter';
-import { ThemeProvider } from '@/components/ThemeProvider';
+import { CustomThemeProvider } from '@/components/ThemeProvider';
 import GridBackground from '@/components/GridBackground';
 
 export const metadata: Metadata = {
@@ -33,19 +33,14 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col bg-background">
         <GridBackground />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <CustomThemeProvider>
           <AppHeader />
           <main className="flex-grow">
             {children}
           </main>
           <AppFooter />
           <Toaster />
-        </ThemeProvider>
+        </CustomThemeProvider>
       </body>
     </html>
   );
