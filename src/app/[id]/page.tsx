@@ -13,6 +13,7 @@ import JsonFormatter from '@/components/tools/JsonFormatter';
 import PdfMerger from '@/components/tools/PdfMerger';
 import LoremIpsumGenerator from '@/components/tools/LoremIpsumGenerator';
 import UnitConverter from '@/components/tools/UnitConverter';
+import ColorConverter from '@/components/tools/ColorConverter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getColorByIndex } from '@/lib/utils';
 import ToolActions from '@/components/ToolActions';
@@ -70,6 +71,7 @@ const ToolComponents: { [key: string]: React.ComponentType } = {
   'pdf-merger': PdfMerger,
   'lorem-ipsum-generator': LoremIpsumGenerator,
   'unit-converter': UnitConverter,
+  'color-converter': ColorConverter,
 };
 
 

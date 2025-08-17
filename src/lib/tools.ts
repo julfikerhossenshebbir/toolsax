@@ -42,7 +42,7 @@ export const ALL_TOOLS: Tool[] = [
     "category": "Utilities",
     "icon": "FileText"
   },
-    {
+  {
     "id": "color-converter",
     "name": "Color Converter",
     "description": "Convert between HEX, RGB, and HSL values.",
