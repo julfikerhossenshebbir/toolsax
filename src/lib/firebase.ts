@@ -6,6 +6,11 @@ import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { getDatabase, ref, runTransaction, onValue, type Database } from "firebase/database";
 import { v4 as uuidv4 } from 'uuid';
 
+export interface Notification {
+    message: string;
+    icon: string;
+}
+
 const firebaseConfig = {
   apiKey: "AIzaSyCjlDeMVCox4fujNWO2nzku-EiAsOUWX9s",
   authDomain: "hand-gram.firebaseapp.com",
@@ -114,20 +119,25 @@ export const getToolStats = (toolId: string, callback: (stats: { clicks: number 
   return unsubscribe;
 };
 
-export const getNotificationMessage = (callback: (message: string) => void) => {
-  const defaultMessage = "Welcome to Toolsax! We're constantly adding new tools and features.";
+export const getNotificationMessage = (callback: (messages: Notification[]) => void) => {
+  const defaultMessages: Notification[] = [
+    { message: "New tool added: PDF Merger!", icon: "FilePlus" },
+    { message: "Dark mode is now available.", icon: "Moon" },
+    { message: "Customize your theme in settings.", icon: "Settings" },
+  ];
+  
   if (!db) {
-    callback(defaultMessage);
+    callback(defaultMessages);
     return () => {};
   }
 
-  const notificationRef = ref(db, 'notifications/latestMessage');
+  const notificationRef = ref(db, 'notifications/items');
   const unsubscribe = onValue(notificationRef, (snapshot) => {
-    const message = snapshot.val();
-    callback(typeof message === 'string' && message ? message : defaultMessage);
+    const messages = snapshot.val();
+    callback(Array.isArray(messages) && messages.length > 0 ? messages : defaultMessages);
   }, (error) => {
       console.error("Error fetching notification: ", error);
-      callback(defaultMessage)
+      callback(defaultMessages)
   });
 
   return unsubscribe;

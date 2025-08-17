@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, Bell, Settings } from 'lucide-react';
+import { Search, Bell, Settings, Info, Zap, Palette } from 'lucide-react';
 import { Button } from './ui/button';
 import { SettingsPanel } from './SettingsPanel';
 import { ThemeToggle } from './ThemeToggle';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { useEffect, useState } from 'react';
-import { getNotificationMessage } from '@/lib/firebase';
+import { getNotificationMessage, Notification } from '@/lib/firebase';
+import Icon from './Icon';
 
 const Logo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -19,10 +20,14 @@ const Logo = () => (
 );
 
 const NotificationBell = () => {
-    const [notification, setNotification] = useState('Loading notifications...');
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const unsubscribe = getNotificationMessage(setNotification);
+        const unsubscribe = getNotificationMessage((newNotifications) => {
+            setNotifications(newNotifications);
+            setIsLoading(false);
+        });
         return () => unsubscribe();
     }, []);
 
@@ -38,8 +43,20 @@ const NotificationBell = () => {
                     <div className="space-y-2">
                         <h4 className="font-medium leading-none">Notifications</h4>
                         <p className="text-sm text-muted-foreground">
-                            {notification}
+                            Latest updates and announcements.
                         </p>
+                    </div>
+                    <div className="grid gap-3">
+                        {isLoading ? (
+                            <p className="text-sm text-muted-foreground">Loading notifications...</p>
+                        ) : (
+                            notifications.map((notification, index) => (
+                                <div key={index} className="flex items-start gap-3">
+                                    <Icon name={notification.icon} className="h-4 w-4 text-muted-foreground mt-1" />
+                                    <p className="text-sm text-foreground">{notification.message}</p>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </PopoverContent>
