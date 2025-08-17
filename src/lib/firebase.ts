@@ -131,7 +131,7 @@ export const getNotificationMessage = (callback: (messages: Notification[]) => v
     return () => {};
   }
 
-  const notificationRef = ref(db, 'notifications/items');
+  const notificationRef = ref(db, 'notif');
   const unsubscribe = onValue(notificationRef, (snapshot) => {
     const messages = snapshot.val();
     callback(Array.isArray(messages) && messages.length > 0 ? messages : defaultMessages);
