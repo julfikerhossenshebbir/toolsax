@@ -20,6 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 import { getColorByIndex } from '@/lib/utils';
 import ToolActions from '@/components/ToolActions';
+import DisqusComments from '@/components/DisqusComments';
 
 type Props = {
   params: { id: string };
@@ -126,6 +127,10 @@ export default async function ToolPage({ params }: Props) {
 
           <div className="mt-12 flex flex-wrap justify-center items-center gap-3">
              <ToolActions toolId={tool.id} />
+          </div>
+
+          <div className="mt-12">
+            <DisqusComments tool={tool} />
           </div>
         </div>
       </div>

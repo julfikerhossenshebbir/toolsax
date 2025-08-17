@@ -42,6 +42,13 @@ export default function ToolActions({ toolId }: ToolActionsProps) {
     });
   };
 
+  const scrollToComments = () => {
+    const commentsSection = document.getElementById('comments');
+    if (commentsSection) {
+      commentsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -70,12 +77,12 @@ export default function ToolActions({ toolId }: ToolActionsProps) {
 
       <Tooltip>
         <TooltipTrigger asChild>
-           <Button variant="outline" size="icon" disabled>
+           <Button variant="outline" size="icon" onClick={scrollToComments}>
             <MessageCircle className="h-4 w-4" />
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Comments (coming soon)</p>
+          <p>Go to Comments</p>
         </TooltipContent>
       </Tooltip>
       
