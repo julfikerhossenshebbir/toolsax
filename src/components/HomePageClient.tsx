@@ -82,7 +82,7 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
       
       <section id="filters-section" className="mb-12">
         <div className="w-full mx-auto flex flex-col items-center gap-y-6">
-            <div className="relative w-3/4">
+            <div className="relative w-full md:w-3/4">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 id="search-box"
