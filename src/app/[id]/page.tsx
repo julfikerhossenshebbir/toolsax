@@ -94,7 +94,8 @@ const PlaceholderTool = ({ tool }: { tool: Tool }) => (
 
 
 export default async function ToolPage({ params }: Props) {
-  const { tool, index } = await getTool(params.id);
+  const { id } = params;
+  const { tool, index } = await getTool(id);
   const allTools = await getTools();
   
   if (!tool) {
@@ -125,7 +126,7 @@ export default async function ToolPage({ params }: Props) {
 
           <ToolComponent />
 
-          <div className="mt-12 flex flex-wrap justify-center items-center gap-3">
+          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 md:flex-row justify-center items-center gap-3">
              <ToolActions toolId={tool.id} />
           </div>
 
