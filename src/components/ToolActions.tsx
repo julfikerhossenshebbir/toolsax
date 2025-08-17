@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { ArrowLeft, MessageSquareWarning, Heart, MessageCircle } from 'lucide-react';
+import { Home, MessageSquareWarning, Heart, MessageCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
@@ -56,12 +56,12 @@ export default function ToolActions({ tool }: ToolActionsProps) {
         <TooltipTrigger asChild>
           <Link href="/">
             <Button variant="outline" size="icon">
-              <ArrowLeft className="h-4 w-4" />
+              <Home className="h-4 w-4" />
             </Button>
           </Link>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Back to All Tools</p>
+          <p>Back to Home</p>
         </TooltipContent>
       </Tooltip>
 
