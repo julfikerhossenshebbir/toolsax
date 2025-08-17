@@ -73,11 +73,6 @@ export const incrementClicks = (toolId: string) => {
   incrementCounter(`tools/${toolId}/clicks`);
 };
 
-export const incrementLikes = (toolId: string) => {
-    if (!db) return;
-    incrementCounter(`tools/${toolId}/likes`);
-};
-
 export const initializeUser = () => {
     if (!db || typeof window === 'undefined') return;
 
@@ -121,17 +116,6 @@ export const getToolStats = (toolId: string, callback: (stats: { clicks: number 
   });
 
   return unsubscribe;
-};
-
-export const getToolLikes = async (toolId: string): Promise<number> => {
-    if (!db) return 0;
-    try {
-        const snapshot = await get(ref(db, `tools/${toolId}/likes`));
-        return snapshot.val() || 0;
-    } catch (error) {
-        console.error("Error fetching likes:", error);
-        return 0;
-    }
 };
 
 export const getNotificationMessage = (callback: (messages: Notification[]) => void) => {

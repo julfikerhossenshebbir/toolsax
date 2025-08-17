@@ -3,31 +3,23 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { ArrowLeft, MessageSquareWarning, Heart, ThumbsUp } from 'lucide-react';
-import { incrementLikes } from '@/lib/firebase';
+import { ArrowLeft, MessageSquareWarning, Heart, MessageCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 
 interface ToolActionsProps {
   toolId: string;
-  initialLikes: number;
 }
 
-export default function ToolActions({ toolId, initialLikes }: ToolActionsProps) {
+export default function ToolActions({ toolId }: ToolActionsProps) {
   const [isFavorite, setIsFavorite] = useState(false);
-  const [hasLiked, setHasLiked] = useState(false);
-  const [likes, setLikes] = useState(initialLikes);
   const { toast } = useToast();
 
   useEffect(() => {
     // Check favorites from localStorage
     const favorites = JSON.parse(localStorage.getItem('favorite_tools') || '[]');
     setIsFavorite(favorites.includes(toolId));
-
-    // Check liked status from localStorage
-    const likedTools = JSON.parse(localStorage.getItem('liked_tools') || '[]');
-    setHasLiked(likedTools.includes(toolId));
   }, [toolId]);
 
   const toggleFavorite = () => {
@@ -47,22 +39,6 @@ export default function ToolActions({ toolId, initialLikes }: ToolActionsProps) 
     setIsFavorite(newIsFavorite);
     toast({
       title: newIsFavorite ? 'Added to favorites!' : 'Removed from favorites.',
-    });
-  };
-
-  const handleLike = () => {
-    if (hasLiked) return;
-
-    incrementLikes(toolId);
-    setLikes((prev) => prev + 1);
-    setHasLiked(true);
-
-    const likedTools = JSON.parse(localStorage.getItem('liked_tools') || '[]');
-    likedTools.push(toolId);
-    localStorage.setItem('liked_tools', JSON.stringify(likedTools));
-
-    toast({
-      title: 'Thanks for your feedback!',
     });
   };
 
@@ -94,12 +70,12 @@ export default function ToolActions({ toolId, initialLikes }: ToolActionsProps) 
 
       <Tooltip>
         <TooltipTrigger asChild>
-           <Button variant="outline" size="icon" onClick={handleLike} disabled={hasLiked}>
-            <ThumbsUp className="h-4 w-4" />
+           <Button variant="outline" size="icon" disabled>
+            <MessageCircle className="h-4 w-4" />
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Like ({likes})</p>
+          <p>Comments (coming soon)</p>
         </TooltipContent>
       </Tooltip>
       

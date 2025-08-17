@@ -19,7 +19,6 @@ import UnitConverter from '@/components/tools/UnitConverter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 import { getColorByIndex } from '@/lib/utils';
-import { getToolLikes } from '@/lib/firebase';
 import ToolActions from '@/components/ToolActions';
 
 type Props = {
@@ -101,7 +100,6 @@ export default async function ToolPage({ params }: Props) {
     notFound();
   }
 
-  const initialLikes = await getToolLikes(tool.id);
   const ToolComponent = ToolComponents[tool.id] || (() => <PlaceholderTool tool={tool} />);
   const iconColor = getColorByIndex(index);
 
@@ -126,8 +124,8 @@ export default async function ToolPage({ params }: Props) {
 
           <ToolComponent />
 
-          <div className="mt-12 flex justify-center gap-3">
-             <ToolActions toolId={tool.id} initialLikes={initialLikes} />
+          <div className="mt-12 flex flex-wrap justify-center items-center gap-3">
+             <ToolActions toolId={tool.id} />
           </div>
         </div>
       </div>
