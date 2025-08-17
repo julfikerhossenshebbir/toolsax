@@ -12,7 +12,7 @@ import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Slider } from './ui/slider';
 import { useThemeSettings } from './ThemeProvider';
-import { Check } from 'lucide-react';
+import { Check, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
@@ -45,7 +45,7 @@ const fontOptions = [
 ];
 
 export function SettingsPanel({ children }: { children: React.ReactNode }) {
-    const { primaryColor, setPrimaryColor, radius, setRadius, fontSize, setFontSize, font, setFont } = useThemeSettings();
+    const { primaryColor, setPrimaryColor, radius, setRadius, fontSize, setFontSize, font, setFont, resetTheme } = useThemeSettings();
 
   return (
     <Sheet>
@@ -114,6 +114,12 @@ export function SettingsPanel({ children }: { children: React.ReactNode }) {
               step={1}
             />
           </div>
+        </div>
+        <div className="mt-6 border-t pt-6">
+            <Button variant="outline" onClick={resetTheme} className="w-full">
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Reset to Defaults
+            </Button>
         </div>
       </SheetContent>
     </Sheet>
