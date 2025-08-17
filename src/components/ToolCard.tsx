@@ -81,9 +81,9 @@ const ToolCard = ({ tool }: ToolCardProps) => {
             <div className="w-10 h-10 flex-shrink-0 bg-secondary rounded-lg flex items-center justify-center">
               <Icon name={tool.icon} className="w-5 h-5 text-foreground" />
             </div>
-            <div className="flex-grow">
-              <h3 className="font-semibold text-base">{tool.name}</h3>
-              <p className="text-xs text-muted-foreground truncate max-w-[250px]">{tool.description}</p>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-base truncate">{tool.name}</h3>
+              <p className="text-xs text-muted-foreground truncate">{tool.description}</p>
             </div>
             <div className="flex-shrink-0 flex items-center text-xs text-muted-foreground gap-1.5">
               {clicks === null ? (
