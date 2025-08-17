@@ -6,6 +6,8 @@ import { Button } from './ui/button';
 import { ArrowLeft, MessageSquareWarning, Heart, ThumbsUp } from 'lucide-react';
 import { incrementLikes } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+
 
 interface ToolActionsProps {
   toolId: string;
@@ -65,30 +67,54 @@ export default function ToolActions({ toolId, initialLikes }: ToolActionsProps) 
   };
 
   return (
-    <>
-      <Link href="/">
-        <Button variant="outline">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to All Tools
-        </Button>
-      </Link>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Link href="/">
+            <Button variant="outline" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Back to All Tools</p>
+        </TooltipContent>
+      </Tooltip>
 
-      <Button variant="outline" onClick={toggleFavorite}>
-        <Heart className={`mr-2 h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
-        {isFavorite ? 'Favorited' : 'Add to Favorite'}
-      </Button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="outline" size="icon" onClick={toggleFavorite}>
+            <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{isFavorite ? 'Remove from favorites' : 'Add to Favorite'}</p>
+        </TooltipContent>
+      </Tooltip>
 
-      <Button variant="outline" onClick={handleLike} disabled={hasLiked}>
-        <ThumbsUp className="mr-2 h-4 w-4" />
-        Like ({likes})
-      </Button>
-
-      <Link href={`/report-a-bug?tool=${toolId}`}>
-        <Button variant="destructive">
-          <MessageSquareWarning className="mr-2 h-4 w-4" />
-          Report a Bug
-        </Button>
-      </Link>
-    </>
+      <Tooltip>
+        <TooltipTrigger asChild>
+           <Button variant="outline" size="icon" onClick={handleLike} disabled={hasLiked}>
+            <ThumbsUp className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Like ({likes})</p>
+        </TooltipContent>
+      </Tooltip>
+      
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Link href={`/report-a-bug?tool=${toolId}`}>
+            <Button variant="destructive" size="icon">
+              <MessageSquareWarning className="h-4 w-4" />
+            </Button>
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Report a Bug</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
