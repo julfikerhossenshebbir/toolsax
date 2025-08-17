@@ -4,32 +4,32 @@ import { BadgeCheck, ShieldCheck, Code, Rocket, Feather, CloudOff } from 'lucide
 
 const features = [
   {
-    icon: <Rocket className="h-6 w-6 text-primary" />,
+    icon: <Rocket className="h-6 w-6 text-foreground" />,
     title: 'Blazing Fast Performance',
     description: 'Built with Next.js for a speedy, responsive user experience.',
   },
   {
-    icon: <ShieldCheck className="h-6 w-6 text-primary" />,
+    icon: <ShieldCheck className="h-6 w-6 text-foreground" />,
     title: 'Secure & Private',
     description: 'All tools run client-side, so your data never leaves your browser.',
   },
   {
-    icon: <Code className="h-6 w-6 text-primary" />,
+    icon: <Code className="h-6 w-6 text-foreground" />,
     title: 'Open Source & Free',
     description: 'Completely free to use, with the source code available on GitHub.',
   },
   {
-    icon: <Feather className="h-6 w-6 text-primary" />,
+    icon: <Feather className="h-6 w-6 text-foreground" />,
     title: 'Modern, Clean UI',
     description: 'A beautiful and intuitive interface built with ShadCN UI and Tailwind CSS.',
   },
   {
-    icon: <BadgeCheck className="h-6 w-6 text-primary" />,
+    icon: <BadgeCheck className="h-6 w-6 text-foreground" />,
     title: 'Constantly Expanding',
     description: 'New tools and features are added regularly to expand the collection.',
   },
   {
-    icon: <CloudOff className="h-6 w-6 text-primary" />,
+    icon: <CloudOff className="h-6 w-6 text-foreground" />,
     title: 'Works Offline',
     description: 'Many tools are available offline, so you can use them anytime, anywhere.',
   },
