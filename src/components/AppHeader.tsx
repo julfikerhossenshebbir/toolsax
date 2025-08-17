@@ -22,20 +22,48 @@ const Logo = () => (
 const NotificationBell = () => {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [hasUnread, setHasUnread] = useState(false);
 
     useEffect(() => {
         const unsubscribe = getNotificationMessage((newNotifications) => {
             setNotifications(newNotifications);
             setIsLoading(false);
+            
+            try {
+                const seenNotifications = localStorage.getItem('seen_notifications');
+                if (JSON.stringify(newNotifications) !== seenNotifications) {
+                    setHasUnread(true);
+                }
+            } catch (error) {
+                // If localStorage is not available or fails, default to showing notifications as new
+                setHasUnread(true);
+            }
         });
         return () => unsubscribe();
     }, []);
 
+    const handleOpenChange = (open: boolean) => {
+        if (open && hasUnread) {
+            setHasUnread(false);
+            try {
+                localStorage.setItem('seen_notifications', JSON.stringify(notifications));
+            } catch (error) {
+                console.error("Could not save seen notifications to localStorage", error)
+            }
+        }
+    };
+
     return (
-        <Popover>
+        <Popover onOpenChange={handleOpenChange}>
             <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Notifications">
+                <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
                     <Bell className="w-5 h-5" />
+                    {hasUnread && (
+                       <span className="absolute top-2 right-2.5 flex h-2 w-2">
+                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                           <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                       </span>
+                    )}
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80">
