@@ -3,6 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { useMemo } from 'react';
+
 
 import { Tool } from '@/lib/types';
 import Icon from '@/components/Icon';
@@ -105,6 +107,12 @@ export default async function ToolPage({ params }: Props) {
   const ToolComponent = ToolComponents[tool.id] || (() => <PlaceholderTool tool={tool} />);
   const iconColor = getColorByIndex(index);
 
+  const relatedTools = allTools.filter(t => t.category === tool.category && t.id !== tool.id).slice(0, 3);
+  const originalIndexMap = new Map<string, number>();
+  allTools.forEach((tool, index) => {
+    originalIndexMap.set(tool.id, index);
+  });
+
 
   return (
     <>
@@ -137,7 +145,11 @@ export default async function ToolPage({ params }: Props) {
       </div>
       
       <div className="container mx-auto px-4">
-        <RelatedTools allTools={allTools} currentTool={tool} />
+        <RelatedTools 
+          relatedTools={relatedTools} 
+          currentTool={tool} 
+          originalIndexMap={originalIndexMap} 
+        />
       </div>
     </>
   );
