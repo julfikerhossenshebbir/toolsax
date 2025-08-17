@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { useEffect, useState } from 'react';
 import { getNotificationMessage, Notification } from '@/lib/firebase';
 import Icon from './Icon';
-import { SidebarTrigger } from './ui/sidebar';
+import AppSidebar from './AppSidebar';
 
 const Logo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -108,7 +108,7 @@ export default function AppHeader() {
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center px-4">
         <div className="flex items-center gap-2 mr-auto">
-            <SidebarTrigger className="md:hidden" />
+            <AppSidebar />
              <Link href="/" className="flex items-center gap-2">
                 <Logo />
                 <span className="font-bold text-lg hidden sm:inline-block">Toolsax</span>

@@ -1,15 +1,16 @@
+
+'use client'
+
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuItem,
-    SidebarMenuButton,
-    SidebarFooter,
-    SidebarTrigger,
-} from "@/components/ui/sidebar"
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTrigger,
+} from "@/components/ui/sheet"
 import Link from "next/link";
-import { Home, Bug, FileText, ShieldCheck, Cookie, Send, Coffee } from "lucide-react";
+import { Home, Bug, FileText, ShieldCheck, Cookie, Send, Coffee, PanelLeft } from "lucide-react";
+import { useState } from "react";
+import { Button } from "./ui/button";
 
 const Logo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -32,59 +33,59 @@ const secondaryNavLinks = [
     { href: "/contact", icon: <Send />, label: "Contact" },
 ]
 
+export default function AppSidebar() {
+    const [isOpen, setIsOpen] = useState(false);
 
-export default async function AppSidebar() {
     return (
-        <Sidebar>
-            <SidebarHeader>
-                 <div className="flex items-center gap-2">
-                    <Logo />
-                    <span className="font-bold text-lg">Toolsax</span>
-                </div>
-                <SidebarTrigger className="hidden md:flex" />
-            </SidebarHeader>
-            <SidebarContent>
-                <SidebarMenu>
-                    {mainNavLinks.map(link => (
-                        <SidebarMenuItem key={link.href}>
-                            <Link href={link.href} className="w-full">
-                                <SidebarMenuButton tooltip={link.label}>
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:h-10 md:w-10 h-8 w-8">
+                    <PanelLeft className="h-5 w-5" />
+                    <span className="sr-only">Toggle Menu</span>
+                </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] p-0 flex flex-col">
+                <SheetHeader className="border-b p-4">
+                     <div className="flex items-center gap-2">
+                        <Logo />
+                        <span className="font-bold text-lg">Toolsax</span>
+                    </div>
+                </SheetHeader>
+                <div className="p-4 flex-grow">
+                    <nav className="flex flex-col gap-2">
+                        {mainNavLinks.map(link => (
+                            <Link key={link.href} href={link.href} onClick={() => setIsOpen(false)}>
+                                <Button variant="ghost" className="w-full justify-start gap-2">
                                     {link.icon}
                                     <span>{link.label}</span>
-                                </SidebarMenuButton>
+                                </Button>
                             </Link>
-                        </SidebarMenuItem>
-                    ))}
-                </SidebarMenu>
+                        ))}
+                    </nav>
 
-                <SidebarMenu className="mt-auto">
-                     <SidebarMenuItem>
-                        <div className="px-2 py-1 text-xs font-medium text-muted-foreground">Policies</div>
-                    </SidebarMenuItem>
-                    {secondaryNavLinks.map(link => (
-                        <SidebarMenuItem key={link.href}>
-                            <Link href={link.href} className="w-full">
-                                <SidebarMenuButton size="sm" tooltip={link.label}>
+                    <hr className="my-4" />
+                    
+                    <nav className="flex flex-col gap-2">
+                        <p className="px-2 py-1 text-xs font-medium text-muted-foreground">Policies</p>
+                        {secondaryNavLinks.map(link => (
+                             <Link key={link.href} href={link.href} onClick={() => setIsOpen(false)}>
+                                <Button variant="ghost" size="sm" className="w-full justify-start gap-2">
                                     {link.icon}
                                     <span>{link.label}</span>
-                                </SidebarMenuButton>
+                                </Button>
                             </Link>
-                        </SidebarMenuItem>
-                    ))}
-                </SidebarMenu>
-            </SidebarContent>
-            <SidebarFooter>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <a href="https://www.buymeacoffee.com/your-username" target="_blank" rel="noopener noreferrer" className="w-full">
-                            <SidebarMenuButton tooltip="Buy me a Coffee">
-                                <Coffee />
-                                <span>Buy me a Coffee</span>
-                            </SidebarMenuButton>
-                        </a>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarFooter>
-        </Sidebar>
+                        ))}
+                    </nav>
+                </div>
+                <div className="border-t p-4">
+                     <a href="https://www.buymeacoffee.com/your-username" target="_blank" rel="noopener noreferrer" className="w-full">
+                        <Button variant="outline" className="w-full justify-start gap-2">
+                            <Coffee />
+                            <span>Buy me a Coffee</span>
+                        </Button>
+                    </a>
+                </div>
+            </SheetContent>
+        </Sheet>
     )
 }
