@@ -25,7 +25,7 @@ export default function RelatedTools({ allTools, currentTool }: RelatedToolsProp
     }
 
     return (
-        <div className="mt-16 mb-16">
+        <div className="mt-12 mb-16">
             <SectionDivider />
             <div className="text-center">
                 <h2 className="text-3xl font-bold tracking-tight mb-2">Related Tools</h2>
