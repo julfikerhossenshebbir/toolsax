@@ -12,6 +12,7 @@ import { Search, Wrench, Lock, Code, Palette, LayoutGrid } from 'lucide-react';
 import { Button } from './ui/button';
 import Icon from './Icon';
 import FeaturesSection from './FeaturesSection';
+import SectionDivider from './SectionDivider';
 
 interface HomePageClientProps {
   tools: Tool[];
@@ -115,9 +116,11 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
         </div>
       )}
 
+      <SectionDivider />
       <FeaturesSection />
 
       <div className="my-16">
+        <SectionDivider />
         <FirebaseStats />
       </div>
     </div>
