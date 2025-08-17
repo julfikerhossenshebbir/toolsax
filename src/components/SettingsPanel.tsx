@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -14,24 +15,26 @@ import { Slider } from './ui/slider';
 import { useThemeSettings } from './ThemeProvider';
 import { Check, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 const colorOptions = [
-    { name: 'neutral', light: '#18181b', dark: '#fafafa' },
-    { name: 'slate', light: '#475569', dark: '#94a3b8' },
-    { name: 'stone', light: '#44403c', dark: '#a8a29e' },
-    { name: 'gray', light: '#4b5563', dark: '#9ca3af' },
-    { name: 'zinc', light: '#52525b', dark: '#a1a1aa' },
-    { name: 'red', light: '#ef4444', dark: '#f87171' },
-    { name: 'orange', light: '#f97316', dark: '#fb923c' },
-    { name: 'green', light: '#22c55e', dark: '#4ade80' },
-    { name: 'blue', light: '#3b82f6', dark: '#60a5fa' },
-    { name: 'indigo', light: '#6366f1', dark: '#818cf8' },
-    { name: 'purple', light: '#8b5cf6', dark: '#a78bfa' },
-    { name: 'pink', light: '#ec4899', dark: '#f472b6' },
+    { name: 'neutral', value: '#18181b' },
+    { name: 'slate', value: '#475569' },
+    { name: 'stone', value: '#44403c' },
+    { name: 'gray', value: '#4b5563' },
+    { name: 'zinc', value: '#52525b' },
+    { name: 'red', value: '#ef4444' },
+    { name: 'orange', value: '#f97316' },
+    { name: 'green', value: '#22c55e' },
+    { name: 'blue', value: '#3b82f6' },
+    { name: 'indigo', value: '#6366f1' },
+    { name: 'purple', value: '#8b5cf6' },
+    { name: 'pink', value: '#ec4899' },
 ];
 
 export function SettingsPanel({ children }: { children: React.ReactNode }) {
     const { primaryColor, setPrimaryColor, radius, setRadius, fontSize, setFontSize, resetTheme } = useThemeSettings();
+    const { theme } = useTheme();
 
   return (
     <Sheet>
@@ -47,23 +50,32 @@ export function SettingsPanel({ children }: { children: React.ReactNode }) {
           <div className="space-y-3">
             <Label>Primary Color</Label>
             <div className="grid grid-cols-6 gap-2">
-              {colorOptions.map((color) => (
-                <Button
-                  key={color.name}
-                  variant="outline"
-                  size="icon"
-                  className={cn("h-8 w-8 rounded-full", primaryColor === color.name && 'border-2 border-primary')}
-                  style={{ backgroundColor: color.light }}
-                  onClick={() => setPrimaryColor(color.name)}
-                >
-                  {primaryColor === color.name && <Check className="h-4 w-4 text-white" />}
-                  <span className="sr-only">{color.name}</span>
-                </Button>
-              ))}
+              {colorOptions.map((color) => {
+                const isActive = primaryColor === color.name;
+                return (
+                  <Button
+                    key={color.name}
+                    variant={'outline'}
+                    size="icon"
+                    className={cn(
+                        "h-8 w-8 rounded-full border-2",
+                        isActive ? 'border-primary' : 'border-transparent'
+                    )}
+                    style={{ backgroundColor: color.value }}
+                    onClick={() => setPrimaryColor(color.name)}
+                  >
+                    {isActive && <Check className="h-4 w-4" style={{ color: theme === 'dark' ? 'black' : 'white' }} />}
+                    <span className="sr-only">{color.name}</span>
+                  </Button>
+                )
+              })}
             </div>
           </div>
           <div className="space-y-3">
-            <Label>Border Radius</Label>
+            <Label className="flex justify-between items-center">
+                <span>Border Radius</span>
+                <span className="text-xs text-muted-foreground">{radius.toFixed(1)}rem</span>
+            </Label>
             <Slider
               value={[radius]}
               onValueChange={(value) => setRadius(value[0])}
@@ -71,11 +83,11 @@ export function SettingsPanel({ children }: { children: React.ReactNode }) {
               max={1}
               step={0.1}
             />
-            <span className="text-xs text-muted-foreground">{radius.toFixed(1)}rem</span>
           </div>
           <div className="space-y-3">
-            <Label className="flex justify-between">
-              Font Size <span>{fontSize}px</span>
+            <Label className="flex justify-between items-center">
+              <span>Font Size</span>
+              <span className="text-xs text-muted-foreground">{fontSize}px</span>
             </Label>
             <Slider
               value={[fontSize]}
