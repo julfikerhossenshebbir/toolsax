@@ -8,19 +8,8 @@ import {
     SidebarFooter,
     SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { Tool } from "@/lib/types";
-import fs from 'fs';
-import path from 'path';
 import Link from "next/link";
-import Icon from "./Icon";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
-import { Github, Home } from "lucide-react";
-
-async function getTools(): Promise<Tool[]> {
-  const filePath = path.join(process.cwd(), 'src', 'data', 'tools.json');
-  const jsonData = await fs.promises.readFile(filePath, 'utf-8');
-  return JSON.parse(jsonData);
-}
+import { Home, Bug, FileText, ShieldCheck, Cookie, Send, Coffee } from "lucide-react";
 
 const Logo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -31,16 +20,20 @@ const Logo = () => (
     </svg>
 );
 
+const mainNavLinks = [
+    { href: "/", icon: <Home />, label: "Home" },
+    { href: "/report-a-bug", icon: <Bug />, label: "Report a Bug" },
+];
+
+const secondaryNavLinks = [
+    { href: "/dmca", icon: <FileText />, label: "DMCA" },
+    { href: "/privacy", icon: <ShieldCheck />, label: "Privacy Policy" },
+    { href: "/cookies", icon: <Cookie />, label: "Cookie Policy" },
+    { href: "/contact", icon: <Send />, label: "Contact" },
+]
+
 
 export default async function AppSidebar() {
-    const tools = await getTools();
-    const categories = Array.from(new Set(tools.map(tool => tool.category))).sort();
-
-    const groupedTools: { [key: string]: Tool[] } = {};
-    categories.forEach(category => {
-        groupedTools[category] = tools.filter(tool => tool.category === category);
-    });
-
     return (
         <Sidebar>
             <SidebarHeader>
@@ -52,46 +45,41 @@ export default async function AppSidebar() {
             </SidebarHeader>
             <SidebarContent>
                 <SidebarMenu>
-                    <SidebarMenuItem>
-                        <Link href="/" className="w-full">
-                            <SidebarMenuButton tooltip="Home">
-                                <Home />
-                                <span>Home</span>
-                            </SidebarMenuButton>
-                        </Link>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-                <Accordion type="multiple" className="w-full px-2" defaultValue={categories}>
-                    {categories.map(category => (
-                        <AccordionItem value={category} key={category} className="border-none">
-                            <AccordionTrigger className="text-sm font-medium text-muted-foreground hover:text-foreground px-2 py-2 rounded-md">
-                                {category}
-                            </AccordionTrigger>
-                            <AccordionContent>
-                                <SidebarMenu>
-                                    {groupedTools[category].map(tool => (
-                                        <SidebarMenuItem key={tool.id}>
-                                            <Link href={`/${tool.id}`} className="w-full">
-                                                <SidebarMenuButton size="sm" tooltip={tool.name}>
-                                                    <Icon name={tool.icon} />
-                                                    <span>{tool.name}</span>
-                                                </SidebarMenuButton>
-                                            </Link>
-                                        </SidebarMenuItem>
-                                    ))}
-                                </SidebarMenu>
-                            </AccordionContent>
-                        </AccordionItem>
+                    {mainNavLinks.map(link => (
+                        <SidebarMenuItem key={link.href}>
+                            <Link href={link.href} className="w-full">
+                                <SidebarMenuButton tooltip={link.label}>
+                                    {link.icon}
+                                    <span>{link.label}</span>
+                                </SidebarMenuButton>
+                            </Link>
+                        </SidebarMenuItem>
                     ))}
-                </Accordion>
+                </SidebarMenu>
+
+                <SidebarMenu className="mt-auto">
+                     <SidebarMenuItem>
+                        <div className="px-2 py-1 text-xs font-medium text-muted-foreground">Policies</div>
+                    </SidebarMenuItem>
+                    {secondaryNavLinks.map(link => (
+                        <SidebarMenuItem key={link.href}>
+                            <Link href={link.href} className="w-full">
+                                <SidebarMenuButton size="sm" tooltip={link.label}>
+                                    {link.icon}
+                                    <span>{link.label}</span>
+                                </SidebarMenuButton>
+                            </Link>
+                        </SidebarMenuItem>
+                    ))}
+                </SidebarMenu>
             </SidebarContent>
             <SidebarFooter>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <a href="https://github.com/your-repo" target="_blank" rel="noopener noreferrer" className="w-full">
-                            <SidebarMenuButton tooltip="GitHub">
-                                <Github />
-                                <span>GitHub</span>
+                        <a href="https://www.buymeacoffee.com/your-username" target="_blank" rel="noopener noreferrer" className="w-full">
+                            <SidebarMenuButton tooltip="Buy me a Coffee">
+                                <Coffee />
+                                <span>Buy me a Coffee</span>
                             </SidebarMenuButton>
                         </a>
                     </SidebarMenuItem>
