@@ -18,15 +18,6 @@ export default {
     extend: {
       fontFamily: {
         body: ['var(--font-body)', 'sans-serif'],
-        inter: ['var(--font-inter)'],
-        roboto: ['var(--font-roboto)'],
-        lato: ['var(--font-lato)'],
-        montserrat: ['var(--font-montserrat)'],
-        oswald: ['var(--font-oswald)'],
-        raleway: ['var(--font-raleway)'],
-        poppins: ['var(--font-poppins)'],
-        nunito: ['var(--font-nunito)'],
-        merriweather: ['var(--font-merriweather)'],
       },
       colors: {
         background: 'hsl(var(--background))',

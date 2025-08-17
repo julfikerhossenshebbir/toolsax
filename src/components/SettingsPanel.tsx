@@ -14,7 +14,6 @@ import { Slider } from './ui/slider';
 import { useThemeSettings } from './ThemeProvider';
 import { Check, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 const colorOptions = [
     { name: 'neutral', light: '#18181b', dark: '#fafafa' },
@@ -31,21 +30,8 @@ const colorOptions = [
     { name: 'pink', light: '#ec4899', dark: '#f472b6' },
 ];
 
-const fontOptions = [
-  { name: 'Lexend', value: 'Lexend' },
-  { name: 'Inter', value: 'Inter' },
-  { name: 'Roboto', value: 'Roboto' },
-  { name: 'Lato', value: 'Lato' },
-  { name: 'Montserrat', value: 'Montserrat' },
-  { name: 'Oswald', value: 'Oswald' },
-  { name: 'Raleway', value: 'Raleway' },
-  { name: 'Poppins', value: 'Poppins' },
-  { name: 'Nunito', value: 'Nunito' },
-  { name: 'Merriweather', value: 'Merriweather' },
-];
-
 export function SettingsPanel({ children }: { children: React.ReactNode }) {
-    const { primaryColor, setPrimaryColor, radius, setRadius, fontSize, setFontSize, font, setFont, resetTheme } = useThemeSettings();
+    const { primaryColor, setPrimaryColor, radius, setRadius, fontSize, setFontSize, resetTheme } = useThemeSettings();
 
   return (
     <Sheet>
@@ -75,21 +61,6 @@ export function SettingsPanel({ children }: { children: React.ReactNode }) {
                 </Button>
               ))}
             </div>
-          </div>
-          <div className="space-y-3">
-            <Label>Font Family</Label>
-            <Select value={font} onValueChange={setFont}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a font" />
-              </SelectTrigger>
-              <SelectContent>
-                {fontOptions.map((fontOption) => (
-                  <SelectItem key={fontOption.value} value={fontOption.value}>
-                    {fontOption.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
           <div className="space-y-3">
             <Label>Border Radius</Label>

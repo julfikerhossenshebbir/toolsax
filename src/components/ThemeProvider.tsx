@@ -7,7 +7,6 @@ import { type ThemeProviderProps } from 'next-themes/dist/types';
 const DEFAULT_COLOR = 'neutral';
 const DEFAULT_RADIUS = 0.5;
 const DEFAULT_FONT_SIZE = 16;
-const DEFAULT_FONT = 'Lexend';
 
 
 interface CustomThemeContextType {
@@ -17,8 +16,6 @@ interface CustomThemeContextType {
   setRadius: (radius: number) => void;
   fontSize: number;
   setFontSize: (size: number) => void;
-  font: string;
-  setFont: (font: string) => void;
   resetTheme: () => void;
 }
 
@@ -29,17 +26,14 @@ export function CustomThemeProvider({ children, ...props }: ThemeProviderProps) 
   const [primaryColor, setPrimaryColor] = React.useState(DEFAULT_COLOR);
   const [radius, setRadius] = React.useState(DEFAULT_RADIUS);
   const [fontSize, setFontSize] = React.useState(DEFAULT_FONT_SIZE);
-  const [font, setFont] = React.useState(DEFAULT_FONT);
 
   React.useEffect(() => {
     const savedColor = localStorage.getItem('theme-primary-color');
     const savedRadius = localStorage.getItem('theme-radius');
     const savedFontSize = localStorage.getItem('theme-font-size');
-    const savedFont = localStorage.getItem('theme-font');
     if (savedColor) setPrimaryColor(savedColor);
     if (savedRadius) setRadius(parseFloat(savedRadius));
     if (savedFontSize) setFontSize(parseInt(savedFontSize, 10));
-    if (savedFont) setFont(savedFont);
   }, []);
 
   const handleSetPrimaryColor = (color: string) => {
@@ -57,26 +51,18 @@ export function CustomThemeProvider({ children, ...props }: ThemeProviderProps) 
     localStorage.setItem('theme-font-size', newSize.toString());
   };
 
-  const handleSetFont = (newFont: string) => {
-    setFont(newFont);
-    localStorage.setItem('theme-font', newFont);
-  };
-  
   const resetTheme = () => {
     setPrimaryColor(DEFAULT_COLOR);
     setRadius(DEFAULT_RADIUS);
     setFontSize(DEFAULT_FONT_SIZE);
-    setFont(DEFAULT_FONT);
     localStorage.removeItem('theme-primary-color');
     localStorage.removeItem('theme-radius');
     localStorage.removeItem('theme-font-size');
-    localStorage.removeItem('theme-font');
   };
 
   React.useEffect(() => {
     document.body.style.setProperty('--radius', `${radius}rem`);
     document.documentElement.style.fontSize = `${fontSize}px`;
-    document.body.style.setProperty('--font-body', `var(--font-${font.toLowerCase()})`);
 
     const isDark = theme === 'dark';
 
@@ -115,12 +101,12 @@ export function CustomThemeProvider({ children, ...props }: ThemeProviderProps) 
     document.documentElement.style.setProperty('--primary', primaryValue);
     document.documentElement.style.setProperty('--primary-foreground', primaryForegroundValue);
 
-  }, [primaryColor, radius, fontSize, theme, font]);
+  }, [primaryColor, radius, fontSize, theme]);
 
 
   return (
     <NextThemesProvider attribute="class" defaultTheme="system" enableSystem {...props}>
-        <CustomThemeContext.Provider value={{ primaryColor, setPrimaryColor: handleSetPrimaryColor, radius, setRadius: handleSetRadius, fontSize, setFontSize: handleSetFontSize, font, setFont: handleSetFont, resetTheme }}>
+        <CustomThemeContext.Provider value={{ primaryColor, setPrimaryColor: handleSetPrimaryColor, radius, setRadius: handleSetRadius, fontSize, setFontSize: handleSetFontSize, resetTheme }}>
             {children}
         </CustomThemeContext.Provider>
     </NextThemesProvider>
