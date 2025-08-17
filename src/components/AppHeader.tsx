@@ -4,6 +4,10 @@ import Link from 'next/link';
 import { Search, Bell, Settings } from 'lucide-react';
 import { Button } from './ui/button';
 import { SettingsPanel } from './SettingsPanel';
+import { ThemeToggle } from './ThemeToggle';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { useEffect, useState } from 'react';
+import { getNotificationMessage } from '@/lib/firebase';
 
 const Logo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -13,6 +17,35 @@ const Logo = () => (
         <path d="M12 22V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
 );
+
+const NotificationBell = () => {
+    const [notification, setNotification] = useState('Loading notifications...');
+
+    useEffect(() => {
+        const unsubscribe = getNotificationMessage(setNotification);
+        return () => unsubscribe();
+    }, []);
+
+    return (
+        <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" aria-label="Notifications">
+                    <Bell className="w-5 h-5" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+                <div className="grid gap-4">
+                    <div className="space-y-2">
+                        <h4 className="font-medium leading-none">Notifications</h4>
+                        <p className="text-sm text-muted-foreground">
+                            {notification}
+                        </p>
+                    </div>
+                </div>
+            </PopoverContent>
+        </Popover>
+    )
+}
 
 
 export default function AppHeader() {
@@ -36,11 +69,8 @@ export default function AppHeader() {
             <Button variant="ghost" size="icon" onClick={handleSearchClick} aria-label="Search">
               <Search className="w-5 h-5" />
             </Button>
-            <Button variant="ghost" size="icon" asChild aria-label="Notifications">
-              <a href="#" >
-                <Bell className="w-5 h-5" />
-              </a>
-            </Button>
+            <NotificationBell />
+            <ThemeToggle />
             <SettingsPanel>
                 <Button variant="ghost" size="icon" aria-label="Settings">
                     <Settings className="w-5 h-5" />

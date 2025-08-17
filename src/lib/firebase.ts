@@ -114,5 +114,24 @@ export const getToolStats = (toolId: string, callback: (stats: { clicks: number 
   return unsubscribe;
 };
 
+export const getNotificationMessage = (callback: (message: string) => void) => {
+  const defaultMessage = "Welcome to Toolsax! We're constantly adding new tools and features.";
+  if (!db) {
+    callback(defaultMessage);
+    return () => {};
+  }
+
+  const notificationRef = ref(db, 'notifications/latestMessage');
+  const unsubscribe = onValue(notificationRef, (snapshot) => {
+    const message = snapshot.val();
+    callback(typeof message === 'string' && message ? message : defaultMessage);
+  }, (error) => {
+      console.error("Error fetching notification: ", error);
+      callback(defaultMessage)
+  });
+
+  return unsubscribe;
+}
+
 
 export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;

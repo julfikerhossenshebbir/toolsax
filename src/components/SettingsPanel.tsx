@@ -14,7 +14,6 @@ import { Slider } from './ui/slider';
 import { useThemeSettings } from './ThemeProvider';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ThemeToggle } from './ThemeToggle';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 const colorOptions = [
@@ -65,10 +64,6 @@ export function SettingsPanel({ children }: { children: React.ReactNode }) {
           </SheetDescription>
         </SheetHeader>
         <div className="grid gap-6 py-4">
-          <div className="space-y-3">
-            <Label>Theme</Label>
-            <ThemeToggle />
-          </div>
           <div className="space-y-3">
             <Label>Primary Color</Label>
             <div className="grid grid-cols-6 gap-2">
