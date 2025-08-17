@@ -9,7 +9,7 @@ const Header = () => {
         <div className="absolute top-8 left-1/4 opacity-30 text-muted-foreground -z-10">
             <SvgOne />
         </div>
-        <h1 className="text-4xl sm:text-5xl font-bold tracking-tighter text-foreground">
+        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tighter text-foreground">
             From Search to Solution — Instantly.
         </h1>
         <p className="mt-4 max-w-2xl mx-auto text-base sm:text-lg leading-7 text-muted-foreground">

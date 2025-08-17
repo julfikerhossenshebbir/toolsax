@@ -4,7 +4,7 @@ import * as React from 'react';
 import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes';
 import { type ThemeProviderProps } from 'next-themes/dist/types';
 
-const DEFAULT_COLOR = 'neutral';
+const DEFAULT_COLOR = 'violet';
 const DEFAULT_RADIUS = 0.5;
 const DEFAULT_FONT_SIZE = 16;
 
@@ -79,6 +79,7 @@ export function CustomThemeProvider({ children, ...props }: ThemeProviderProps) 
       indigo: { light: '243 75% 59%', dark: '243 75% 70%' },
       purple: { light: '262 84% 60%', dark: '262 84% 75%' },
       pink: { light: '336 84% 60%', dark: '336 84% 75%' },
+      violet: { light: '256 79% 56%', dark: '256 79% 70%'},
 
       neutral_foreground: { light: '0 0% 98%', dark: '240 10% 3.9%' },
       slate_foreground: { light: '0 0% 98%', dark: '215 28% 15%' },
@@ -92,6 +93,7 @@ export function CustomThemeProvider({ children, ...props }: ThemeProviderProps) 
       indigo_foreground: { light: '0 0% 98%', dark: '243 75% 25%' },
       purple_foreground: { light: '0 0% 98%', dark: '262 84% 25%' },
       pink_foreground: { light: '0 0% 98%', dark: '336 84% 25%' },
+      violet_foreground: { light: '0 0% 98%', dark: '256 79% 25%' },
     };
     
     const selectedColor = colors[primaryColor] || colors.neutral;

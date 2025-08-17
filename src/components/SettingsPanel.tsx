@@ -29,6 +29,7 @@ const colorOptions = [
     { name: 'green', value: '#22c55e' },
     { name: 'blue', value: '#3b82f6' },
     { name: 'indigo', value: '#6366f1' },
+    { name: 'violet', value: '#673de6' },
     { name: 'purple', value: '#8b5cf6' },
     { name: 'pink', value: '#ec4899' },
 ];
@@ -57,7 +58,7 @@ export function SettingsPanel({ children }: { children: React.ReactNode }) {
             </div>
           <div className="space-y-3">
             <Label>Primary Color</Label>
-            <div className="grid grid-cols-6 gap-2">
+            <div className="grid grid-cols-7 gap-2">
               {colorOptions.map((color) => {
                 const isActive = primaryColor === color.name;
                 return (
