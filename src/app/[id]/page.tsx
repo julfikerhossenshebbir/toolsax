@@ -126,7 +126,7 @@ export default async function ToolPage({ params }: Props) {
 
           <ToolComponent />
 
-          <div className="text-center mt-12 flex justify-center gap-4">
+          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-row justify-center gap-3">
              <ToolActions toolId={tool.id} initialLikes={initialLikes} />
           </div>
         </div>
