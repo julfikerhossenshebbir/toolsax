@@ -17,6 +17,7 @@ import ColorConverter from '@/components/tools/ColorConverter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getColorByIndex } from '@/lib/utils';
 import ToolActions from '@/components/ToolActions';
+import ImageCompressor from '@/components/tools/ImageCompressor';
 
 type Props = {
   params: { id: string };
@@ -72,6 +73,7 @@ const ToolComponents: { [key: string]: React.ComponentType } = {
   'lorem-ipsum-generator': LoremIpsumGenerator,
   'unit-converter': UnitConverter,
   'color-converter': ColorConverter,
+  'image-compressor': ImageCompressor,
 };
 
 
