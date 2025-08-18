@@ -8,12 +8,12 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
-export const MinifyHtmlInputSchema = z.object({
+const MinifyHtmlInputSchema = z.object({
   html: z.string().describe('The HTML content to minify.'),
 });
 export type MinifyHtmlInput = z.infer<typeof MinifyHtmlInputSchema>;
 
-export const MinifyHtmlOutputSchema = z.object({
+const MinifyHtmlOutputSchema = z.object({
   minifiedHtml: z.string().describe('The minified HTML content.'),
 });
 export type MinifyHtmlOutput = z.infer<typeof MinifyHtmlOutputSchema>;
