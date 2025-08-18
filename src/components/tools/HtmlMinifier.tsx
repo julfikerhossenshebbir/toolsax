@@ -1,16 +1,15 @@
-
 'use client';
 
 import { useState } from 'react';
-import { minify } from 'html-minifier-terser';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Copy, Trash2, ArrowRight, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { minifyHtmlAction } from './actions';
 
 export default function HtmlMinifier() {
-  const [inputHtml, setInputHtml] = useState('');
+  const [inputHtml, setInputHtml] = useState('<!DOCTYPE html>\n<html>\n<head>\n  <title>My Page</title>\n</head>\n<body>\n\n  <!-- This is a comment -->\n  <h1>Hello,     World!</h1>\n\n</body>\n</html>');
   const [outputHtml, setOutputHtml] = useState('');
   const [isMinifying, setIsMinifying] = useState(false);
   const { toast } = useToast();
@@ -23,26 +22,20 @@ export default function HtmlMinifier() {
 
     setIsMinifying(true);
     try {
-      const minified = await minify(inputHtml, {
-        collapseWhitespace: true,
-        removeComments: true,
-        removeOptionalTags: true,
-        removeRedundantAttributes: true,
-        removeScriptTypeAttributes: true,
-        removeStyleLinkTypeAttributes: true,
-        useShortDoctype: true,
-        minifyCSS: true,
-        minifyJS: true,
-      });
-      setOutputHtml(minified);
-      const originalSize = new Blob([inputHtml]).size;
-      const minifiedSize = new Blob([minified]).size;
-      const reduction = ((originalSize - minifiedSize) / originalSize) * 100;
-      
-      toast({
-        title: 'HTML Minified!',
-        description: `Size reduced by ${reduction.toFixed(2)}%.`,
-      });
+      const result = await minifyHtmlAction(inputHtml);
+      if (result.success && result.minifiedHtml) {
+        setOutputHtml(result.minifiedHtml);
+        const originalSize = new Blob([inputHtml]).size;
+        const minifiedSize = new Blob([result.minifiedHtml]).size;
+        const reduction = ((originalSize - minifiedSize) / originalSize) * 100;
+        
+        toast({
+          title: 'HTML Minified!',
+          description: `Size reduced by ${reduction.toFixed(2)}%.`,
+        });
+      } else {
+        throw new Error(result.error || 'Minification failed');
+      }
     } catch (error: any) {
       setOutputHtml('');
       toast({

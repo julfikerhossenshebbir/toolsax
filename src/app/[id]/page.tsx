@@ -26,6 +26,8 @@ import Base64Encoder from '@/components/tools/Base64Encoder';
 import HashGenerator from '@/components/tools/HashGenerator';
 import FaviconGenerator from '@/components/tools/FaviconGenerator';
 import HtmlMinifier from '@/components/tools/HtmlMinifier';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type Props = {
   params: { id: string };
@@ -72,7 +74,22 @@ export async function generateStaticParams() {
   }));
 }
 
-const ToolComponents: { [key: string]: React.ComponentType } = {
+const ToolLoadingSkeleton = () => (
+  <Card>
+    <CardHeader>
+      <Skeleton className="h-8 w-1/2" />
+      <Skeleton className="h-4 w-3/4 mt-2" />
+    </CardHeader>
+    <CardContent className="space-y-4">
+      <Skeleton className="h-40 w-full" />
+      <div className="flex justify-center">
+        <Skeleton className="h-10 w-28" />
+      </div>
+    </CardContent>
+  </Card>
+);
+
+const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'case-converter': CaseConverter,
   'password-generator': PasswordGenerator,
   'qr-generator': QrCodeGenerator,
