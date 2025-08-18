@@ -27,6 +27,7 @@ import HashGenerator from '@/components/tools/HashGenerator';
 import FaviconGenerator from '@/components/tools/FaviconGenerator';
 import HtmlMinifier from '@/components/tools/HtmlMinifier';
 import CssMinifier from '@/components/tools/CssMinifier';
+import JavaScriptMinifier from '@/components/tools/JavaScriptMinifier';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -109,6 +110,7 @@ const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'favicon-generator': FaviconGenerator,
   'html-minifier': HtmlMinifier,
   'css-minifier': CssMinifier,
+  'javascript-minifier': JavaScriptMinifier,
 };
 
 
