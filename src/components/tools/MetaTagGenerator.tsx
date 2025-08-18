@@ -78,7 +78,7 @@ export default function MetaTagGenerator() {
             <ol className="list-decimal list-inside space-y-1 pl-4">
               <li><strong>Fill in the details:</strong> Provide your site's title, description, keywords, and author.</li>
               <li><strong>Review the code:</strong> The generated HTML meta tags will appear in the code block.</li>
-              <li><strong>Copy and paste:</strong> Click the copy button and paste the code into the `<head>` section of your HTML document.</li>
+              <li><strong>Copy and paste:</strong> Click the copy button and paste the code into the &lt;head&gt; section of your HTML document.</li>
             </ol>
           </div>
         </CardDescription>
