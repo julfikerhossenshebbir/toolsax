@@ -19,6 +19,7 @@ import { getColorByIndex } from '@/lib/utils';
 import ToolActions from '@/components/ToolActions';
 import ImageCompressor from '@/components/tools/ImageCompressor';
 import MarkdownEditor from '@/components/tools/MarkdownEditor';
+import WordCounter from '@/components/tools/WordCounter';
 
 type Props = {
   params: { id: string };
@@ -76,6 +77,7 @@ const ToolComponents: { [key: string]: React.ComponentType } = {
   'color-converter': ColorConverter,
   'image-compressor': ImageCompressor,
   'markdown-editor': MarkdownEditor,
+  'word-counter': WordCounter,
 };
 
 
