@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Copy, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import CryptoJS from 'crypto-js';
+import * as CryptoJS from 'crypto-js';
 
 export default function HashGenerator() {
   const [input, setInput] = useState('');
