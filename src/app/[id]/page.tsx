@@ -31,7 +31,15 @@ import JavaScriptMinifier from '@/components/tools/JavaScriptMinifier';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import MetaTagGenerator from '@/components/tools/MetaTagGenerator';
-import OpenGraphGenerator from '@/components/tools/OpenGraphGenerator';
+
+const OpenGraphGenerator = dynamic(
+  () => import('@/components/tools/OpenGraphGenerator'),
+  { 
+    ssr: false,
+    loading: () => <ToolLoadingSkeleton />
+  }
+);
+
 
 type Props = {
   params: { id: string };
