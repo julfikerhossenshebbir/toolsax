@@ -31,6 +31,7 @@ import JavaScriptMinifier from '@/components/tools/JavaScriptMinifier';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import MetaTagGenerator from '@/components/tools/MetaTagGenerator';
+import OpenGraphGenerator from '@/components/tools/OpenGraphGenerator';
 
 type Props = {
   params: { id: string };
@@ -113,6 +114,7 @@ const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'css-minifier': CssMinifier,
   'javascript-minifier': JavaScriptMinifier,
   'meta-tag-generator': MetaTagGenerator,
+  'open-graph-generator': OpenGraphGenerator,
 };
 
 
