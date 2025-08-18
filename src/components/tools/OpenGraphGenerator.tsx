@@ -10,8 +10,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Copy, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export default function OpenGraphGenerator() {
   const [siteName, setSiteName] = useState('Toolsax');
@@ -121,14 +119,17 @@ export default function OpenGraphGenerator() {
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <Label className="text-lg font-semibold">Generated Tags</Label>
-            <Button variant="ghost" size="icon" onClick={handleCopy} disabled={!generatedTags}>
+             <Button variant="ghost" size="icon" onClick={handleCopy} disabled={!generatedTags}>
               <Copy className="h-4 w-4" />
             </Button>
           </div>
           <div className="relative">
-            <SyntaxHighlighter language="markup" style={atomDark} customStyle={{ borderRadius: '0.5rem', margin: 0 }}>
-              {generatedTags}
-            </SyntaxHighlighter>
+            <Textarea
+              readOnly
+              value={generatedTags}
+              className="min-h-[360px] text-sm font-mono bg-muted"
+              placeholder="Generated tags will appear here..."
+            />
           </div>
         </div>
       </CardContent>
