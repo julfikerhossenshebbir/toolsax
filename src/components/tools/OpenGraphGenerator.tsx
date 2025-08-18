@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Copy, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export default function OpenGraphGenerator() {
   const [siteName, setSiteName] = useState('Toolsax');
@@ -125,8 +125,8 @@ export default function OpenGraphGenerator() {
               <Copy className="h-4 w-4" />
             </Button>
           </div>
-          <div className="relative bg-muted rounded-md p-0">
-            <SyntaxHighlighter language="markup" style={oneLight} customStyle={{ borderRadius: '0.5rem', margin: 0, padding: '1rem', backgroundColor: 'var(--card-background, white)' }}>
+          <div className="relative">
+            <SyntaxHighlighter language="markup" style={atomDark} customStyle={{ borderRadius: '0.5rem', margin: 0 }}>
               {generatedTags}
             </SyntaxHighlighter>
           </div>
