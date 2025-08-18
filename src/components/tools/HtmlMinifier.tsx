@@ -181,7 +181,7 @@ export default function HtmlMinifier() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2 justify-center border-t pt-4">
+        <div className="flex flex-wrap gap-2 justify-center mt-4">
           <Button onClick={handleMinify} disabled={!inputHtml || isMinifying}>
             {isMinifying ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
