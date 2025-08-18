@@ -21,6 +21,7 @@ import ImageCompressor from '@/components/tools/ImageCompressor';
 import MarkdownEditor from '@/components/tools/MarkdownEditor';
 import WordCounter from '@/components/tools/WordCounter';
 import UrlEncoderDecoder from '@/components/tools/UrlEncoderDecoder';
+import ImageResizer from '@/components/tools/ImageResizer';
 
 type Props = {
   params: { id: string };
@@ -80,6 +81,7 @@ const ToolComponents: { [key: string]: React.ComponentType } = {
   'markdown-editor': MarkdownEditor,
   'word-counter': WordCounter,
   'url-encoder-decoder': UrlEncoderDecoder,
+  'image-resizer': ImageResizer,
 };
 
 
