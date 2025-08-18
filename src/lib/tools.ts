@@ -1,4 +1,3 @@
-
 import { Tool } from './types';
 
 export const ALL_TOOLS: Tool[] = [
@@ -100,7 +99,7 @@ export const ALL_TOOLS: Tool[] = [
   },
   {
     "id": "base64-encoder",
-    "name": "Base64 Encoder",
+    "name": "Base64 Encoder & Decoder",
     "description": "Encode or decode text to Base64 format.",
     "link": "/base64-encoder",
     "category": "Development",
