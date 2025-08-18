@@ -127,30 +127,6 @@ export default function HtmlMinifier() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex flex-wrap gap-2 justify-center border-t pt-4">
-          <Button onClick={handleMinify} disabled={!inputHtml || isMinifying}>
-            {isMinifying ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <ArrowRight className="mr-2 h-4 w-4" />
-            )}
-            Minify HTML
-          </Button>
-           <Button onClick={() => fileInputRef.current?.click()} variant="outline">
-              <Upload className="mr-2 h-4 w-4" /> Import HTML File
-              <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileImport}
-                  accept=".html"
-                  className="hidden"
-              />
-          </Button>
-          <Button onClick={handleClear} variant="outline" disabled={!inputHtml && !outputHtml}>
-            <Trash2 className="mr-2 h-4 w-4" /> Clear All
-          </Button>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
@@ -203,6 +179,30 @@ export default function HtmlMinifier() {
               )}
             </div>
           </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2 justify-center border-t pt-4">
+          <Button onClick={handleMinify} disabled={!inputHtml || isMinifying}>
+            {isMinifying ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <ArrowRight className="mr-2 h-4 w-4" />
+            )}
+            Minify HTML
+          </Button>
+           <Button onClick={() => fileInputRef.current?.click()} variant="outline">
+              <Upload className="mr-2 h-4 w-4" /> Import HTML File
+              <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileImport}
+                  accept=".html"
+                  className="hidden"
+              />
+          </Button>
+          <Button onClick={handleClear} variant="outline" disabled={!inputHtml && !outputHtml}>
+            <Trash2 className="mr-2 h-4 w-4" /> Clear All
+          </Button>
         </div>
 
       </CardContent>
