@@ -6,29 +6,6 @@ import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// --- Static Imports ---
-import CaseConverter from '@/components/tools/CaseConverter';
-import PasswordGenerator from '@/components/tools/PasswordGenerator';
-import QrCodeGenerator from '@/components/tools/QrCodeGenerator';
-import JsonFormatter from '@/components/tools/JsonFormatter';
-import PdfMerger from '@/components/tools/PdfMerger';
-import LoremIpsumGenerator from '@/components/tools/LoremIpsumGenerator';
-import UnitConverter from '@/components/tools/UnitConverter';
-import ColorConverter from '@/components/tools/ColorConverter';
-import ImageCompressor from '@/components/tools/ImageCompressor';
-import MarkdownEditor from '@/components/tools/MarkdownEditor';
-import WordCounter from '@/components/tools/WordCounter';
-import UrlEncoderDecoder from '@/components/tools/UrlEncoderDecoder';
-import ImageResizer from '@/components/tools/ImageResizer';
-import Base64Encoder from '@/components/tools/Base64Encoder';
-import HashGenerator from '@/components/tools/HashGenerator';
-import FaviconGenerator from '@/components/tools/FaviconGenerator';
-import HtmlMinifier from '@/components/tools/HtmlMinifier';
-import CssMinifier from '@/components/tools/CssMinifier';
-import JavaScriptMinifier from '@/components/tools/JavaScriptMinifier';
-import MetaTagGenerator from '@/components/tools/MetaTagGenerator';
-
-
 // --- Loading Skeleton ---
 const ToolLoadingSkeleton = () => (
   <Card>
@@ -45,39 +22,31 @@ const ToolLoadingSkeleton = () => (
   </Card>
 );
 
-// --- Dynamic Imports for Client-Side Only Components ---
-const OpenGraphGenerator = dynamic(
-  () => import('@/components/tools/OpenGraphGenerator'),
-  { 
-    ssr: false,
-    loading: () => <ToolLoadingSkeleton />
-  }
-);
-
-
+// --- Dynamic Imports for All Tools ---
 const ToolComponents: { [key: string]: React.ComponentType<any> } = {
-  'case-converter': CaseConverter,
-  'password-generator': PasswordGenerator,
-  'qr-generator': QrCodeGenerator,
-  'json-formatter': JsonFormatter,
-  'pdf-merger': PdfMerger,
-  'lorem-ipsum-generator': LoremIpsumGenerator,
-  'unit-converter': UnitConverter,
-  'color-converter': ColorConverter,
-  'image-compressor': ImageCompressor,
-  'markdown-editor': MarkdownEditor,
-  'word-counter': WordCounter,
-  'url-encoder-decoder': UrlEncoderDecoder,
-  'image-resizer': ImageResizer,
-  'base64-encoder': Base64Encoder,
-  'hash-generator': HashGenerator,
-  'favicon-generator': FaviconGenerator,
-  'html-minifier': HtmlMinifier,
-  'css-minifier': CssMinifier,
-  'javascript-minifier': JavaScriptMinifier,
-  'meta-tag-generator': MetaTagGenerator,
-  'open-graph-generator': OpenGraphGenerator,
+  'case-converter': dynamic(() => import('@/components/tools/CaseConverter'), { loading: () => <ToolLoadingSkeleton /> }),
+  'password-generator': dynamic(() => import('@/components/tools/PasswordGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
+  'qr-generator': dynamic(() => import('@/components/tools/QrCodeGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
+  'json-formatter': dynamic(() => import('@/components/tools/JsonFormatter'), { loading: () => <ToolLoadingSkeleton /> }),
+  'pdf-merger': dynamic(() => import('@/components/tools/PdfMerger'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
+  'lorem-ipsum-generator': dynamic(() => import('@/components/tools/LoremIpsumGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
+  'unit-converter': dynamic(() => import('@/components/tools/UnitConverter'), { loading: () => <ToolLoadingSkeleton /> }),
+  'color-converter': dynamic(() => import('@/components/tools/ColorConverter'), { loading: () => <ToolLoadingSkeleton /> }),
+  'image-compressor': dynamic(() => import('@/components/tools/ImageCompressor'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
+  'markdown-editor': dynamic(() => import('@/components/tools/MarkdownEditor'), { loading: () => <ToolLoadingSkeleton /> }),
+  'word-counter': dynamic(() => import('@/components/tools/WordCounter'), { loading: () => <ToolLoadingSkeleton /> }),
+  'url-encoder-decoder': dynamic(() => import('@/components/tools/UrlEncoderDecoder'), { loading: () => <ToolLoadingSkeleton /> }),
+  'image-resizer': dynamic(() => import('@/components/tools/ImageResizer'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
+  'base64-encoder': dynamic(() => import('@/components/tools/Base64Encoder'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
+  'hash-generator': dynamic(() => import('@/components/tools/HashGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
+  'favicon-generator': dynamic(() => import('@/components/tools/FaviconGenerator'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
+  'html-minifier': dynamic(() => import('@/components/tools/HtmlMinifier'), { loading: () => <ToolLoadingSkeleton /> }),
+  'css-minifier': dynamic(() => import('@/components/tools/CssMinifier'), { loading: () => <ToolLoadingSkeleton /> }),
+  'javascript-minifier': dynamic(() => import('@/components/tools/JavaScriptMinifier'), { loading: () => <ToolLoadingSkeleton /> }),
+  'meta-tag-generator': dynamic(() => import('@/components/tools/MetaTagGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
+  'open-graph-generator': dynamic(() => import('@/components/tools/OpenGraphGenerator'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
 };
+
 
 const PlaceholderTool = ({ tool }: { tool: Tool }) => (
     <Card className="mt-8">
