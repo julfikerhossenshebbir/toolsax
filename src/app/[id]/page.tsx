@@ -30,6 +30,7 @@ import CssMinifier from '@/components/tools/CssMinifier';
 import JavaScriptMinifier from '@/components/tools/JavaScriptMinifier';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
+import MetaTagGenerator from '@/components/tools/MetaTagGenerator';
 
 type Props = {
   params: { id: string };
@@ -111,6 +112,7 @@ const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'html-minifier': HtmlMinifier,
   'css-minifier': CssMinifier,
   'javascript-minifier': JavaScriptMinifier,
+  'meta-tag-generator': MetaTagGenerator,
 };
 
 
