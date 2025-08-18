@@ -40,17 +40,22 @@ export default function HtmlMinifier() {
     try {
       const result = await minifyHtmlAction(inputHtml);
       if (result.success && result.minifiedHtml) {
-        setOutputHtml(result.minifiedHtml);
+        const creditComment = '<!-- Minified by Toolsax -->';
+        const finalOutput = `${creditComment}\n\n${result.minifiedHtml}`;
+
+        setOutputHtml(finalOutput);
+        
         const originalBlobSize = new Blob([inputHtml]).size;
-        const minifiedBlobSize = new Blob([result.minifiedHtml]).size;
+        const minifiedBlobSize = new Blob([finalOutput]).size;
         setOriginalSize(originalBlobSize);
         setMinifiedSize(minifiedBlobSize);
         
-        const reduction = ((originalBlobSize - minifiedBlobSize) / originalBlobSize) * 100;
+        const rawMinifiedSize = new Blob([result.minifiedHtml]).size;
+        const reduction = ((originalBlobSize - rawMinifiedSize) / originalBlobSize) * 100;
         
         toast({
           title: 'HTML Minified!',
-          description: `Size reduced by ${reduction.toFixed(2)}%.`,
+          description: `Size reduced by ${reduction > 0 ? reduction.toFixed(2) : 0}%.`,
         });
       } else {
         throw new Error(result.error || 'Minification failed');
