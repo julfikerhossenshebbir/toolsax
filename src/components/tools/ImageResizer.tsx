@@ -58,8 +58,7 @@ export default function ImageResizer() {
     }
   };
 
-  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const img = e.currentTarget;
+  const handleImageLoad = (img: HTMLImageElement) => {
     setOriginalDimensions({ width: img.naturalWidth, height: img.naturalHeight });
     setWidth(img.naturalWidth);
     setHeight(img.naturalHeight);
