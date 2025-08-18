@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -10,20 +10,27 @@ import { Copy, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import * as CryptoJS from 'crypto-js';
 
+const initialHashes = { md5: '', sha1: '', sha256: '', sha512: '' };
+
 export default function HashGenerator() {
   const [input, setInput] = useState('');
+  const [hashes, setHashes] = useState(initialHashes);
   const { toast } = useToast();
 
-  const hashes = useMemo(() => {
+  useEffect(() => {
     if (!input) {
-      return { md5: '', sha1: '', sha256: '', sha512: '' };
+      setHashes(initialHashes);
+      return;
     }
-    return {
-      md5: CryptoJS.MD5(input).toString(),
-      sha1: CryptoJS.SHA1(input).toString(),
-      sha256: CryptoJS.SHA256(input).toString(),
-      sha512: CryptoJS.SHA512(input).toString(),
+    const calculateHashes = () => {
+        setHashes({
+            md5: CryptoJS.MD5(input).toString(),
+            sha1: CryptoJS.SHA1(input).toString(),
+            sha256: CryptoJS.SHA256(input).toString(),
+            sha512: CryptoJS.SHA512(input).toString(),
+        });
     };
+    calculateHashes();
   }, [input]);
 
   const handleCopy = (text: string) => {
