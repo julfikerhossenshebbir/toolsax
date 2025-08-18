@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Copy, Trash2, ArrowRightLeft } from 'lucide-react';
+import { Copy, Trash2, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function UrlEncoderDecoder() {
@@ -103,9 +103,11 @@ export default function UrlEncoderDecoder() {
 
         <div className="flex flex-wrap gap-2 justify-center pt-4 border-t">
           <Button onClick={handleEncode} disabled={!input}>
+            <ArrowRight className="mr-2 h-4 w-4" />
             Encode
           </Button>
           <Button onClick={handleDecode} disabled={!input}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Decode
           </Button>
           <Button onClick={handleClear} variant="outline" disabled={!input && !output}>
