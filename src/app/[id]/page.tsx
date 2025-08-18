@@ -25,6 +25,7 @@ import ImageResizer from '@/components/tools/ImageResizer';
 import Base64Encoder from '@/components/tools/Base64Encoder';
 import HashGenerator from '@/components/tools/HashGenerator';
 import FaviconGenerator from '@/components/tools/FaviconGenerator';
+import HtmlMinifier from '@/components/tools/HtmlMinifier';
 
 type Props = {
   params: { id: string };
@@ -88,6 +89,7 @@ const ToolComponents: { [key: string]: React.ComponentType } = {
   'base64-encoder': Base64Encoder,
   'hash-generator': HashGenerator,
   'favicon-generator': FaviconGenerator,
+  'html-minifier': HtmlMinifier,
 };
 
 
