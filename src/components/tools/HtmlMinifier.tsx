@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Copy, Trash2, ArrowRight, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { minifyHtmlAction } from './actions';
+import { minifyHtmlAction } from './HtmlMinifier/actions';
 
 export default function HtmlMinifier() {
   const [inputHtml, setInputHtml] = useState('<!DOCTYPE html>\n<html>\n<head>\n  <title>My Page</title>\n</head>\n<body>\n\n  <!-- This is a comment -->\n  <h1>Hello,     World!</h1>\n\n</body>\n</html>');
