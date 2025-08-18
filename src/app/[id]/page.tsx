@@ -23,6 +23,7 @@ import WordCounter from '@/components/tools/WordCounter';
 import UrlEncoderDecoder from '@/components/tools/UrlEncoderDecoder';
 import ImageResizer from '@/components/tools/ImageResizer';
 import Base64Encoder from '@/components/tools/Base64Encoder';
+import HashGenerator from '@/components/tools/HashGenerator';
 
 type Props = {
   params: { id: string };
@@ -84,6 +85,7 @@ const ToolComponents: { [key: string]: React.ComponentType } = {
   'url-encoder-decoder': UrlEncoderDecoder,
   'image-resizer': ImageResizer,
   'base64-encoder': Base64Encoder,
+  'hash-generator': HashGenerator,
 };
 
 
