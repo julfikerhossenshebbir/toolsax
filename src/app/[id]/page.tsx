@@ -6,40 +6,9 @@ import { Tool } from '@/lib/types';
 import Icon from '@/components/Icon';
 import RelatedTools from '@/components/RelatedTools';
 import { Badge } from '@/components/ui/badge';
-import CaseConverter from '@/components/tools/CaseConverter';
-import PasswordGenerator from '@/components/tools/PasswordGenerator';
-import QrCodeGenerator from '@/components/tools/QrCodeGenerator';
-import JsonFormatter from '@/components/tools/JsonFormatter';
-import PdfMerger from '@/components/tools/PdfMerger';
-import LoremIpsumGenerator from '@/components/tools/LoremIpsumGenerator';
-import UnitConverter from '@/components/tools/UnitConverter';
-import ColorConverter from '@/components/tools/ColorConverter';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getColorByIndex } from '@/lib/utils';
 import ToolActions from '@/components/ToolActions';
-import ImageCompressor from '@/components/tools/ImageCompressor';
-import MarkdownEditor from '@/components/tools/MarkdownEditor';
-import WordCounter from '@/components/tools/WordCounter';
-import UrlEncoderDecoder from '@/components/tools/UrlEncoderDecoder';
-import ImageResizer from '@/components/tools/ImageResizer';
-import Base64Encoder from '@/components/tools/Base64Encoder';
-import HashGenerator from '@/components/tools/HashGenerator';
-import FaviconGenerator from '@/components/tools/FaviconGenerator';
-import HtmlMinifier from '@/components/tools/HtmlMinifier';
-import CssMinifier from '@/components/tools/CssMinifier';
-import JavaScriptMinifier from '@/components/tools/JavaScriptMinifier';
-import dynamic from 'next/dynamic';
-import { Skeleton } from '@/components/ui/skeleton';
-import MetaTagGenerator from '@/components/tools/MetaTagGenerator';
-
-const OpenGraphGenerator = dynamic(
-  () => import('@/components/tools/OpenGraphGenerator'),
-  { 
-    ssr: false,
-    loading: () => <ToolLoadingSkeleton />
-  }
-);
-
+import ToolRenderer from '@/components/tools/ToolRenderer';
 
 type Props = {
   params: { id: string };
@@ -86,59 +55,6 @@ export async function generateStaticParams() {
   }));
 }
 
-const ToolLoadingSkeleton = () => (
-  <Card>
-    <CardHeader>
-      <Skeleton className="h-8 w-1/2" />
-      <Skeleton className="h-4 w-3/4 mt-2" />
-    </CardHeader>
-    <CardContent className="space-y-4">
-      <Skeleton className="h-40 w-full" />
-      <div className="flex justify-center">
-        <Skeleton className="h-10 w-28" />
-      </div>
-    </CardContent>
-  </Card>
-);
-
-const ToolComponents: { [key: string]: React.ComponentType<any> } = {
-  'case-converter': CaseConverter,
-  'password-generator': PasswordGenerator,
-  'qr-generator': QrCodeGenerator,
-  'json-formatter': JsonFormatter,
-  'pdf-merger': PdfMerger,
-  'lorem-ipsum-generator': LoremIpsumGenerator,
-  'unit-converter': UnitConverter,
-  'color-converter': ColorConverter,
-  'image-compressor': ImageCompressor,
-  'markdown-editor': MarkdownEditor,
-  'word-counter': WordCounter,
-  'url-encoder-decoder': UrlEncoderDecoder,
-  'image-resizer': ImageResizer,
-  'base64-encoder': Base64Encoder,
-  'hash-generator': HashGenerator,
-  'favicon-generator': FaviconGenerator,
-  'html-minifier': HtmlMinifier,
-  'css-minifier': CssMinifier,
-  'javascript-minifier': JavaScriptMinifier,
-  'meta-tag-generator': MetaTagGenerator,
-  'open-graph-generator': OpenGraphGenerator,
-};
-
-
-const PlaceholderTool = ({ tool }: { tool: Tool }) => (
-    <Card className="mt-8">
-        <CardHeader>
-            <CardTitle>Tool Not Implemented</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <p>The tool <span className="font-semibold">{tool.name}</span> is not yet implemented.</p>
-            <p className="mt-4">Check back soon!</p>
-        </CardContent>
-    </Card>
-);
-
-
 export default async function ToolPage({ params }: Props) {
   const { id } = params;
   const { tool, index } = await getTool(id);
@@ -148,7 +64,6 @@ export default async function ToolPage({ params }: Props) {
     notFound();
   }
 
-  const ToolComponent = ToolComponents[tool.id] || (() => <PlaceholderTool tool={tool} />);
   const iconColor = getColorByIndex(index);
 
   const relatedTools = allTools.filter(t => t.category === tool.category && t.id !== tool.id).slice(0, 3);
@@ -156,7 +71,6 @@ export default async function ToolPage({ params }: Props) {
   allTools.forEach((tool, index) => {
     originalIndexMap.set(tool.id, index);
   });
-
 
   return (
     <>
@@ -176,7 +90,7 @@ export default async function ToolPage({ params }: Props) {
             <Badge variant="secondary" className="mt-3 text-sm">{tool.category}</Badge>
           </div>
 
-          <ToolComponent />
+          <ToolRenderer tool={tool} />
 
           <div className="mt-12 flex justify-center items-center gap-3">
              <ToolActions tool={tool} />
