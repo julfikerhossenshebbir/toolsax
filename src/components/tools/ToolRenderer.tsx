@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { Tool } from '@/lib/types';
@@ -45,6 +44,7 @@ const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'javascript-minifier': dynamic(() => import('@/components/tools/JavaScriptMinifier'), { loading: () => <ToolLoadingSkeleton /> }),
   'meta-tag-generator': dynamic(() => import('@/components/tools/MetaTagGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
   'open-graph-generator': dynamic(() => import('@/components/tools/OpenGraphGenerator'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
+  'slug-generator': dynamic(() => import('@/components/tools/SlugGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
 };
 
 
