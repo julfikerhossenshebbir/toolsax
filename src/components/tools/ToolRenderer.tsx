@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Tool } from '@/lib/types';
@@ -45,6 +46,7 @@ const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'meta-tag-generator': dynamic(() => import('@/components/tools/MetaTagGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
   'open-graph-generator': dynamic(() => import('@/components/tools/OpenGraphGenerator'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
   'slug-generator': dynamic(() => import('@/components/tools/SlugGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
+  'emoji-picker': dynamic(() => import('@/components/tools/EmojiPicker'), { loading: () => <ToolLoadingSkeleton /> }),
 };
 
 
