@@ -4,7 +4,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { onAuthStateChange, isConfigured } from '@/lib/firebase';
 import type { User } from 'firebase/auth';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface AuthContextType {
   user: User | null;
@@ -30,15 +29,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => unsubscribe();
   }, []);
-
-  // Show a simple loading state for the whole app while auth is initializing
-  if (loading && isConfigured) {
-    return (
-        <div className="w-full h-screen flex items-center justify-center">
-            <Skeleton className="h-16 w-16 rounded-full" />
-        </div>
-    );
-  }
 
   return (
     <AuthContext.Provider value={{ user, loading }}>
