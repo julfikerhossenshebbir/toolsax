@@ -142,6 +142,8 @@ export const getUserPublicProfile = async (username: string) => {
         photoURL: data.photoURL,
         lastLogin: data.lastLogin,
         favorites: data.favorites || [],
+        bio: data.bio,
+        social: data.social,
     };
 };
 

@@ -11,13 +11,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { updateUserProfile, getUserData, updateUserData } from '@/lib/firebase';
-import { Loader2, Upload, User, Scissors, Eye as EyeIcon } from 'lucide-react';
+import { Loader2, Upload, User, Scissors, Eye as EyeIcon, Twitter, Github, Globe } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import ReactCrop, { type Crop, type PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Textarea } from '@/components/ui/textarea';
 
 
 async function uploadToImgBB(imageFile: File | Blob): Promise<string | null> {
@@ -101,6 +102,10 @@ export default function ProfilePage() {
   const [username, setUsername] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [photoURL, setPhotoURL] = useState('');
+  const [bio, setBio] = useState('');
+  const [twitter, setTwitter] = useState('');
+  const [github, setGithub] = useState('');
+  const [website, setWebsite] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -125,6 +130,10 @@ export default function ProfilePage() {
           setUsername(data.username || '');
           setContactNumber(data.contactNumber || '');
           setPhotoURL(data.photoURL || user.photoURL || '');
+          setBio(data.bio || '');
+          setTwitter(data.social?.twitter || '');
+          setGithub(data.social?.github || '');
+          setWebsite(data.social?.website || '');
         } else {
           setPhotoURL(user.photoURL || '');
         }
@@ -190,7 +199,17 @@ export default function ProfilePage() {
     setIsSaving(true);
     try {
       await updateUserProfile(user, { displayName });
-      await updateUserData(user.uid, { name: displayName, contactNumber });
+      const socialLinks = {
+          twitter: twitter,
+          github: github,
+          website: website,
+      };
+      await updateUserData(user.uid, { 
+          name: displayName, 
+          contactNumber,
+          bio,
+          social: socialLinks,
+      });
       toast({ title: 'Profile saved successfully!' });
     } catch (error: any) {
       toast({
@@ -316,14 +335,31 @@ export default function ProfilePage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="contactNumber">Contact Number (Optional)</Label>
-              <Input
-                id="contactNumber"
-                type="tel"
-                value={contactNumber}
-                onChange={(e) => setContactNumber(e.target.value)}
-                placeholder="Your phone number"
+              <Label htmlFor="bio">Bio</Label>
+              <Textarea
+                id="bio"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                placeholder="Tell us a little about yourself"
+                maxLength={160}
               />
+               <p className="text-xs text-muted-foreground text-right">{bio.length}/160</p>
+            </div>
+
+            <div className="space-y-4">
+                <h3 className="text-base font-medium">Social Links</h3>
+                <div className="relative">
+                    <Github className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input value={github} onChange={(e) => setGithub(e.target.value)} placeholder="github.com/username" className="pl-10" />
+                </div>
+                <div className="relative">
+                    <Twitter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input value={twitter} onChange={(e) => setTwitter(e.target.value)} placeholder="twitter.com/username" className="pl-10" />
+                </div>
+                <div className="relative">
+                    <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="your-website.com" className="pl-10" />
+                </div>
             </div>
 
             <Button type="submit" className="w-full" disabled={isSaving}>
