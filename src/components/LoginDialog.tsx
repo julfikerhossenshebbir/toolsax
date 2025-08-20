@@ -21,7 +21,7 @@ import {
   signInWithEmail,
   updateUserProfile,
 } from '@/lib/firebase';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Wand2 } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -148,6 +148,7 @@ interface EmailFormProps {
 
 function EmailForm({ schema, onSubmit, buttonText, onSuccess }: EmailFormProps) {
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const { toast } = useToast();
 
     const form = useForm<z.infer<typeof schema>>({
@@ -180,8 +181,8 @@ function EmailForm({ schema, onSubmit, buttonText, onSuccess }: EmailFormProps) 
                     name="email"
                     render={({ field }) => (
                         <FormItem>
-                            <Label htmlFor="email">Email</Label>
-                            <Input id="email" placeholder="m@example.com" {...field} />
+                            <Label htmlFor="email-login">Email</Label>
+                            <Input id="email-login" placeholder="m@example.com" {...field} />
                             <FormMessage />
                         </FormItem>
                     )}
@@ -191,8 +192,20 @@ function EmailForm({ schema, onSubmit, buttonText, onSuccess }: EmailFormProps) 
                     name="password"
                     render={({ field }) => (
                         <FormItem>
-                            <Label htmlFor="password">Password</Label>
-                            <Input id="password" type="password" {...field} />
+                            <Label htmlFor="password-login">Password</Label>
+                            <div className="relative">
+                                <Input id="password-login" type={showPassword ? 'text' : 'password'} {...field} />
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  className="absolute top-1/2 right-2 -translate-y-1/2 h-7 w-7"
+                                  onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    <span className="sr-only">Toggle password visibility</span>
+                                </Button>
+                            </div>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -209,6 +222,7 @@ function EmailForm({ schema, onSubmit, buttonText, onSuccess }: EmailFormProps) 
 // Signup Form
 function SignupForm({ onSuccess }: { onSuccess: () => void }) {
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const { toast } = useToast();
 
     const form = useForm<z.infer<typeof signupSchema>>({
@@ -222,7 +236,8 @@ function SignupForm({ onSuccess }: { onSuccess: () => void }) {
         for (let i = 0; i < 16; i++) {
             pass += chars.charAt(Math.floor(Math.random() * chars.length));
         }
-        form.setValue('password', pass);
+        form.setValue('password', pass, { shouldValidate: true });
+        toast({ title: "Password Generated!", description: "A new secure password has been generated and filled in."});
     };
 
     const handleSignup = async (values: z.infer<typeof signupSchema>) => {
@@ -259,11 +274,34 @@ function SignupForm({ onSuccess }: { onSuccess: () => void }) {
                 <FormField control={form.control} name="password" render={({ field }) => (
                     <FormItem>
                         <Label>Password</Label>
-                        <FormControl><Input type="password" {...field} /></FormControl>
+                        <div className="relative">
+                            <Input type={showPassword ? 'text' : 'password'} {...field} />
+                             <div className="absolute top-1/2 right-2 -translate-y-1/2 flex items-center gap-1">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={generatePassword}
+                                >
+                                    <Wand2 className="h-4 w-4" />
+                                    <span className="sr-only">Generate password</span>
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    <span className="sr-only">Toggle password visibility</span>
+                                </Button>
+                            </div>
+                        </div>
                         <FormMessage />
                     </FormItem>
                 )} />
-                <Button type="button" variant="link" size="sm" className="p-0 h-auto" onClick={generatePassword}>Generate Password</Button>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Sign Up
@@ -272,4 +310,3 @@ function SignupForm({ onSuccess }: { onSuccess: () => void }) {
         </Form>
     )
 }
-
