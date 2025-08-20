@@ -126,49 +126,19 @@ const HeaderSearch = ({ onSearchChange }: { onSearchChange: (query: string) => v
     
     return (
         <>
-            <div className={cn("flex items-center gap-2 mr-auto transition-opacity duration-300", { "opacity-0 pointer-events-none": isSearchVisible })}>
-                <AppSidebar />
-                 <Link href="/" className="flex items-center gap-2">
-                    <Logo />
-                    <span className="font-bold text-lg hidden sm:inline-block">Toolsax</span>
-                </Link>
-            </div>
-
-            <div 
-                className={cn(
-                  "absolute inset-y-0 left-0 flex items-center w-full h-full p-2 pr-4 transition-all duration-300",
-                  isSearchVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-                )}
-            >
-                <Button variant="ghost" size="icon" onClick={() => setIsSearchVisible(false)} className="flex-shrink-0">
-                    <ArrowLeft className="w-5 h-5"/>
-                </Button>
-                <div className="relative w-full md:mr-[190px]">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <Input 
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search for tools..."
-                        className="w-full pl-12"
-                        autoFocus
-                    />
-                    {searchQuery && (
-                        <Button variant="ghost" size="icon" onClick={() => setSearchQuery('')} className="absolute top-1/2 right-2 -translate-y-1/2 h-7 w-7">
-                            <X className="h-4 w-4" />
-                        </Button>
-                    )}
+            <div className={cn("flex items-center w-full justify-between transition-opacity duration-300", { "opacity-0 pointer-events-none": isSearchVisible })}>
+                <div className="flex items-center gap-2">
+                    <AppSidebar />
+                    <Link href="/" className="flex items-center gap-2">
+                        <Logo />
+                        <span className="font-bold text-lg hidden sm:inline-block">Toolsax</span>
+                    </Link>
                 </div>
-            </div>
-            
-            <div className={cn("flex items-center gap-2", {
-                "opacity-0 pointer-events-none": isSearchVisible && !isSearchVisible,
-                "md:opacity-100": !isSearchVisible,
-                "opacity-0 md:opacity-100": isSearchVisible,
-            })}>
-                <Button variant="ghost" size="icon" onClick={handleSearchClick} aria-label="Search">
-                    <Search className="w-5 h-5" />
-                </Button>
-                <div className={cn("flex items-center gap-2", {"hidden md:flex": isSearchVisible})}>
+                
+                <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon" onClick={handleSearchClick} aria-label="Search">
+                        <Search className="w-5 h-5" />
+                    </Button>
                     <NotificationBell />
                     <FavoriteTools />
                     <SettingsPanel>
@@ -177,6 +147,32 @@ const HeaderSearch = ({ onSearchChange }: { onSearchChange: (query: string) => v
                         </Button>
                     </SettingsPanel>
                     <UserAvatar />
+                </div>
+            </div>
+
+            <div 
+                className={cn(
+                  "absolute inset-0 flex items-center w-full h-full p-2 pr-4 transition-all duration-300",
+                  isSearchVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                )}
+            >
+                <Button variant="ghost" size="icon" onClick={() => setIsSearchVisible(false)} className="flex-shrink-0">
+                    <ArrowLeft className="w-5 h-5"/>
+                </Button>
+                <div className="relative w-full">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search for tools..."
+                        className="w-full pl-12 pr-10"
+                        autoFocus
+                    />
+                    {searchQuery && (
+                        <Button variant="ghost" size="icon" onClick={() => setSearchQuery('')} className="absolute top-1/2 right-2 -translate-y-1/2 h-7 w-7">
+                            <X className="h-4 w-4" />
+                        </Button>
+                    )}
                 </div>
             </div>
         </>
