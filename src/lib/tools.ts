@@ -38,7 +38,7 @@ export const ALL_TOOLS: Tool[] = [
     "name": "Lorem Ipsum Generator",
     "description": "Generate placeholder text for your designs.",
     "link": "/lorem-ipsum-generator",
-    "category": "Utilities",
+    "category": "Content",
     "icon": "FileText"
   },
   {
@@ -54,7 +54,7 @@ export const ALL_TOOLS: Tool[] = [
     "name": "Image Compressor",
     "description": "Reduce file size of JPG & PNG images.",
     "link": "/image-compressor",
-    "category": "Utilities",
+    "category": "Image",
     "icon": "Minimize2",
     "authRequired": true
   },
@@ -63,7 +63,7 @@ export const ALL_TOOLS: Tool[] = [
     "name": "Markdown Editor",
     "description": "Write and preview Markdown in real-time.",
     "link": "/markdown-editor",
-    "category": "Development",
+    "category": "Content",
     "icon": "FileSignature"
   },
   {
@@ -79,7 +79,7 @@ export const ALL_TOOLS: Tool[] = [
     "name": "Word Counter",
     "description": "Count words, characters, and sentences.",
     "link": "/word-counter",
-    "category": "Utilities",
+    "category": "Content",
     "icon": "FileJson2"
   },
   {
@@ -95,7 +95,7 @@ export const ALL_TOOLS: Tool[] = [
     "name": "Image Resizer",
     "description": "Resize images to specific dimensions online.",
     "link": "/image-resizer",
-    "category": "Design",
+    "category": "Image",
     "icon": "Crop",
      "authRequired": true
   },
@@ -120,7 +120,7 @@ export const ALL_TOOLS: Tool[] = [
     "name": "Favicon Generator",
     "description": "Create a favicon from any image.",
     "link": "/favicon-generator",
-    "category": "Design",
+    "category": "Image",
     "icon": "Heart",
      "authRequired": true
   },
@@ -153,7 +153,7 @@ export const ALL_TOOLS: Tool[] = [
     "name": "Meta Tag Generator",
     "description": "Create SEO-friendly meta tags for websites.",
     "link": "/meta-tag-generator",
-    "category": "Development",
+    "category": "SEO",
     "icon": "Code"
   },
   {
@@ -161,7 +161,7 @@ export const ALL_TOOLS: Tool[] = [
     "name": "Open Graph Generator",
     "description": "Generate Open Graph tags for social sharing.",
     "link": "/open-graph-generator",
-    "category": "Development",
+    "category": "SEO",
     "icon": "Share2"
   },
   {
@@ -169,7 +169,7 @@ export const ALL_TOOLS: Tool[] = [
     "name": "Slug Generator",
     "description": "Convert text into SEO-friendly slugs.",
     "link": "/slug-generator",
-    "category": "Utilities",
+    "category": "SEO",
     "icon": "Globe"
   },
   {
@@ -177,7 +177,7 @@ export const ALL_TOOLS: Tool[] = [
     "name": "Emoji Picker",
     "description": "Search and copy emojis instantly.",
     "link": "/emoji-picker",
-    "category": "Utilities",
+    "category": "Content",
     "icon": "Smile"
   },
   {
@@ -233,7 +233,7 @@ export const ALL_TOOLS: Tool[] = [
     "name": "Text Diff Checker",
     "description": "Compare two texts and highlight differences.",
     "link": "/text-diff-checker",
-    "category": "Utilities",
+    "category": "Content",
     "icon": "GitCompareArrows"
   },
   {
@@ -241,7 +241,7 @@ export const ALL_TOOLS: Tool[] = [
     "name": "PDF Merger",
     "description": "Merge multiple PDF files into one.",
     "link": "/pdf-merger",
-    "category": "Utilities",
+    "category": "PDF",
     "icon": "FilePlus",
     "authRequired": true
   },
@@ -250,7 +250,7 @@ export const ALL_TOOLS: Tool[] = [
     "name": "PDF Splitter",
     "description": "Split PDF files into separate pages.",
     "link": "/pdf-splitter",
-    "category": "Utilities",
+    "category": "PDF",
     "icon": "FileMinus"
   },
   {
@@ -258,7 +258,7 @@ export const ALL_TOOLS: Tool[] = [
     "name": "Image to PDF",
     "description": "Convert images to PDF format.",
     "link": "/image-to-pdf",
-    "category": "Utilities",
+    "category": "PDF",
     "icon": "FileImage"
   },
   {
@@ -298,7 +298,7 @@ export const ALL_TOOLS: Tool[] = [
     "name": "WhatsApp Message Generator",
     "description": "Create custom WhatsApp messages for quick sharing.",
     "link": "/whatsapp-message-generator",
-    "category": "Utilities",
+    "category": "Social Media",
     "icon": "MessageSquare"
   }
 ];

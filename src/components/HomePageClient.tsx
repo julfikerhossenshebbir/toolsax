@@ -13,7 +13,7 @@ import FirebaseStats from './FirebaseStats';
 import { useAppState } from '@/contexts/AppStateContext';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
-import { LayoutGrid, Palette, Code, Wrench, Lock } from 'lucide-react';
+import { LayoutGrid, Palette, Code, Wrench, Lock, FileText, ImageIcon, File as FileIcon, Share2, Search } from 'lucide-react';
 
 
 interface HomePageClientProps {
@@ -26,6 +26,11 @@ const categoryIcons: { [key: string]: React.ReactNode } = {
   Development: <Code className="w-4 h-4 mr-2" />,
   Utilities: <Wrench className="w-4 h-4 mr-2" />,
   Security: <Lock className="w-4 h-4 mr-2" />,
+  Content: <FileText className="w-4 h-4 mr-2" />,
+  Image: <ImageIcon className="w-4 h-4 mr-2" />,
+  PDF: <FileIcon className="w-4 h-4 mr-2" />,
+  "Social Media": <Share2 className="w-4 h-4 mr-2" />,
+  SEO: <Search className="w-4 h-4 mr-2" />,
 };
 
 
