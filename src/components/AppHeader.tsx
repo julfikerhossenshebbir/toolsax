@@ -91,7 +91,7 @@ const NotificationBell = () => {
                             notifications.map((notification, index) => (
                                 <div key={index} className="flex items-start gap-3">
                                     <Icon name={notification.icon} className="h-4 w-4 text-muted-foreground mt-1 flex-shrink-0" />
-                                    <p className="text-sm text-foreground break-words">{notification.message}</p>
+                                    <p className="text-sm text-foreground break-all">{notification.message}</p>
                                 </div>
                             ))
                         )}
