@@ -3,10 +3,11 @@
 
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getStats, subscribeToAllUsers, getNotificationMessage, getAdSettings } from '@/lib/firebase';
+import { getStats, subscribeToAllUsers, getNotificationMessage, getAdSettings, getAllAdvertisements } from '@/lib/firebase';
 import { StatCard, UsersTable, columns, NotificationForm, UserOverviewChart, ToolPopularityChart, AdSettingsForm } from './components';
 import { Users, BarChart, AreaChart } from 'lucide-react';
-import type { UserData, Notification as NotifType, AdSettings } from '../types';
+import type { UserData, Notification as NotifType, AdSettings, Advertisement } from '../types';
+import AdManagementForm from './AdManagementForm';
 
 const defaultAdSettings: AdSettings = {
     adsEnabled: true,
@@ -21,6 +22,8 @@ export default function AdminDashboardPage() {
     const [users, setUsers] = useState<UserData[]>([]);
     const [notifications, setNotifications] = useState<NotifType[]>([]);
     const [adSettings, setAdSettings] = useState<AdSettings>(defaultAdSettings);
+    const [advertisements, setAdvertisements] = useState<Advertisement[]>([]);
+
 
     useEffect(() => {
         // Fetch initial static data
@@ -35,11 +38,16 @@ export default function AdminDashboardPage() {
         const unsubscribeAdSettings = getAdSettings(true, (settings) => {
             setAdSettings(settings || defaultAdSettings);
         });
+        
+        const unsubscribeAds = getAllAdvertisements(true, (ads) => {
+            setAdvertisements(ads);
+        });
 
         // Cleanup subscription on component unmount
         return () => {
             unsubscribeUsers();
             unsubscribeAdSettings();
+            unsubscribeAds();
         };
     }, []);
 
@@ -62,6 +70,10 @@ export default function AdminDashboardPage() {
             <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
                 <UserOverviewChart />
                 <ToolPopularityChart />
+
+                <div className="lg:col-span-full">
+                    <AdManagementForm currentAds={advertisements} />
+                </div>
 
                 <div className="lg:col-span-full">
                      <AdSettingsForm currentAdSettings={adSettings} />

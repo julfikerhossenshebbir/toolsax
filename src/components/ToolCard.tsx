@@ -7,22 +7,28 @@ import { useEffect, useState } from 'react';
 import { Tool } from '@/lib/types';
 import Icon from './Icon';
 import { Card, CardContent } from './ui/card';
-import { incrementClicks, getToolStats, isConfigured, getAdSettings } from '@/lib/firebase';
+import { incrementClicks, getToolStats, isConfigured, getAdSettings, getActiveAdvertisement, incrementAdViews, incrementAdClicks } from '@/lib/firebase';
 import { MousePointerClick, Lock } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 import { AdModal } from './AdModal';
 import { getColorByIndex } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import LoginDialog from './LoginDialog';
-import type { AdSettings } from '@/app/admin/types';
+import type { AdSettings, Advertisement } from '@/app/admin/types';
 
 const AD_STORAGE_KEY_COUNT = 'toolsax_ad_views';
 const AD_STORAGE_KEY_TIMESTAMP = 'toolsax_last_ad_timestamp';
+
+interface ToolCardProps {
+  tool: Tool;
+  index: number;
+}
 
 const ToolCard = ({ tool, index }: ToolCardProps) => {
   const [clicks, setClicks] = useState<number | null>(null);
   const [showAd, setShowAd] = useState(false);
   const [adSettings, setAdSettings] = useState<AdSettings | null>(null);
+  const [activeAd, setActiveAd] = useState<Advertisement | null>(null);
   const router = useRouter();
   const { user } = useAuth();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -45,7 +51,7 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
     }
   }, [tool.id]);
 
-  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleCardClick = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
 
     if (tool.authRequired && !user) {
@@ -68,22 +74,36 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
     const cooldownInMillis = (adSettings.cooldownMinutes || 30) * 60 * 1000;
 
     const isCooldownOver = now - lastAdTimestamp > cooldownInMillis;
-
+    
     if (isCooldownOver) {
         localStorage.setItem(AD_STORAGE_KEY_COUNT, '0');
-        localStorage.setItem(AD_STORAGE_KEY_TIMESTAMP, now.toString());
-        setShowAd(true);
-    } else if (adViews < (adSettings.viewLimit || 3)) {
-      setShowAd(true);
-    } else {
-      router.push(`/${tool.id}`);
     }
+    
+    const currentAdViews = isCooldownOver ? 0 : adViews;
+
+    if (currentAdViews < (adSettings.viewLimit || 3)) {
+      const adToShow = await getActiveAdvertisement();
+      if (adToShow) {
+        setActiveAd(adToShow);
+        setShowAd(true);
+        incrementAdViews(adToShow.id);
+        return;
+      }
+    }
+    
+    // No ad to show, proceed to tool
+    router.push(`/${tool.id}`);
   };
 
-  const handleContinueToTool = () => {
+  const handleContinueToTool = (ad: Advertisement) => {
     const currentViews = parseInt(localStorage.getItem(AD_STORAGE_KEY_COUNT) || '0', 10);
     localStorage.setItem(AD_STORAGE_KEY_COUNT, (currentViews + 1).toString());
     localStorage.setItem(AD_STORAGE_KEY_TIMESTAMP, new Date().getTime().toString());
+    
+    if (ad.linkUrl) {
+      incrementAdClicks(ad.id);
+    }
+
     setShowAd(false);
     router.push(`/${tool.id}`);
   };
@@ -94,6 +114,7 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
         isOpen={showAd}
         onClose={() => setShowAd(false)}
         onContinue={handleContinueToTool}
+        advertisement={activeAd}
       />
       <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen} />
 

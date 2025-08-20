@@ -12,14 +12,16 @@ import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import type { Advertisement } from '@/app/admin/types';
 
 interface AdModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onContinue: () => void;
+  onContinue: (ad: Advertisement) => void;
+  advertisement: Advertisement | null;
 }
 
-export function AdModal({ isOpen, onClose, onContinue }: AdModalProps) {
+export function AdModal({ isOpen, onClose, onContinue, advertisement }: AdModalProps) {
   const [countdown, setCountdown] = useState(10);
 
   useEffect(() => {
@@ -39,7 +41,18 @@ export function AdModal({ isOpen, onClose, onContinue }: AdModalProps) {
     }
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !advertisement) return null;
+  
+  const handleContinueClick = () => {
+    if(advertisement) {
+        onContinue(advertisement);
+    }
+  }
+  
+  const handleAdClick = () => {
+      window.open(advertisement.linkUrl, '_blank');
+      handleContinueClick();
+  }
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
@@ -47,7 +60,7 @@ export function AdModal({ isOpen, onClose, onContinue }: AdModalProps) {
         <Button
             variant="ghost"
             size="icon"
-            onClick={onContinue}
+            onClick={handleContinueClick}
             disabled={countdown > 0}
             className="absolute top-4 right-4 rounded-full h-8 w-8"
         >
@@ -61,13 +74,13 @@ export function AdModal({ isOpen, onClose, onContinue }: AdModalProps) {
         <AlertDialogHeader>
           <AlertDialogTitle>Advertisement</AlertDialogTitle>
           <AlertDialogDescription>
-            Enjoy our free tools! Please take a moment to view this ad.
+            Enjoy our free tools! Please take a moment to view this ad from {advertisement.advertiserName}.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="my-4 rounded-md overflow-hidden">
+        <div className="my-4 rounded-md overflow-hidden cursor-pointer" onClick={handleAdClick}>
             <Image
-                src="https://placehold.co/400x200.png"
-                alt="Advertisement"
+                src={advertisement.imageUrl}
+                alt={`Advertisement from ${advertisement.advertiserName}`}
                 width={400}
                 height={200}
                 className="w-full h-auto object-cover"

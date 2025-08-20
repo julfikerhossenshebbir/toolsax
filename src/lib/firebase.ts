@@ -4,7 +4,7 @@
 // add your configuration here.
 
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
-import { getDatabase, ref, runTransaction, onValue, get, set, type Database, serverTimestamp, push, child, update } from "firebase/database";
+import { getDatabase, ref, runTransaction, onValue, get, set, type Database, serverTimestamp, push, child, update, remove } from "firebase/database";
 import { 
     getAuth, 
     onAuthStateChanged,
@@ -18,7 +18,7 @@ import {
     type User
 } from "firebase/auth";
 import { v4 as uuidv4 } from 'uuid';
-import type { AdSettings } from "@/app/admin/types";
+import type { AdSettings, Advertisement } from "@/app/admin/types";
 
 
 export interface Notification {
@@ -407,5 +407,74 @@ export const updateAdSettings = (settings: AdSettings) => {
     const adSettingsRef = ref(db, 'settings/ads');
     return set(adSettingsRef, settings);
 }
+
+// --- Advertisement CRUD ---
+export const getAllAdvertisements = (subscribe: boolean = true, callback: (ads: Advertisement[]) => void) => {
+    if (!db) {
+        callback([]);
+        return () => {};
+    }
+    const adsRef = ref(db, 'advertisements');
+    const unsubscribe = onValue(adsRef, (snapshot) => {
+        if (snapshot.exists()) {
+            const adsData = snapshot.val();
+            const adsList = Object.keys(adsData).map(id => ({
+                id,
+                ...adsData[id]
+            }));
+            callback(adsList);
+        } else {
+            callback([]);
+        }
+    });
+    return unsubscribe;
+};
+
+export const getActiveAdvertisement = async (): Promise<Advertisement | null> => {
+    if (!db) return null;
+    const adsRef = ref(db, 'advertisements');
+    const snapshot = await get(adsRef);
+    if (!snapshot.exists()) return null;
+
+    const adsData = snapshot.val();
+    const activeAds = Object.values(adsData).filter((ad: any) => {
+        if (!ad.isActive) return false;
+        const maxViews = ad.maxViews || Infinity;
+        const maxClicks = ad.maxClicks || Infinity;
+        return ad.currentViews < maxViews && ad.currentClicks < maxClicks;
+    }) as Advertisement[];
+
+    if (activeAds.length === 0) return null;
+
+    // Pick a random active ad to display
+    const randomIndex = Math.floor(Math.random() * activeAds.length);
+    return activeAds[randomIndex];
+};
+
+export const incrementAdViews = (adId: string) => {
+    if (!db) return;
+    const viewsRef = ref(db, `advertisements/${adId}/currentViews`);
+    runTransaction(viewsRef, (currentViews) => (currentViews || 0) + 1);
+};
+
+export const incrementAdClicks = (adId: string) => {
+    if (!db) return;
+    const clicksRef = ref(db, `advertisements/${adId}/currentClicks`);
+    runTransaction(clicksRef, (currentClicks) => (currentClicks || 0) + 1);
+};
+
+
+export const saveAdvertisement = (ad: Advertisement) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const adRef = ref(db, `advertisements/${ad.id}`);
+    return set(adRef, ad);
+};
+
+export const deleteAdvertisement = (adId: string) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const adRef = ref(db, `advertisements/${adId}`);
+    return remove(adRef);
+}
+
 
 export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;

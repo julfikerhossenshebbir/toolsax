@@ -14,7 +14,19 @@ export interface Notification {
 
 export interface AdSettings {
     adsEnabled: boolean;
-    viewLimit: number;
-    cooldownMinutes: number;
+    viewLimit: number; // Per user
+    cooldownMinutes: number; // Per user
     enabledTools: string[];
+}
+
+export interface Advertisement {
+    id: string;
+    advertiserName: string;
+    imageUrl: string;
+    linkUrl: string;
+    maxViews?: number;
+    maxClicks?: number;
+    currentViews: number;
+    currentClicks: number;
+    isActive: boolean;
 }

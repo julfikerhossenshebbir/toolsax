@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { sendNotification, saveAdSettings } from './actions';
+import { sendNotification, saveAdSettingsAction } from './actions';
 import { Loader2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Label } from '@/components/ui/label';
@@ -271,7 +271,7 @@ export function AdSettingsForm({ currentAdSettings }: { currentAdSettings: AdSet
 
     const handleSubmit = async () => {
         setIsSubmitting(true);
-        const result = await saveAdSettings(settings);
+        const result = await saveAdSettingsAction(settings);
 
         if (result.success) {
             toast({
@@ -291,9 +291,9 @@ export function AdSettingsForm({ currentAdSettings }: { currentAdSettings: AdSet
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Advertisement Settings</CardTitle>
+                <CardTitle>User Advertisement Settings</CardTitle>
                 <CardDescription>
-                    Control how and when ads are shown to users. Changes are saved to the database in real-time.
+                    Control how and when ads are shown to users. These settings apply on a per-user basis.
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -308,24 +308,24 @@ export function AdSettingsForm({ currentAdSettings }: { currentAdSettings: AdSet
 
                 <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label htmlFor="view-limit">Ad View Limit</Label>
+                        <Label htmlFor="view-limit">Ad View Limit (Per User)</Label>
                         <Input
                             id="view-limit"
                             type="number"
                             value={settings.viewLimit}
                             onChange={(e) => setSettings({ ...settings, viewLimit: parseInt(e.target.value, 10) || 0 })}
                         />
-                        <p className="text-xs text-muted-foreground">Number of clicks before ads stop showing for a user.</p>
+                        <p className="text-xs text-muted-foreground">Number of times a user sees an ad before cooldown.</p>
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="cooldown-minutes">Cooldown Period (Minutes)</Label>
+                        <Label htmlFor="cooldown-minutes">Cooldown (Minutes)</Label>
                         <Input
                             id="cooldown-minutes"
                             type="number"
                             value={settings.cooldownMinutes}
                             onChange={(e) => setSettings({ ...settings, cooldownMinutes: parseInt(e.target.value, 10) || 0 })}
                         />
-                         <p className="text-xs text-muted-foreground">Time until the view count resets for a user.</p>
+                         <p className="text-xs text-muted-foreground">Time until the ad view count resets for a user.</p>
                     </div>
                 </div>
 
@@ -347,7 +347,7 @@ export function AdSettingsForm({ currentAdSettings }: { currentAdSettings: AdSet
 
                 <Button onClick={handleSubmit} disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Save Ad Settings
+                    Save User Ad Settings
                 </Button>
             </CardContent>
         </Card>
