@@ -360,5 +360,3 @@ function SignupForm({ onSuccess }: { onSuccess: () => void }) {
         </Form>
     )
 }
-
-      

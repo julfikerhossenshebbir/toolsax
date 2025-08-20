@@ -9,7 +9,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import Link from "next/link";
-import { Home, Bug, Coffee, PanelLeft } from "lucide-react";
+import { Home, Bug, PanelLeft } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 
@@ -57,14 +57,6 @@ export default function AppSidebar() {
                             </Link>
                         ))}
                     </nav>
-                </div>
-                <div className="border-t p-4">
-                     <a href="https://www.buymeacoffee.com/your-username" target="_blank" rel="noopener noreferrer" className="w-full">
-                        <Button variant="outline" className="w-full justify-start gap-2">
-                            <Coffee />
-                            <span>Buy me a Coffee</span>
-                        </Button>
-                    </a>
                 </div>
             </SheetContent>
         </Sheet>
