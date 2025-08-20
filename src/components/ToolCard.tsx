@@ -8,10 +8,12 @@ import { Tool } from '@/lib/types';
 import Icon from './Icon';
 import { Card, CardContent } from './ui/card';
 import { incrementClicks, getToolStats, isConfigured } from '@/lib/firebase';
-import { MousePointerClick } from 'lucide-react';
+import { MousePointerClick, Lock } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 import { AdModal } from './AdModal';
 import { getColorByIndex } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+import LoginDialog from './LoginDialog';
 
 interface ToolCardProps {
   tool: Tool;
@@ -27,6 +29,8 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
   const [clicks, setClicks] = useState<number | null>(null);
   const [showAd, setShowAd] = useState(false);
   const router = useRouter();
+  const { user } = useAuth();
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   
   const iconColor = getColorByIndex(index);
 
@@ -43,6 +47,12 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
+
+    if (tool.authRequired && !user) {
+        setIsLoginOpen(true);
+        return;
+    }
+      
     incrementClicks(tool.id);
 
     const adViews = parseInt(localStorage.getItem(AD_STORAGE_KEY_COUNT) || '0', 10);
@@ -75,6 +85,11 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
         onClose={() => setShowAd(false)}
         onContinue={handleContinueToTool}
       />
+      <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
+         {/* This is just a trigger wrapper, it won't be visible */}
+         <div />
+      </LoginDialog>
+
       <div
         onClick={handleCardClick}
         className="h-full cursor-pointer"
@@ -93,7 +108,10 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
               <Icon name={tool.icon} className="w-5 h-5" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-base truncate">{tool.name}</h3>
+              <h3 className="font-semibold text-base truncate flex items-center gap-2">
+                {tool.name}
+                {tool.authRequired && <Lock className="w-3 h-3 text-muted-foreground" />}
+              </h3>
               <p className="text-xs text-muted-foreground truncate">{tool.description}</p>
             </div>
             <div className="flex-shrink-0 flex items-center text-xs text-muted-foreground gap-1.5">

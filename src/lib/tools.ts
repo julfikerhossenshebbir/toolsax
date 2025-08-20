@@ -55,7 +55,8 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Reduce file size of JPG & PNG images.",
     "link": "/image-compressor",
     "category": "Utilities",
-    "icon": "Minimize2"
+    "icon": "Minimize2",
+    "authRequired": true
   },
   {
     "id": "markdown-editor",
@@ -95,7 +96,8 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Resize images to specific dimensions online.",
     "link": "/image-resizer",
     "category": "Design",
-    "icon": "Crop"
+    "icon": "Crop",
+     "authRequired": true
   },
   {
     "id": "base64-encoder",
@@ -119,7 +121,8 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Create a favicon from any image.",
     "link": "/favicon-generator",
     "category": "Design",
-    "icon": "Heart"
+    "icon": "Heart",
+     "authRequired": true
   },
   {
     "id": "html-minifier",
@@ -239,7 +242,8 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Merge multiple PDF files into one.",
     "link": "/pdf-merger",
     "category": "Utilities",
-    "icon": "FilePlus"
+    "icon": "FilePlus",
+    "authRequired": true
   },
   {
     "id": "pdf-splitter",

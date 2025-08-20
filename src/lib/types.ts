@@ -5,6 +5,7 @@ export interface Tool {
   link: string;
   category: 'Design' | 'Development' | 'Productivity' | 'Marketing' | 'Utilities' | 'Security';
   icon: string;
+  authRequired?: boolean;
 }
 
 export interface ToolStat {

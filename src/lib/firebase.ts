@@ -13,6 +13,7 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
+    updateProfile,
     type Auth,
     type User
 } from "firebase/auth";
@@ -82,6 +83,11 @@ export const onAuthStateChange = (callback: (user: User | null) => void) => {
     if (!auth) return () => {};
     return onAuthStateChanged(auth, callback);
 };
+
+export const updateUserProfile = (user: User, profile: { displayName?: string, photoURL?: string }) => {
+    return updateProfile(user, profile);
+};
+
 
 // --- User Management ---
 const getUserId = (): string => {

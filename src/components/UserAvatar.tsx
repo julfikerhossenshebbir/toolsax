@@ -14,9 +14,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { LogIn, LogOut, User as UserIcon } from 'lucide-react';
+import { LogOut, User as UserIcon, Settings } from 'lucide-react';
 import LoginDialog from './LoginDialog';
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function UserAvatar() {
   const { user, loading } = useAuth();
@@ -43,9 +44,9 @@ export default function UserAvatar() {
   if (!user) {
     return (
       <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-        <Button onClick={() => setIsLoginOpen(true)}>
-          <LogIn className="mr-2 h-4 w-4" />
-          Login
+        <Button variant="ghost" size="icon" onClick={() => setIsLoginOpen(true)} className="h-8 w-8 rounded-full">
+            <UserIcon className="h-5 w-5" />
+            <span className="sr-only">Login</span>
         </Button>
       </LoginDialog>
     );
@@ -80,6 +81,12 @@ export default function UserAvatar() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/profile">
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Profile</span>
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
