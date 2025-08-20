@@ -51,7 +51,7 @@ export default function MobileBottomNav() {
   const ThemeIcon = () => {
     if (!isMounted) {
       // Render a placeholder or null on the server and during initial client render
-      return <div className="h-6 w-6"></div>;
+      return null;
     }
     return theme === 'light' ? <Moon className="h-6 w-6" /> : <Sun className="h-6 w-6" />;
   }
