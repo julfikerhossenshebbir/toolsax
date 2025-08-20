@@ -13,7 +13,7 @@ import FirebaseStats from './FirebaseStats';
 import { useAppState } from '@/contexts/AppStateContext';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
-import { LayoutGrid, Palette, Code, Wrench, Lock, FileText, ImageIcon, File as FileIcon, Share2, Search } from 'lucide-react';
+import { LayoutGrid, Palette, Code, Wrench, Lock, FileText, ImageIcon, File as FileIcon, Share2, Search, Smile, Paintbrush, BoxSelect, Square, Scan, Code2, GitCompareArrows, Mic, Volume2, FileAudio, Github, MessageSquare } from 'lucide-react';
 
 
 interface HomePageClientProps {
@@ -71,9 +71,9 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
       <Header />
 
       <div id="filters-section" className="mb-8 w-full">
-        <div className="relative">
+        <div className="relative -mx-4 px-4">
           <div className="overflow-x-auto pb-4 -mb-4">
-            <div className="flex justify-center gap-2 whitespace-nowrap">
+            <div className="flex justify-start gap-2 whitespace-nowrap">
               {categories.map(category => (
                   <Button
                       key={category}
