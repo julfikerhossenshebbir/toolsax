@@ -1,39 +1,25 @@
 
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Loader2 } from 'lucide-react';
+
+const Logo = () => (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" fill="currentColor" />
+        <path d="M12 2L22 7V17L12 22L2 17V7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M2 7L12 12L22 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M12 22V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
+
 
 export default function Loading() {
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-            <Skeleton className="w-16 h-16 rounded-2xl mx-auto mb-4" />
-            <Skeleton className="h-8 w-48 mx-auto" />
-            <Skeleton className="h-6 w-24 mx-auto mt-3" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+      <div className="flex flex-col items-center gap-4">
+        <div className="relative">
+            <Logo />
+            <Loader2 className="absolute -top-3 -right-3 h-5 w-5 animate-spin text-primary" />
         </div>
-
-        <Card>
-            <CardHeader>
-              <Skeleton className="h-8 w-1/2" />
-              <div className="space-y-2 mt-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <Skeleton className="h-40 w-full" />
-              <div className="flex justify-center">
-                <Skeleton className="h-10 w-32" />
-              </div>
-            </CardContent>
-        </Card>
-
-        <div className="mt-12 flex justify-center items-center gap-3">
-            <Skeleton className="h-10 w-10 rounded-md" />
-            <Skeleton className="h-10 w-10 rounded-md" />
-            <Skeleton className="h-10 w-10 rounded-md" />
-            <Skeleton className="h-10 w-10 rounded-md" />
-        </div>
+        <p className="text-sm text-muted-foreground">Loading page...</p>
       </div>
     </div>
   );
