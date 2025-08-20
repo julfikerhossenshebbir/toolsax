@@ -13,7 +13,6 @@ import {
 import { format, formatDistanceToNow } from 'date-fns';
 import { Trash2 as Trash2Icon } from 'lucide-react';
 import type { UserData, Notification, AdSettings } from '../types';
-import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
@@ -220,18 +219,18 @@ export function NotificationForm({ currentNotifications }: { currentNotification
             <CardContent>
                 <div className="space-y-4">
                     {notifications.map((notif, index) => (
-                        <div key={index} className="flex items-start sm:items-center gap-2 flex-col sm:flex-row">
+                        <div key={index} className="flex items-center gap-2">
                             <Input
                                 placeholder="Icon name (e.g., Bell)"
                                 value={notif.icon}
                                 onChange={(e) => handleNotificationChange(index, 'icon', e.target.value)}
-                                className="w-full sm:w-1/3"
+                                className="w-1/3"
                             />
-                            <Textarea
+                            <Input
                                 placeholder="Notification message..."
                                 value={notif.message}
                                 onChange={(e) => handleNotificationChange(index, 'message', e.target.value)}
-                                className="h-10 flex-grow"
+                                className="flex-grow"
                             />
                             <Button variant="destructive" size="icon" onClick={() => handleRemoveNotification(index)} className="flex-shrink-0">
                                 <Trash2Icon className="h-4 w-4" />
