@@ -11,7 +11,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { format, formatDistanceToNow } from 'date-fns';
-import { Users, Trash2 as Trash2Icon } from 'lucide-react';
+import { Trash2 as Trash2Icon } from 'lucide-react';
 import type { UserData, Notification } from '../types';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -70,7 +70,13 @@ export const columns: ColumnDef<UserData>[] = [
     cell: ({ row }) => {
       const lastLogin = row.getValue("lastLogin");
       if (!lastLogin) return <span className="text-muted-foreground">Never</span>;
-      return formatDistanceToNow(new Date(lastLogin as string), { addSuffix: true });
+      // Check if it's a server timestamp placeholder
+      if (typeof lastLogin !== 'string' && typeof lastLogin !== 'number') return <span className="text-muted-foreground">Logging in...</span>;
+      try {
+        return formatDistanceToNow(new Date(lastLogin as string), { addSuffix: true });
+      } catch (e) {
+        return <span className="text-muted-foreground">Invalid Date</span>
+      }
     },
   },
    {
@@ -79,7 +85,13 @@ export const columns: ColumnDef<UserData>[] = [
     cell: ({ row }) => {
       const createdAt = row.getValue("createdAt");
       if (!createdAt) return <span className="text-muted-foreground">Unknown</span>;
-      return format(new Date(createdAt as string), 'PPP');
+       // Check if it's a server timestamp placeholder
+      if (typeof createdAt !== 'string' && typeof createdAt !== 'number') return <span className="text-muted-foreground">Just now</span>;
+      try {
+        return format(new Date(createdAt as string), 'PPP');
+      } catch (e) {
+        return <span className="text-muted-foreground">Invalid Date</span>;
+      }
     },
   },
 ];
@@ -134,7 +146,7 @@ export function UsersTable<TData, TValue>({ columns, data }: DataTableProps<TDat
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                No users found.
               </TableCell>
             </TableRow>
           )}
@@ -170,16 +182,6 @@ export function NotificationForm({ currentNotifications }: { currentNotification
         // Filter out empty messages
         const validNotifications = notifications.filter(n => n.message.trim() !== '' && n.icon.trim() !== '');
 
-        if (validNotifications.length === 0) {
-            toast({
-                variant: 'destructive',
-                title: 'No valid notifications',
-                description: 'Please add at least one notification with a message and icon name.'
-            });
-            setIsSubmitting(false);
-            return;
-        }
-
         const result = await sendNotification(validNotifications);
 
         if (result.success) {
@@ -200,39 +202,40 @@ export function NotificationForm({ currentNotifications }: { currentNotification
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Manage Notifications</CardTitle>
-                <CardContent className="p-0 pt-4">
-                    <div className="space-y-4">
-                        {notifications.map((notif, index) => (
-                            <div key={index} className="flex items-center gap-2 p-2 border rounded-lg">
-                                <Input
-                                    placeholder="Icon name (e.g., Bell)"
-                                    value={notif.icon}
-                                    onChange={(e) => handleNotificationChange(index, 'icon', e.target.value)}
-                                />
-                                <Textarea
-                                    placeholder="Notification message..."
-                                    value={notif.message}
-                                    onChange={(e) => handleNotificationChange(index, 'message', e.target.value)}
-                                    className="h-10"
-                                />
-                                <Button variant="destructive" size="icon" onClick={() => handleRemoveNotification(index)}>
-                                    <Trash2Icon className="h-4 w-4" />
-                                </Button>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="flex gap-2 mt-4">
-                         <Button onClick={handleAddNotification} variant="outline">
-                            Add Notification
-                        </Button>
-                        <Button onClick={handleSubmit} disabled={isSubmitting}>
-                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Save Notifications
-                        </Button>
-                    </div>
-                </CardContent>
+                <CardTitle>Manage Global Notifications</CardTitle>
             </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    {notifications.map((notif, index) => (
+                        <div key={index} className="flex items-start sm:items-center gap-2 flex-col sm:flex-row">
+                            <Input
+                                placeholder="Icon name (e.g., Bell)"
+                                value={notif.icon}
+                                onChange={(e) => handleNotificationChange(index, 'icon', e.target.value)}
+                                className="w-full sm:w-1/3"
+                            />
+                            <Textarea
+                                placeholder="Notification message..."
+                                value={notif.message}
+                                onChange={(e) => handleNotificationChange(index, 'message', e.target.value)}
+                                className="h-10 flex-grow"
+                            />
+                            <Button variant="destructive" size="icon" onClick={() => handleRemoveNotification(index)} className="flex-shrink-0">
+                                <Trash2Icon className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ))}
+                </div>
+                <div className="flex gap-2 mt-4">
+                     <Button onClick={handleAddNotification} variant="outline">
+                        Add Notification
+                    </Button>
+                    <Button onClick={handleSubmit} disabled={isSubmitting}>
+                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Save Notifications
+                    </Button>
+                </div>
+            </CardContent>
         </Card>
     )
 }
@@ -264,12 +267,13 @@ export function UserOverviewChart() {
                 <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={userChartData}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                        <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}`} />
+                        <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}`} />
                         <Tooltip
                           contentStyle={{
                             background: "hsl(var(--background))",
                             borderColor: "hsl(var(--border))",
+                            borderRadius: "var(--radius)",
                           }}
                         />
                         <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
@@ -300,16 +304,23 @@ export function ToolPopularityChart() {
             <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
                     <AreaChart data={toolPopularityData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                        <defs>
+                            <linearGradient id="colorClicks" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
+                                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                            </linearGradient>
+                        </defs>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                        <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                        <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
                         <Tooltip 
                             contentStyle={{
                                 background: "hsl(var(--background))",
                                 borderColor: "hsl(var(--border))",
+                                borderRadius: "var(--radius)",
                             }}
                         />
-                        <Area type="monotone" dataKey="clicks" stroke="hsl(var(--primary))" fill="hsla(var(--primary), 0.2)" />
+                        <Area type="monotone" dataKey="clicks" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorClicks)" />
                     </AreaChart>
                 </ResponsiveContainer>
             </CardContent>
