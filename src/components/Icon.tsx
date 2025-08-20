@@ -12,7 +12,8 @@ const Icon = ({ name, ...props }: IconProps) => {
   const LucideIcon = (icons as unknown as IconCollection)[name];
 
   if (!LucideIcon) {
-    return <icons.Tool {...props} />;
+    // Return a default icon if the requested one is not found.
+    return <icons.HelpCircle {...props} />;
   }
 
   return <LucideIcon {...props} />;
