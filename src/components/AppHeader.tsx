@@ -126,7 +126,7 @@ const HeaderSearch = ({ onSearchChange }: { onSearchChange: (query: string) => v
     
     return (
         <>
-            <div className="flex items-center gap-2 mr-auto transition-all duration-300" style={{ opacity: isSearchVisible ? 0 : 1, pointerEvents: isSearchVisible ? 'none' : 'auto' }}>
+            <div className={cn("flex items-center gap-2 mr-auto transition-opacity duration-300", { "opacity-0 pointer-events-none": isSearchVisible })}>
                 <AppSidebar />
                  <Link href="/" className="flex items-center gap-2">
                     <Logo />
@@ -135,12 +135,10 @@ const HeaderSearch = ({ onSearchChange }: { onSearchChange: (query: string) => v
             </div>
 
             <div 
-                className="absolute inset-y-0 left-0 flex items-center w-full h-full p-2 pr-4 transition-all duration-300"
-                style={{
-                    transform: `translateX(${isSearchVisible ? '0%' : '-100%'})`,
-                    opacity: isSearchVisible ? 1 : 0,
-                    pointerEvents: isSearchVisible ? 'auto' : 'none',
-                }}
+                className={cn(
+                  "absolute inset-y-0 left-0 flex items-center w-full h-full p-2 pr-4 transition-all duration-300",
+                  isSearchVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                )}
             >
                 <Button variant="ghost" size="icon" onClick={() => setIsSearchVisible(false)} className="flex-shrink-0">
                     <ArrowLeft className="w-5 h-5"/>
@@ -163,19 +161,23 @@ const HeaderSearch = ({ onSearchChange }: { onSearchChange: (query: string) => v
             </div>
             
             <div className={cn("flex items-center gap-2", {
-                "hidden md:flex": isSearchVisible,
+                "opacity-0 pointer-events-none": isSearchVisible && !isSearchVisible,
+                "md:opacity-100": !isSearchVisible,
+                "opacity-0 md:opacity-100": isSearchVisible,
             })}>
                 <Button variant="ghost" size="icon" onClick={handleSearchClick} aria-label="Search">
                     <Search className="w-5 h-5" />
                 </Button>
-                <NotificationBell />
-                <FavoriteTools />
-                <SettingsPanel>
-                    <Button variant="ghost" size="icon" aria-label="Settings">
-                        <Settings className="w-5 h-5" />
-                    </Button>
-                </SettingsPanel>
-                <UserAvatar />
+                <div className={cn("flex items-center gap-2", {"hidden md:flex": isSearchVisible})}>
+                    <NotificationBell />
+                    <FavoriteTools />
+                    <SettingsPanel>
+                        <Button variant="ghost" size="icon" aria-label="Settings">
+                            <Settings className="w-5 h-5" />
+                        </Button>
+                    </SettingsPanel>
+                    <UserAvatar />
+                </div>
             </div>
         </>
     );
@@ -185,7 +187,7 @@ const HeaderSearch = ({ onSearchChange }: { onSearchChange: (query: string) => v
 export default function AppHeader({ onSearchChange }: { onSearchChange: (query: string) => void }) {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container relative flex h-14 items-center px-4">
+      <div className="container relative flex h-14 items-center px-4 justify-between">
         <HeaderSearch onSearchChange={onSearchChange} />
       </div>
     </header>
