@@ -211,18 +211,26 @@ export const getUserData = async (uid: string) => {
     return snapshot.val();
 };
 
-export const getAllUsers = async () => {
-    if (!db) return [];
-    const usersRef = ref(db, 'users');
-    const snapshot = await get(usersRef);
-    if (snapshot.exists()) {
-        const usersData = snapshot.val();
-        return Object.keys(usersData).map(uid => ({
-            uid,
-            ...usersData[uid]
-        }));
+export const subscribeToAllUsers = (callback: (users: any[]) => void) => {
+    if (!db) {
+        callback([]);
+        return () => {}; // Return an empty unsubscribe function
     }
-    return [];
+    const usersRef = ref(db, 'users');
+    const unsubscribe = onValue(usersRef, (snapshot) => {
+        if (snapshot.exists()) {
+            const usersData = snapshot.val();
+            const usersList = Object.keys(usersData).map(uid => ({
+                uid,
+                ...usersData[uid]
+            }));
+            callback(usersList);
+        } else {
+            callback([]);
+        }
+    });
+
+    return unsubscribe; // Return the unsubscribe function from onValue
 };
 
 

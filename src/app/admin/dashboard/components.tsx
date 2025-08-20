@@ -159,9 +159,13 @@ export function UsersTable<TData, TValue>({ columns, data }: DataTableProps<TDat
 // --- Notification Form ---
 
 export function NotificationForm({ currentNotifications }: { currentNotifications: Notification[] }) {
-    const [notifications, setNotifications] = useState<Notification[]>(currentNotifications);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { toast } = useToast();
+
+    useState(() => {
+        setNotifications(currentNotifications);
+    });
 
     const handleAddNotification = () => {
         setNotifications([...notifications, { icon: 'Bell', message: '' }]);

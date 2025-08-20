@@ -1,15 +1,32 @@
 
+'use client';
+
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getAllUsers, getStats, getNotificationMessage } from '@/lib/firebase';
+import { getStats, subscribeToAllUsers, getNotificationMessage } from '@/lib/firebase';
 import { StatCard, UsersTable, columns, NotificationForm, UserOverviewChart, ToolPopularityChart } from './components';
 import { Users, BarChart, AreaChart } from 'lucide-react';
 import type { UserData, Notification as NotifType } from '../types';
 
-export default async function AdminDashboardPage() {
+export default function AdminDashboardPage() {
     
-    const stats = await getStats(false);
-    const users = await getAllUsers();
-    const notifications = await getNotificationMessage(false);
+    const [stats, setStats] = useState({ users: 0, tool_clicks: 0, views: 0 });
+    const [users, setUsers] = useState<UserData[]>([]);
+    const [notifications, setNotifications] = useState<NotifType[]>([]);
+
+    useEffect(() => {
+        // Fetch initial static data
+        getStats(false).then(s => setStats(s));
+        getNotificationMessage(false).then(n => setNotifications(n as NotifType[]));
+
+        // Subscribe to real-time user updates
+        const unsubscribe = subscribeToAllUsers((updatedUsers) => {
+            setUsers(updatedUsers as UserData[]);
+        });
+
+        // Cleanup subscription on component unmount
+        return () => unsubscribe();
+    }, []);
 
     return (
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -31,18 +48,18 @@ export default async function AdminDashboardPage() {
                 <UserOverviewChart />
                 <ToolPopularityChart />
 
-                <div className="col-span-full lg:col-span-1">
-                    <NotificationForm currentNotifications={notifications as NotifType[]} />
-                </div>
-                <div className="col-span-full lg:col-span-1">
-                    <Card>
+                <div className="lg:col-span-full">
+                     <Card>
                         <CardHeader>
                             <CardTitle>User Management</CardTitle>
                         </CardHeader>
                         <CardContent>
-                           <UsersTable columns={columns} data={users as UserData[]} />
+                           <UsersTable columns={columns} data={users} />
                         </CardContent>
                     </Card>
+                </div>
+                <div className="lg:col-span-full">
+                    <NotificationForm currentNotifications={notifications} />
                 </div>
             </div>
         </div>
