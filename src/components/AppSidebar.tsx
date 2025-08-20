@@ -9,7 +9,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import Link from "next/link";
-import { Home, Bug, FileText, ShieldCheck, Cookie, Send, Coffee, PanelLeft } from "lucide-react";
+import { Home, Bug, Coffee, PanelLeft } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 
@@ -26,13 +26,6 @@ const mainNavLinks = [
     { href: "/", icon: <Home />, label: "Home" },
     { href: "/report-a-bug", icon: <Bug />, label: "Report a Bug" },
 ];
-
-const secondaryNavLinks = [
-    { href: "/dmca", icon: <FileText />, label: "DMCA" },
-    { href: "/privacy", icon: <ShieldCheck />, label: "Privacy Policy" },
-    { href: "/cookies", icon: <Cookie />, label: "Cookie Policy" },
-    { href: "/contact", icon: <Send />, label: "Contact" },
-]
 
 export default function AppSidebar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -58,20 +51,6 @@ export default function AppSidebar() {
                         {mainNavLinks.map(link => (
                             <Link key={link.href} href={link.href} onClick={() => setIsOpen(false)}>
                                 <Button variant="ghost" className="w-full justify-start gap-2">
-                                    {link.icon}
-                                    <span>{link.label}</span>
-                                </Button>
-                            </Link>
-                        ))}
-                    </nav>
-
-                    <hr className="my-4" />
-                    
-                    <nav className="flex flex-col gap-2">
-                        <p className="px-2 py-1 text-xs font-medium text-muted-foreground">Policies</p>
-                        {secondaryNavLinks.map(link => (
-                             <Link key={link.href} href={link.href} onClick={() => setIsOpen(false)}>
-                                <Button variant="ghost" size="sm" className="w-full justify-start gap-2">
                                     {link.icon}
                                     <span>{link.label}</span>
                                 </Button>

@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import AppHeader from '@/components/AppHeader';
-import AppFooter from '@/components/AppFooter';
 import { CustomThemeProvider } from '@/components/ThemeProvider';
 import GridBackground from '@/components/GridBackground';
 import { AuthProvider } from '@/contexts/AuthContext';
@@ -37,12 +36,11 @@ export default function RootLayout({
         <AuthProvider>
           <CustomThemeProvider>
               <GridBackground />
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full flex-grow">
                   <AppHeader />
                   <main className="flex-grow">
                       {children}
                   </main>
-                  <AppFooter />
               </div>
               <Toaster />
           </CustomThemeProvider>
