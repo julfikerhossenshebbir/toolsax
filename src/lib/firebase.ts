@@ -25,13 +25,14 @@ export interface Notification {
 }
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCjlDeMVCox4fujNWO2nzku-EiAsOUWX9s",
-  authDomain: "hand-gram.firebaseapp.com",
-  databaseURL: "https://hand-gram-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "hand-gram",
-  storageBucket: "hand-gram.appspot.com",
-  messagingSenderId: "21742056984",
-  appId: "1:21742056984:web:206e8d9c8b858498d8756d"
+  apiKey: "AIzaSyCGyVqbVZhp9rqEQYZ_vrcUYCXXk-6p37w",
+  authDomain: "toolsaxdb.firebaseapp.com",
+  databaseURL: "https://toolsaxdb-default-rtdb.firebaseio.com",
+  projectId: "toolsaxdb",
+  storageBucket: "toolsaxdb.firebasestorage.app",
+  messagingSenderId: "521841849034",
+  appId: "1:521841849034:web:5be88041b20b3d6435fa33",
+  measurementId: "G-J0SGP2CFQH"
 };
 
 let app: FirebaseApp | undefined;

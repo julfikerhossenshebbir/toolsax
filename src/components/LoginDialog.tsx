@@ -19,6 +19,7 @@ import {
   signInWithGoogle,
   signUpWithEmail,
   signInWithEmail,
+  updateUserProfile,
 } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,6 +33,8 @@ const loginSchema = z.object({
 });
 
 const signupSchema = z.object({
+  name: z.string().min(1, { message: 'Name cannot be empty.' }),
+  username: z.string().min(3, { message: 'Username must be at least 3 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email.' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
 });
@@ -82,7 +85,7 @@ export default function LoginDialog({ children, open, onOpenChange }: LoginDialo
           <TabsContent value="login">
             <EmailForm
               schema={loginSchema}
-              onSubmit={signInWithEmail}
+              onSubmit={(email, password) => signInWithEmail(email, password)}
               buttonText="Log In"
               onSuccess={() => onOpenChange(false)}
             />
@@ -90,10 +93,7 @@ export default function LoginDialog({ children, open, onOpenChange }: LoginDialo
           
           {/* Signup Tab */}
           <TabsContent value="signup">
-            <EmailForm
-              schema={signupSchema}
-              onSubmit={signUpWithEmail}
-              buttonText="Sign Up"
+            <SignupForm
               onSuccess={() => onOpenChange(false)}
             />
           </TabsContent>
@@ -138,7 +138,7 @@ export default function LoginDialog({ children, open, onOpenChange }: LoginDialo
 }
 
 
-// Reusable form for Email/Password
+// Reusable form for Email/Password Login
 interface EmailFormProps {
     schema: z.AnyZodObject;
     onSubmit: (email: string, pass: string) => Promise<any>;
@@ -205,3 +205,71 @@ function EmailForm({ schema, onSubmit, buttonText, onSuccess }: EmailFormProps) 
         </Form>
     )
 }
+
+// Signup Form
+function SignupForm({ onSuccess }: { onSuccess: () => void }) {
+    const [isLoading, setIsLoading] = useState(false);
+    const { toast } = useToast();
+
+    const form = useForm<z.infer<typeof signupSchema>>({
+        resolver: zodResolver(signupSchema),
+        defaultValues: { name: '', username: '', email: '', password: '' },
+    });
+    
+    const generatePassword = () => {
+        const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+        let pass = "";
+        for (let i = 0; i < 16; i++) {
+            pass += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        form.setValue('password', pass);
+    };
+
+    const handleSignup = async (values: z.infer<typeof signupSchema>) => {
+        setIsLoading(true);
+        try {
+            const userCredential = await signUpWithEmail(values.email, values.password);
+            await updateUserProfile(userCredential.user, { displayName: values.name });
+            // Here you might want to save the username to your database
+            onSuccess();
+            toast({ title: `Successfully signed up!`, description: "Welcome!" });
+        } catch (error: any) {
+            toast({
+                variant: 'destructive',
+                title: `Sign Up Failed`,
+                description: error.message,
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSignup)} className="space-y-4 pt-4">
+                <FormField control={form.control} name="name" render={({ field }) => (
+                    <FormItem><Label>Name</Label><FormControl><Input placeholder="John Doe" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="username" render={({ field }) => (
+                    <FormItem><Label>Username</Label><FormControl><Input placeholder="johndoe" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="email" render={({ field }) => (
+                    <FormItem><Label>Email</Label><FormControl><Input placeholder="m@example.com" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="password" render={({ field }) => (
+                    <FormItem>
+                        <Label>Password</Label>
+                        <FormControl><Input type="password" {...field} /></FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+                <Button type="button" variant="link" size="sm" className="p-0 h-auto" onClick={generatePassword}>Generate Password</Button>
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Sign Up
+                </Button>
+            </form>
+        </Form>
+    )
+}
+

@@ -12,7 +12,34 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { updateUserProfile } from '@/lib/firebase';
 import { Loader2, Upload, User } from 'lucide-react';
-import imageCompression from 'browser-image-compression';
+
+async function uploadToImgBB(imageFile: File): Promise<string | null> {
+    const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
+    if (!apiKey) {
+        console.error("imgbb API key is not set in environment variables.");
+        return null;
+    }
+
+    const formData = new FormData();
+    formData.append("image", imageFile);
+
+    try {
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+            method: "POST",
+            body: formData,
+        });
+        const result = await response.json();
+        if (result.success) {
+            return result.data.url;
+        } else {
+            console.error("imgbb upload failed:", result.error.message);
+            return null;
+        }
+    } catch (error) {
+        console.error("Error uploading to imgbb:", error);
+        return null;
+    }
+}
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
@@ -20,7 +47,7 @@ export default function ProfilePage() {
   const { toast } = useToast();
   
   const [displayName, setDisplayName] = useState('');
-  const [contactNumber, setContactNumber] = useState(''); // Note: not saving this to firebase auth
+  const [contactNumber, setContactNumber] = useState('');
   const [photoURL, setPhotoURL] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   
@@ -33,7 +60,7 @@ export default function ProfilePage() {
     if (user) {
       setDisplayName(user.displayName || '');
       setPhotoURL(user.photoURL || '');
-      // Mock contact number since it's not in Firebase Auth user object
+      // Save/retrieve contact number to local storage, associated with user UID
       setContactNumber(localStorage.getItem(`contact_${user.uid}`) || '');
     }
   }, [user, loading, router]);
@@ -45,30 +72,24 @@ export default function ProfilePage() {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
+    
+    setIsSaving(true);
+    const uploadedUrl = await uploadToImgBB(file);
+    setIsSaving(false);
 
-    try {
-        const compressedFile = await imageCompression(file, {
-            maxSizeMB: 0.5,
-            maxWidthOrHeight: 800,
-        });
-        
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const dataUrl = reader.result as string;
-            setIsSaving(true);
-            updateUserProfile(user, { photoURL: dataUrl }).then(() => {
-                setPhotoURL(dataUrl);
-                toast({ title: "Profile picture updated!" });
-            }).catch(err => {
-                toast({ variant: 'destructive', title: "Update failed", description: err.message });
-            }).finally(() => {
-                setIsSaving(false);
-            })
-        };
-        reader.readAsDataURL(compressedFile);
-
-    } catch (error) {
-        toast({ variant: 'destructive', title: "Image processing failed", description: "Please try another image." });
+    if (uploadedUrl) {
+      try {
+        setIsSaving(true);
+        await updateUserProfile(user, { photoURL: uploadedUrl });
+        setPhotoURL(uploadedUrl);
+        toast({ title: "Profile picture updated!" });
+      } catch (err: any) {
+        toast({ variant: 'destructive', title: "Update failed", description: err.message });
+      } finally {
+        setIsSaving(false);
+      }
+    } else {
+      toast({ variant: 'destructive', title: "Image upload failed", description: "Could not upload image to imgbb. Please check your API key." });
     }
   };
 
@@ -79,7 +100,6 @@ export default function ProfilePage() {
     setIsSaving(true);
     try {
       await updateUserProfile(user, { displayName });
-      // Save contact number to local storage, associated with user UID
       localStorage.setItem(`contact_${user.uid}`, contactNumber);
       toast({ title: 'Profile saved successfully!' });
     } catch (error: any) {
@@ -120,8 +140,9 @@ export default function ProfilePage() {
                     size="icon" 
                     className="absolute bottom-0 right-0 rounded-full h-8 w-8"
                     onClick={handleAvatarClick}
+                    disabled={isSaving}
                 >
-                    <Upload className="h-4 w-4"/>
+                    {isSaving && fileInputRef.current?.files?.length ? <Loader2 className="h-4 w-4 animate-spin"/> : <Upload className="h-4 w-4"/>}
                     <span className="sr-only">Upload picture</span>
                 </Button>
                 <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden"/>
@@ -171,3 +192,4 @@ export default function ProfilePage() {
     </div>
   );
 }
+
