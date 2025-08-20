@@ -13,6 +13,7 @@ import Icon from './Icon';
 import FeaturesSection from './FeaturesSection';
 import SectionDivider from './SectionDivider';
 import { useAuth } from '@/contexts/AuthContext';
+import FirebaseStats from './FirebaseStats';
 
 interface HomePageClientProps {
   tools: Tool[];
@@ -90,6 +91,8 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
   return (
     <div className="container mx-auto px-4">
       <Header />
+      
+      <FirebaseStats />
       
       <section id="filters-section" className="mb-12">
         <div className="w-full mx-auto flex flex-col items-center gap-y-6">
