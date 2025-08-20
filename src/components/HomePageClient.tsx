@@ -6,7 +6,6 @@ import type { Tool } from '@/lib/types';
 import ToolCard from './ToolCard';
 import Header from './Header';
 import { incrementViews, saveSearchQuery } from '@/lib/firebase';
-import FirebaseStats from './FirebaseStats';
 import { Input } from './ui/input';
 import { Search, Wrench, Lock, Code, Palette, LayoutGrid } from 'lucide-react';
 import { Button } from './ui/button';
@@ -145,10 +144,6 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
       <SectionDivider />
       <FeaturesSection />
 
-      <div className="my-16">
-        <SectionDivider />
-        <FirebaseStats />
-      </div>
     </div>
   );
 }
