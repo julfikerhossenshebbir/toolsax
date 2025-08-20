@@ -2,12 +2,11 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, Search, Bug, Sun, Moon } from 'lucide-react';
+import { Home, Search, Bug, Coffee, PanelLeft } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import AppSidebar from './AppSidebar';
-import { useTheme } from 'next-themes';
 import {
   Tooltip,
   TooltipContent,
@@ -15,18 +14,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Button } from './ui/button';
-import { PanelLeft } from 'lucide-react';
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const handleSearchClick = () => {
      if (pathname !== '/') {
@@ -37,24 +29,12 @@ export default function MobileBottomNav() {
         searchIcon.click();
     }
   };
-  
-  const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
-  };
 
   const navItems = [
     { href: '/', icon: Home, label: 'Home', isLink: true },
     { action: handleSearchClick, icon: Search, label: 'Search', isLink: false },
     { href: '/report-a-bug', icon: Bug, label: 'Report Bug', isLink: true },
   ];
-  
-  const ThemeIcon = () => {
-    if (!isMounted) {
-      // Render a placeholder or null on the server and during initial client render
-      return null;
-    }
-    return theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />;
-  }
 
   return (
     <>
@@ -73,7 +53,6 @@ export default function MobileBottomNav() {
                                )}
                            >
                                <item.icon className="h-5 w-5" />
-                               <span className="text-xs mt-1">{item.label}</span>
                            </Link>
                       ) : (
                            <Button
@@ -82,7 +61,6 @@ export default function MobileBottomNav() {
                                className="flex flex-col items-center justify-center text-muted-foreground w-full h-full p-0 rounded-none hover:bg-transparent"
                            >
                                <item.icon className="h-5 w-5" />
-                               <span className="text-xs mt-1">{item.label}</span>
                            </Button>
                       )}
                     </TooltipTrigger>
@@ -92,20 +70,20 @@ export default function MobileBottomNav() {
                 </Tooltip>
             </TooltipProvider>
         ))}
-        <TooltipProvider delayDuration={0}>
+         <TooltipProvider delayDuration={0}>
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <Button
-                        variant="ghost"
-                        onClick={toggleTheme}
-                        className="flex flex-col items-center justify-center text-muted-foreground w-full h-full p-0 rounded-none hover:bg-transparent"
+                    <a
+                      href="https://www.buymeacoffee.com/anaroul"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex flex-col items-center justify-center text-muted-foreground w-full h-full p-0 rounded-none hover:bg-transparent"
                     >
-                        <ThemeIcon />
-                        <span className="text-xs mt-1">Theme</span>
-                    </Button>
+                        <Coffee className="h-5 w-5" />
+                    </a>
                 </TooltipTrigger>
                 <TooltipContent>
-                    <p>Theme</p>
+                    <p>Buy me a coffee</p>
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>
@@ -119,7 +97,6 @@ export default function MobileBottomNav() {
                         trigger={
                             <Button variant="ghost" className="flex flex-col items-center justify-center text-muted-foreground w-full h-full p-0 rounded-none hover:bg-transparent">
                                 <PanelLeft className="h-5 w-5" />
-                                <span className="text-xs mt-1">Menu</span>
                             </Button>
                         }
                     />
