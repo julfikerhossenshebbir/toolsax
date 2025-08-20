@@ -1,15 +1,24 @@
 
+'use client';
+
 import HomePageClient from '@/components/HomePageClient';
 import { Tool } from '@/lib/types';
 import { ALL_TOOLS } from '@/lib/tools';
+import AppHeader from '@/components/AppHeader';
+import { useAppState } from '@/contexts/AppStateContext';
 
-async function getTools(): Promise<Tool[]> {
+function getTools(): Tool[] {
   return ALL_TOOLS;
 }
 
-export default async function Home() {
-  const tools = await getTools();
+export default function Home() {
+  const tools = getTools();
+  const { setSearchQuery } = useAppState();
+
   return (
-    <HomePageClient tools={tools} />
+    <>
+      <AppHeader onSearchChange={setSearchQuery} />
+      <HomePageClient tools={tools} />
+    </>
   );
 }

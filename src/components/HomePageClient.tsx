@@ -7,13 +7,14 @@ import ToolCard from './ToolCard';
 import Header from './Header';
 import { incrementViews, saveSearchQuery } from '@/lib/firebase';
 import { Input } from './ui/input';
-import { Search, Wrench, Lock, Code, Palette, LayoutGrid } from 'lucide-react';
+import { Wrench, Lock, Code, Palette, LayoutGrid } from 'lucide-react';
 import { Button } from './ui/button';
 import Icon from './Icon';
 import FeaturesSection from './FeaturesSection';
 import SectionDivider from './SectionDivider';
 import { useAuth } from '@/contexts/AuthContext';
 import FirebaseStats from './FirebaseStats';
+import { useAppState } from '@/contexts/AppStateContext';
 
 interface HomePageClientProps {
   tools: Tool[];
@@ -27,31 +28,13 @@ const categoryIcons: { [key: string]: React.ComponentType<{ className?: string }
     Design: Palette,
 };
 
-const searchPlaceholders = [
-    "Search for 'password generator'...",
-    "Find 'case converter'...",
-    "Look up 'JSON formatter'...",
-    "Try 'QR code generator'...",
-    "Search for 'unit converter'...",
-];
-
 export default function HomePageClient({ tools }: HomePageClientProps) {
   const { user } = useAuth();
-  const [searchQuery, setSearchQuery] = useState('');
+  const { searchQuery } = useAppState();
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [placeholder, setPlaceholder] = useState(searchPlaceholders[0]);
-
-  useEffect(() => {
-    incrementViews();
-  }, []);
   
   useEffect(() => {
-    let currentPlaceholderIndex = 0;
-    const interval = setInterval(() => {
-        currentPlaceholderIndex = (currentPlaceholderIndex + 1) % searchPlaceholders.length;
-        setPlaceholder(searchPlaceholders[currentPlaceholderIndex]);
-    }, 3000);
-    return () => clearInterval(interval);
+    incrementViews();
   }, []);
 
   const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -94,18 +77,6 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
       
       <section id="filters-section" className="my-12">
         <div className="w-full mx-auto flex flex-col items-center gap-y-6">
-            <div className="relative w-full md:w-3/4">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                id="search-box"
-                type="search"
-                placeholder={placeholder}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleSearchKeyDown}
-                className="w-full pl-10 h-12 text-base rounded-lg border-2 focus:border-primary transition-colors"
-              />
-            </div>
             <div id="category-pills-container" className="flex flex-wrap items-center justify-center gap-2">
               {categories.map((category) => {
                 const CategoryIcon = categoryIcons[category] || LayoutGrid;

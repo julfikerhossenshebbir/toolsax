@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Home, Search, Bug, Sun, Moon } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import AppSidebar from './AppSidebar';
@@ -19,14 +19,17 @@ import { PanelLeft } from 'lucide-react';
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
   const handleSearchClick = () => {
-    const searchBox = document.getElementById('search-box');
-    if (searchBox) {
-        searchBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        setTimeout(() => searchBox.focus(), 300);
+     if (pathname !== '/') {
+        router.push('/#filters-section');
+     }
+    const searchIcon = document.querySelector('header button[aria-label="Search"]') as HTMLButtonElement;
+    if (searchIcon) {
+        searchIcon.click();
     }
   };
   

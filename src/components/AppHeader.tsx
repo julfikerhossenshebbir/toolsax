@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, Bell, Settings, User } from 'lucide-react';
+import { Search, Bell, Settings, ArrowLeft, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { SettingsPanel } from './SettingsPanel';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
@@ -12,6 +12,9 @@ import Icon from './Icon';
 import AppSidebar from './AppSidebar';
 import FavoriteTools from './FavoriteTools';
 import UserAvatar from './UserAvatar';
+import { Input } from './ui/input';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useDebounce } from 'use-debounce';
 
 const Logo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -96,40 +99,90 @@ const NotificationBell = () => {
     )
 }
 
+const HeaderSearch = ({ onSearchChange }: { onSearchChange: (query: string) => void }) => {
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+    const router = useRouter();
 
-export default function AppHeader() {
+    const [isSearchVisible, setIsSearchVisible] = useState(false);
+    const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+    const [debouncedQuery] = useDebounce(searchQuery, 300);
+
+    useEffect(() => {
+        onSearchChange(debouncedQuery);
+    }, [debouncedQuery, onSearchChange]);
+
     const handleSearchClick = () => {
-        const searchBox = document.getElementById('search-box');
-        if (searchBox) {
-            searchBox.focus();
-            searchBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (pathname !== '/') {
+            router.push('/');
+            // Give time for router to push before showing search
+            setTimeout(() => setIsSearchVisible(true), 100);
+        } else {
+            setIsSearchVisible(true);
         }
     };
+    
+    return (
+        <>
+            <div className="flex items-center gap-2 mr-auto transition-all duration-300" style={{ opacity: isSearchVisible ? 0 : 1, pointerEvents: isSearchVisible ? 'none' : 'auto' }}>
+                <AppSidebar />
+                 <Link href="/" className="flex items-center gap-2">
+                    <Logo />
+                    <span className="font-bold text-lg hidden sm:inline-block">Toolsax</span>
+                </Link>
+            </div>
 
+            <div 
+                className="absolute inset-y-0 left-0 flex items-center w-full h-full p-2 pr-4 transition-all duration-300"
+                style={{
+                    transform: `translateX(${isSearchVisible ? '0%' : '-100%'})`,
+                    opacity: isSearchVisible ? 1 : 0,
+                    pointerEvents: isSearchVisible ? 'auto' : 'none',
+                }}
+            >
+                <Button variant="ghost" size="icon" onClick={() => setIsSearchVisible(false)} className="flex-shrink-0">
+                    <ArrowLeft className="w-5 h-5"/>
+                </Button>
+                <div className="relative w-full">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search for tools..."
+                        className="w-full pl-10"
+                        autoFocus
+                    />
+                    {searchQuery && (
+                        <Button variant="ghost" size="icon" onClick={() => setSearchQuery('')} className="absolute top-1/2 right-2 -translate-y-1/2 h-7 w-7">
+                            <X className="h-4 w-4" />
+                        </Button>
+                    )}
+                </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" onClick={handleSearchClick} aria-label="Search">
+                    <Search className="w-5 h-5" />
+                </Button>
+                <NotificationBell />
+                <FavoriteTools />
+                <SettingsPanel>
+                    <Button variant="ghost" size="icon" aria-label="Settings">
+                        <Settings className="w-5 h-5" />
+                    </Button>
+                </SettingsPanel>
+                <UserAvatar />
+            </div>
+        </>
+    );
+};
+
+
+export default function AppHeader({ onSearchChange }: { onSearchChange: (query: string) => void }) {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center px-4">
-        <div className="flex items-center gap-2 mr-auto">
-            <AppSidebar />
-             <Link href="/" className="flex items-center gap-2">
-                <Logo />
-                <span className="font-bold text-lg hidden sm:inline-block">Toolsax</span>
-            </Link>
-        </div>
-        
-        <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={handleSearchClick} aria-label="Search" className="hidden md:inline-flex">
-              <Search className="w-5 h-5" />
-            </Button>
-            <NotificationBell />
-            <FavoriteTools />
-            <SettingsPanel>
-                <Button variant="ghost" size="icon" aria-label="Settings">
-                    <Settings className="w-5 h-5" />
-                </Button>
-            </SettingsPanel>
-            <UserAvatar />
-        </div>
+      <div className="container relative flex h-14 items-center px-4">
+        <HeaderSearch onSearchChange={onSearchChange} />
       </div>
     </header>
   );
