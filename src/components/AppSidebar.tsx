@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/sheet"
 import Link from "next/link";
 import { Home, Bug, PanelLeft, FileText, Cookie, Shield, Lock, Coffee, Mail } from "lucide-react";
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 
@@ -34,59 +34,76 @@ const secondaryNavLinks = [
     { href: "/privacy", icon: <Lock className="h-4 w-4" />, label: "Privacy Policy" },
 ];
 
-export default function AppSidebar() {
-    const [isOpen, setIsOpen] = useState(false);
+interface AppSidebarProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  trigger?: React.ReactNode;
+}
+
+const AppSidebar = forwardRef<HTMLDivElement, AppSidebarProps>(({ open, onOpenChange, trigger }, ref) => {
+    
+    const sidebarContent = (
+      <SheetContent ref={ref} side="left" className="w-[300px] p-0 flex flex-col">
+          <SheetHeader className="border-b p-4">
+              <SheetTitle className="sr-only">Main Menu</SheetTitle>
+               <div className="flex items-center gap-2">
+                  <Logo />
+                  <span className="font-bold text-lg">Toolsax</span>
+              </div>
+          </SheetHeader>
+          <div className="p-4 flex-grow overflow-y-auto">
+              <nav className="flex flex-col gap-2">
+                  <p className="text-xs font-semibold text-muted-foreground px-2">MAIN</p>
+                  {mainNavLinks.map(link => (
+                      <Link key={link.href} href={link.href} onClick={() => onOpenChange?.(false)}>
+                          <Button variant="ghost" className="w-full justify-start gap-2">
+                              {link.icon}
+                              <span>{link.label}</span>
+                          </Button>
+                      </Link>
+                  ))}
+              </nav>
+              <Separator className="my-4" />
+              <nav className="flex flex-col gap-2">
+                  <p className="text-xs font-semibold text-muted-foreground px-2">INFO</p>
+                  {secondaryNavLinks.map(link => (
+                      <Link key={link.href} href={link.href} onClick={() => onOpenChange?.(false)}>
+                          <Button variant="ghost" className="w-full justify-start gap-2">
+                              {link.icon}
+                              <span>{link.label}</span>
+                          </Button>
+                      </Link>
+                  ))}
+              </nav>
+          </div>
+          <div className="p-4 border-t">
+              <a href="https://www.buymeacoffee.com/anaroul" target="_blank" rel="noopener noreferrer">
+                   <Button className="w-full bg-yellow-400 text-black hover:bg-yellow-500">
+                     <Coffee className="h-4 w-4 mr-2" />
+                     Buy me a coffee
+                   </Button>
+              </a>
+          </div>
+      </SheetContent>
+    );
 
     return (
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:h-10 md:w-10 h-8 w-8">
-                    <PanelLeft className="h-5 w-5" />
-                    <span className="sr-only">Toggle Menu</span>
-                </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] p-0 flex flex-col">
-                <SheetHeader className="border-b p-4">
-                    <SheetTitle className="sr-only">Main Menu</SheetTitle>
-                     <div className="flex items-center gap-2">
-                        <Logo />
-                        <span className="font-bold text-lg">Toolsax</span>
-                    </div>
-                </SheetHeader>
-                <div className="p-4 flex-grow overflow-y-auto">
-                    <nav className="flex flex-col gap-2">
-                        <p className="text-xs font-semibold text-muted-foreground px-2">MAIN</p>
-                        {mainNavLinks.map(link => (
-                            <Link key={link.href} href={link.href} onClick={() => setIsOpen(false)}>
-                                <Button variant="ghost" className="w-full justify-start gap-2">
-                                    {link.icon}
-                                    <span>{link.label}</span>
-                                </Button>
-                            </Link>
-                        ))}
-                    </nav>
-                    <Separator className="my-4" />
-                    <nav className="flex flex-col gap-2">
-                        <p className="text-xs font-semibold text-muted-foreground px-2">INFO</p>
-                        {secondaryNavLinks.map(link => (
-                            <Link key={link.href} href={link.href} onClick={() => setIsOpen(false)}>
-                                <Button variant="ghost" className="w-full justify-start gap-2">
-                                    {link.icon}
-                                    <span>{link.label}</span>
-                                </Button>
-                            </Link>
-                        ))}
-                    </nav>
-                </div>
-                <div className="p-4 border-t">
-                    <a href="https://www.buymeacoffee.com/anaroul" target="_blank" rel="noopener noreferrer">
-                         <Button className="w-full bg-yellow-400 text-black hover:bg-yellow-500">
-                           <Coffee className="h-4 w-4 mr-2" />
-                           Buy me a coffee
-                         </Button>
-                    </a>
-                </div>
-            </SheetContent>
+        <Sheet open={open} onOpenChange={onOpenChange}>
+            {trigger ? (
+                <SheetTrigger asChild>{trigger}</SheetTrigger>
+            ) : (
+                <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon" className="hidden md:inline-flex h-10 w-10">
+                        <PanelLeft className="h-5 w-5" />
+                        <span className="sr-only">Toggle Menu</span>
+                    </Button>
+                </SheetTrigger>
+            )}
+            {sidebarContent}
         </Sheet>
     )
-}
+});
+
+AppSidebar.displayName = 'AppSidebar';
+
+export default AppSidebar;

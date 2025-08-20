@@ -6,6 +6,8 @@ import AppHeader from '@/components/AppHeader';
 import { CustomThemeProvider } from '@/components/ThemeProvider';
 import GridBackground from '@/components/GridBackground';
 import { AuthProvider } from '@/contexts/AuthContext';
+import MobileBottomNav from '@/components/MobileBottomNav';
+import AppSidebar from '@/components/AppSidebar';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://toolsax.com'),
@@ -38,9 +40,10 @@ export default function RootLayout({
               <GridBackground />
               <div className="flex flex-col w-full flex-grow">
                   <AppHeader />
-                  <main className="flex-grow">
+                  <main className="flex-grow pb-16 md:pb-0">
                       {children}
                   </main>
+                  <MobileBottomNav />
               </div>
               <Toaster />
           </CustomThemeProvider>
