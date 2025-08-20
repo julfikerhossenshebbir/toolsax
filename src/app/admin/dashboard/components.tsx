@@ -109,7 +109,7 @@ export function UsersTable<TData, TValue>({ columns, data }: DataTableProps<TDat
   })
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border overflow-auto">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
