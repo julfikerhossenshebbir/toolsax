@@ -1,8 +1,9 @@
+
 import Link from 'next/link';
 
 export default function AppFooter() {
     return (
-      <footer className="border-t">
+      <footer className="border-t hidden md:block">
         <div className="container flex h-14 items-center justify-between">
           <p className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} Toolsax. All rights reserved.
