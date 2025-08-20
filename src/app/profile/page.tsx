@@ -119,12 +119,14 @@ export default function ProfilePage() {
     }
     if (user) {
       setDisplayName(user.displayName || '');
-      setPhotoURL(user.photoURL || '');
       
       getUserData(user.uid).then(data => {
         if(data) {
           setUsername(data.username || '');
           setContactNumber(data.contactNumber || '');
+          setPhotoURL(data.photoURL || user.photoURL || '');
+        } else {
+          setPhotoURL(user.photoURL || '');
         }
       });
     }
