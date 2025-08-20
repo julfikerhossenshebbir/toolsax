@@ -10,7 +10,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { format, formatDistanceToNow } from 'date-fns';
-import { AreaChart, BarChart, Users } from 'lucide-react';
+import { AreaChart, BarChart, Users, Trash2 as Trash2Icon } from 'lucide-react';
 import type { UserData, Notification } from '../types';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -215,7 +215,7 @@ export function NotificationForm({ currentNotifications }: { currentNotification
                                     className="h-10"
                                 />
                                 <Button variant="destructive" size="icon" onClick={() => handleRemoveNotification(index)}>
-                                    <Users className="h-4 w-4" />
+                                    <Trash2Icon className="h-4 w-4" />
                                 </Button>
                             </div>
                         ))}
