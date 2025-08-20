@@ -3,29 +3,44 @@
 
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getStats, subscribeToAllUsers, getNotificationMessage } from '@/lib/firebase';
-import { StatCard, UsersTable, columns, NotificationForm, UserOverviewChart, ToolPopularityChart } from './components';
+import { getStats, subscribeToAllUsers, getNotificationMessage, getAdSettings } from '@/lib/firebase';
+import { StatCard, UsersTable, columns, NotificationForm, UserOverviewChart, ToolPopularityChart, AdSettingsForm } from './components';
 import { Users, BarChart, AreaChart } from 'lucide-react';
-import type { UserData, Notification as NotifType } from '../types';
+import type { UserData, Notification as NotifType, AdSettings } from '../types';
+
+const defaultAdSettings: AdSettings = {
+    adsEnabled: true,
+    viewLimit: 3,
+    cooldownMinutes: 30,
+    enabledTools: [],
+};
 
 export default function AdminDashboardPage() {
     
     const [stats, setStats] = useState({ users: 0, tool_clicks: 0, views: 0 });
     const [users, setUsers] = useState<UserData[]>([]);
     const [notifications, setNotifications] = useState<NotifType[]>([]);
+    const [adSettings, setAdSettings] = useState<AdSettings>(defaultAdSettings);
 
     useEffect(() => {
         // Fetch initial static data
         getStats(false).then(s => setStats(s));
         getNotificationMessage(false).then(n => setNotifications(n as NotifType[]));
 
-        // Subscribe to real-time user updates
-        const unsubscribe = subscribeToAllUsers((updatedUsers) => {
+        // Subscribe to real-time updates
+        const unsubscribeUsers = subscribeToAllUsers((updatedUsers) => {
             setUsers(updatedUsers as UserData[]);
         });
 
+        const unsubscribeAdSettings = getAdSettings(true, (settings) => {
+            setAdSettings(settings || defaultAdSettings);
+        });
+
         // Cleanup subscription on component unmount
-        return () => unsubscribe();
+        return () => {
+            unsubscribeUsers();
+            unsubscribeAdSettings();
+        };
     }, []);
 
     return (
@@ -47,6 +62,10 @@ export default function AdminDashboardPage() {
             <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
                 <UserOverviewChart />
                 <ToolPopularityChart />
+
+                <div className="lg:col-span-full">
+                     <AdSettingsForm currentAdSettings={adSettings} />
+                </div>
 
                 <div className="lg:col-span-full">
                      <Card>

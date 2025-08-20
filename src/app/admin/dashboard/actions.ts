@@ -1,7 +1,7 @@
 'use server';
 
-import { updateGlobalNotifications } from '@/lib/firebase';
-import type { Notification } from '../types';
+import { updateGlobalNotifications, updateAdSettings } from '@/lib/firebase';
+import type { Notification, AdSettings } from '../types';
 
 export async function sendNotification(notifications: Notification[]): Promise<{ success: boolean; error?: string }> {
   try {
@@ -12,5 +12,16 @@ export async function sendNotification(notifications: Notification[]): Promise<{
   } catch (error: any) {
     console.error('Error sending notification:', error);
     return { success: false, error: 'Failed to update notifications in the database.' };
+  }
+}
+
+
+export async function saveAdSettings(settings: AdSettings): Promise<{ success: boolean; error?: string }> {
+  try {
+    await updateAdSettings(settings);
+    return { success: true };
+  } catch (error: any) {
+    console.error('Error saving ad settings:', error);
+    return { success: false, error: 'Failed to update ad settings.' };
   }
 }

@@ -7,27 +7,22 @@ import { useEffect, useState } from 'react';
 import { Tool } from '@/lib/types';
 import Icon from './Icon';
 import { Card, CardContent } from './ui/card';
-import { incrementClicks, getToolStats, isConfigured } from '@/lib/firebase';
+import { incrementClicks, getToolStats, isConfigured, getAdSettings } from '@/lib/firebase';
 import { MousePointerClick, Lock } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 import { AdModal } from './AdModal';
 import { getColorByIndex } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import LoginDialog from './LoginDialog';
+import type { AdSettings } from '@/app/admin/types';
 
-interface ToolCardProps {
-  tool: Tool;
-  index: number;
-}
-
-const AD_VIEW_LIMIT = 3;
-const AD_COOLDOWN_MINUTES = 5;
 const AD_STORAGE_KEY_COUNT = 'toolsax_ad_views';
 const AD_STORAGE_KEY_TIMESTAMP = 'toolsax_last_ad_timestamp';
 
 const ToolCard = ({ tool, index }: ToolCardProps) => {
   const [clicks, setClicks] = useState<number | null>(null);
   const [showAd, setShowAd] = useState(false);
+  const [adSettings, setAdSettings] = useState<AdSettings | null>(null);
   const router = useRouter();
   const { user } = useAuth();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -36,10 +31,15 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
 
   useEffect(() => {
     if (isConfigured) {
-      const unsubscribe = getToolStats(tool.id, (stats) => {
+      const unsubscribeStats = getToolStats(tool.id, (stats) => {
         setClicks(stats.clicks);
       });
-      return () => unsubscribe();
+      const unsubscribeAdSettings = getAdSettings(true, setAdSettings);
+      
+      return () => {
+        unsubscribeStats();
+        unsubscribeAdSettings();
+      };
     } else {
       setClicks(0);
     }
@@ -54,16 +54,26 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
     }
       
     incrementClicks(tool.id);
+    
+    // Ad logic starts here
+    if (!adSettings || !adSettings.adsEnabled || !adSettings.enabledTools.includes(tool.id)) {
+        router.push(`/${tool.id}`);
+        return;
+    }
 
     const adViews = parseInt(localStorage.getItem(AD_STORAGE_KEY_COUNT) || '0', 10);
     const lastAdTimestamp = parseInt(localStorage.getItem(AD_STORAGE_KEY_TIMESTAMP) || '0', 10);
     
     const now = new Date().getTime();
-    const fiveMinutesInMillis = AD_COOLDOWN_MINUTES * 60 * 1000;
+    const cooldownInMillis = (adSettings.cooldownMinutes || 30) * 60 * 1000;
 
-    const isCooldownOver = now - lastAdTimestamp > fiveMinutesInMillis;
+    const isCooldownOver = now - lastAdTimestamp > cooldownInMillis;
 
-    if (adViews < AD_VIEW_LIMIT && isCooldownOver) {
+    if (isCooldownOver) {
+        localStorage.setItem(AD_STORAGE_KEY_COUNT, '0');
+        localStorage.setItem(AD_STORAGE_KEY_TIMESTAMP, now.toString());
+        setShowAd(true);
+    } else if (adViews < (adSettings.viewLimit || 3)) {
       setShowAd(true);
     } else {
       router.push(`/${tool.id}`);

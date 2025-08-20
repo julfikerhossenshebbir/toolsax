@@ -18,6 +18,8 @@ import {
     type User
 } from "firebase/auth";
 import { v4 as uuidv4 } from 'uuid';
+import type { AdSettings } from "@/app/admin/types";
+
 
 export interface Notification {
     message: string;
@@ -381,5 +383,29 @@ export const updateGlobalNotifications = (notifications: Notification[]) => {
     const notificationRef = ref(db, 'notif');
     return set(notificationRef, notifications);
 };
+
+// --- Ad Settings ---
+export const getAdSettings = (subscribe: boolean = true, callback?: (settings: AdSettings) => void) => {
+    if (!db) {
+        if (callback) callback({ adsEnabled: false, viewLimit: 3, cooldownMinutes: 30, enabledTools: [] });
+        return () => {};
+    }
+    const adSettingsRef = ref(db, 'settings/ads');
+
+    if (subscribe && callback) {
+        const unsubscribe = onValue(adSettingsRef, (snapshot) => {
+            callback(snapshot.val());
+        });
+        return unsubscribe;
+    } else {
+        return get(adSettingsRef).then(snapshot => snapshot.val());
+    }
+}
+
+export const updateAdSettings = (settings: AdSettings) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const adSettingsRef = ref(db, 'settings/ads');
+    return set(adSettingsRef, settings);
+}
 
 export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;

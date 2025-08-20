@@ -11,3 +11,10 @@ export interface Notification {
     icon: string;
     message: string;
 }
+
+export interface AdSettings {
+    adsEnabled: boolean;
+    viewLimit: number;
+    cooldownMinutes: number;
+    enabledTools: string[];
+}

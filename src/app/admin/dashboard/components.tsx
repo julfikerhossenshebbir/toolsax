@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -12,15 +12,19 @@ import {
 } from "@tanstack/react-table"
 import { format, formatDistanceToNow } from 'date-fns';
 import { Trash2 as Trash2Icon } from 'lucide-react';
-import type { UserData, Notification } from '../types';
+import type { UserData, Notification, AdSettings } from '../types';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { sendNotification } from './actions';
+import { sendNotification, saveAdSettings } from './actions';
 import { Loader2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ALL_TOOLS } from '@/lib/tools';
 
 
 // --- Stat Cards ---
@@ -163,9 +167,9 @@ export function NotificationForm({ currentNotifications }: { currentNotification
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { toast } = useToast();
 
-    useState(() => {
+    useEffect(() => {
         setNotifications(currentNotifications);
-    });
+    }, [currentNotifications]);
 
     const handleAddNotification = () => {
         setNotifications([...notifications, { icon: 'Bell', message: '' }]);
@@ -207,6 +211,9 @@ export function NotificationForm({ currentNotifications }: { currentNotification
         <Card>
             <CardHeader>
                 <CardTitle>Manage Global Notifications</CardTitle>
+                <CardDescription>
+                  Send site-wide notifications to all users. These appear in the bell icon in the header.
+                </CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
@@ -244,6 +251,108 @@ export function NotificationForm({ currentNotifications }: { currentNotification
     )
 }
 
+// --- Ad Settings Form ---
+export function AdSettingsForm({ currentAdSettings }: { currentAdSettings: AdSettings }) {
+    const [settings, setSettings] = useState<AdSettings>(currentAdSettings);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { toast } = useToast();
+
+    useEffect(() => {
+        setSettings(currentAdSettings);
+    }, [currentAdSettings]);
+
+    const handleToolToggle = (toolId: string) => {
+        const enabledTools = settings.enabledTools || [];
+        const newEnabledTools = enabledTools.includes(toolId)
+            ? enabledTools.filter(id => id !== toolId)
+            : [...enabledTools, toolId];
+        setSettings({ ...settings, enabledTools: newEnabledTools });
+    };
+
+    const handleSubmit = async () => {
+        setIsSubmitting(true);
+        const result = await saveAdSettings(settings);
+
+        if (result.success) {
+            toast({
+                title: 'Ad Settings Saved!',
+                description: 'Your new ad settings are now live.',
+            });
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Save Failed',
+                description: result.error || 'An unknown error occurred.',
+            });
+        }
+        setIsSubmitting(false);
+    };
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Advertisement Settings</CardTitle>
+                <CardDescription>
+                    Control how and when ads are shown to users. Changes are saved to the database in real-time.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="flex items-center space-x-2">
+                    <Switch
+                        id="ads-enabled"
+                        checked={settings.adsEnabled}
+                        onCheckedChange={(checked) => setSettings({ ...settings, adsEnabled: checked })}
+                    />
+                    <Label htmlFor="ads-enabled" className="text-base font-medium">Enable Ads Globally</Label>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="view-limit">Ad View Limit</Label>
+                        <Input
+                            id="view-limit"
+                            type="number"
+                            value={settings.viewLimit}
+                            onChange={(e) => setSettings({ ...settings, viewLimit: parseInt(e.target.value, 10) || 0 })}
+                        />
+                        <p className="text-xs text-muted-foreground">Number of clicks before ads stop showing for a user.</p>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="cooldown-minutes">Cooldown Period (Minutes)</Label>
+                        <Input
+                            id="cooldown-minutes"
+                            type="number"
+                            value={settings.cooldownMinutes}
+                            onChange={(e) => setSettings({ ...settings, cooldownMinutes: parseInt(e.target.value, 10) || 0 })}
+                        />
+                         <p className="text-xs text-muted-foreground">Time until the view count resets for a user.</p>
+                    </div>
+                </div>
+
+                <div>
+                    <Label className="text-base font-medium">Enable Ads on Specific Tools</Label>
+                    <div className="mt-2 space-y-2 max-h-60 overflow-y-auto border p-4 rounded-md">
+                        {ALL_TOOLS.map(tool => (
+                            <div key={tool.id} className="flex items-center space-x-2">
+                                <Checkbox
+                                    id={`tool-${tool.id}`}
+                                    checked={(settings.enabledTools || []).includes(tool.id)}
+                                    onCheckedChange={() => handleToolToggle(tool.id)}
+                                />
+                                <Label htmlFor={`tool-${tool.id}`} className="font-normal">{tool.name}</Label>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <Button onClick={handleSubmit} disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save Ad Settings
+                </Button>
+            </CardContent>
+        </Card>
+    )
+}
 
 // --- User Overview Chart ---
 const userChartData = [
