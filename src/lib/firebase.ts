@@ -123,6 +123,26 @@ export const isUsernameAvailable = async (username: string): Promise<boolean> =>
     return !snapshot.exists();
 }
 
+export const getUidByUsername = async (username: string): Promise<string | null> => {
+    if (!db) return null;
+    const usernameRef = ref(db, `usernames/${username}`);
+    const snapshot = await get(usernameRef);
+    return snapshot.val() || null;
+};
+
+export const getUserPublicProfile = async (username: string) => {
+    const uid = await getUidByUsername(username);
+    if (!uid) return null;
+    const data = await getUserData(uid);
+    if (!data) return null;
+    return {
+        uid: uid,
+        name: data.name,
+        username: data.username,
+        photoURL: data.photoURL
+    };
+};
+
 export const checkAndCreateUser = async (data: { name: string, username: string, email: string, password:  string }) => {
     if (!auth || !db) throw new Error("Firebase not configured.");
     
@@ -315,5 +335,3 @@ export const getNotificationMessage = (callback: (messages: Notification[]) => v
 }
 
 export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;
-
-    

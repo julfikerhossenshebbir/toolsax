@@ -11,11 +11,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { updateUserProfile, getUserData, updateUserData } from '@/lib/firebase';
-import { Loader2, Upload, User, Scissors } from 'lucide-react';
+import { Loader2, Upload, User, Scissors, Eye as EyeIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import ReactCrop, { type Crop, type PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
+import Link from 'next/link';
 
 
 async function uploadToImgBB(imageFile: File | Blob): Promise<string | null> {
@@ -230,8 +231,19 @@ export default function ProfilePage() {
     <div className="container mx-auto px-4 py-12 flex-grow flex flex-col justify-center">
       <Card className="max-w-2xl mx-auto w-full">
         <CardHeader>
-          <CardTitle>Your Profile</CardTitle>
-          <CardDescription>Update your personal information and profile picture.</CardDescription>
+            <div className="flex justify-between items-start">
+                <div>
+                    <CardTitle>Your Profile</CardTitle>
+                    <CardDescription>Update your personal information and profile picture.</CardDescription>
+                </div>
+                {username && (
+                    <Button asChild variant="outline">
+                        <Link href={`/u/${username}`}>
+                            <EyeIcon className="mr-2 h-4 w-4"/> View Public Profile
+                        </Link>
+                    </Button>
+                )}
+            </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSave} className="space-y-6">
@@ -336,7 +348,3 @@ export default function ProfilePage() {
     </>
   );
 }
-
-    
-
-    
