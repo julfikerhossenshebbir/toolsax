@@ -20,6 +20,7 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { sendNotification } from './actions';
 import { Loader2 } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
 
 // --- Stat Cards ---
@@ -232,6 +233,86 @@ export function NotificationForm({ currentNotifications }: { currentNotification
                     </div>
                 </CardContent>
             </CardHeader>
+        </Card>
+    )
+}
+
+
+// --- User Overview Chart ---
+const userChartData = [
+  { name: 'Jan', total: Math.floor(Math.random() * 200) + 100 },
+  { name: 'Feb', total: Math.floor(Math.random() * 200) + 100 },
+  { name: 'Mar', total: Math.floor(Math.random() * 200) + 100 },
+  { name: 'Apr', total: Math.floor(Math.random() * 200) + 100 },
+  { name: 'May', total: Math.floor(Math.random() * 200) + 100 },
+  { name: 'Jun', total: Math.floor(Math.random() * 200) + 100 },
+  { name: 'Jul', total: Math.floor(Math.random() * 200) + 100 },
+  { name: 'Aug', total: Math.floor(Math.random() * 200) + 100 },
+  { name: 'Sep', total: Math.floor(Math.random() * 200) + 100 },
+  { name: 'Oct', total: Math.floor(Math.random() * 200) + 100 },
+  { name: 'Nov', total: Math.floor(Math.random() * 200) + 100 },
+  { name: 'Dec', total: Math.floor(Math.random() * 200) + 100 },
+];
+
+export function UserOverviewChart() {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>User Growth Overview</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={userChartData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}`} />
+                        <Tooltip
+                          contentStyle={{
+                            background: "hsl(var(--background))",
+                            borderColor: "hsl(var(--border))",
+                          }}
+                        />
+                        <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                </ResponsiveContainer>
+            </CardContent>
+        </Card>
+    )
+}
+
+// --- Tool Popularity Chart ---
+const toolPopularityData = [
+  { name: 'JSON Formatter', clicks: 4000 },
+  { name: 'QR Generator', clicks: 3000 },
+  { name: 'Case Converter', clicks: 2000 },
+  { name: 'Password Gen', clicks: 2780 },
+  { name: 'Color Conv', clicks: 1890 },
+  { name: 'Lorem Ipsum', clicks: 2390 },
+  { name: 'Unit Conv', clicks: 3490 },
+];
+
+export function ToolPopularityChart() {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Tool Popularity</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                    <AreaChart data={toolPopularityData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                        <Tooltip 
+                            contentStyle={{
+                                background: "hsl(var(--background))",
+                                borderColor: "hsl(var(--border))",
+                            }}
+                        />
+                        <Area type="monotone" dataKey="clicks" stroke="hsl(var(--primary))" fill="hsla(var(--primary), 0.2)" />
+                    </AreaChart>
+                </ResponsiveContainer>
+            </CardContent>
         </Card>
     )
 }

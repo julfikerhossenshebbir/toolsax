@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getAllUsers, getStats, getNotificationMessage } from '@/lib/firebase';
-import { StatCard, UsersTable, columns, NotificationForm } from './components';
-import { AreaChart, BarChart, Bell, Users } from 'lucide-react';
+import { StatCard, UsersTable, columns, NotificationForm, UserOverviewChart, ToolPopularityChart } from './components';
+import { AreaChart, BarChart, Users } from 'lucide-react';
 import type { UserData, Notification as NotifType } from '../types';
 
 export default async function AdminDashboardPage() {
@@ -27,16 +27,20 @@ export default async function AdminDashboardPage() {
                 </StatCard>
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                <Card className="col-span-4">
-                    <CardHeader>
-                        <CardTitle>User Management</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                       <UsersTable columns={columns} data={users as UserData[]} />
-                    </CardContent>
-                </Card>
-                 <div className="col-span-3">
-                     <NotificationForm currentNotifications={notifications as NotifType[]} />
+                <div className="col-span-4 space-y-4">
+                    <UserOverviewChart />
+                    <ToolPopularityChart />
+                </div>
+                 <div className="col-span-3 space-y-4">
+                    <NotificationForm currentNotifications={notifications as NotifType[]} />
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>User Management</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                           <UsersTable columns={columns} data={users as UserData[]} />
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         </div>
