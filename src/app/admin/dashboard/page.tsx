@@ -27,13 +27,14 @@ export default async function AdminDashboardPage() {
                     <AreaChart />
                 </StatCard>
             </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                <div className="col-span-full lg:col-span-4 space-y-4">
-                    <UserOverviewChart />
-                    <ToolPopularityChart />
-                </div>
-                 <div className="col-span-full lg:col-span-3 space-y-4">
+            <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+                <UserOverviewChart />
+                <ToolPopularityChart />
+
+                <div className="col-span-full lg:col-span-1">
                     <NotificationForm currentNotifications={notifications as NotifType[]} />
+                </div>
+                <div className="col-span-full lg:col-span-1">
                     <Card>
                         <CardHeader>
                             <CardTitle>User Management</CardTitle>
