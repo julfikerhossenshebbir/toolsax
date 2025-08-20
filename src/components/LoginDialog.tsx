@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -20,13 +20,15 @@ import {
   signUpWithEmail,
   signInWithEmail,
   checkAndCreateUser,
-  saveUserToDatabase
+  saveUserToDatabase,
+  isUsernameAvailable,
 } from '@/lib/firebase';
-import { Loader2, Eye, EyeOff, Wand2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Wand2, Check, X } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormMessage } from './ui/form';
+import { debounce } from 'lodash';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
@@ -226,12 +228,43 @@ function EmailForm({ schema, onSubmit, buttonText, onSuccess }: EmailFormProps) 
 function SignupForm({ onSuccess }: { onSuccess: () => void }) {
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+    const [usernameStatus, setUsernameStatus] = useState<'idle' | 'available' | 'taken'>('idle');
+
     const { toast } = useToast();
 
     const form = useForm<z.infer<typeof signupSchema>>({
         resolver: zodResolver(signupSchema),
         defaultValues: { name: '', username: '', email: '', password: '' },
     });
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const debouncedCheck = useCallback(debounce(async (username: string) => {
+        if (username.length < 3) {
+            setUsernameStatus('idle');
+            setIsCheckingUsername(false);
+            return;
+        }
+        const available = await isUsernameAvailable(username);
+        setUsernameStatus(available ? 'available' : 'taken');
+        if (!available) {
+            form.setError('username', { type: 'manual', message: 'This username is already taken.' });
+        } else {
+            form.clearErrors('username');
+        }
+        setIsCheckingUsername(false);
+    }, 500), []);
+
+
+    const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const username = e.target.value;
+        form.setValue('username', username, { shouldValidate: true });
+        setUsernameStatus('idle');
+        if (username.length >= 3) {
+            setIsCheckingUsername(true);
+            debouncedCheck(username);
+        }
+    };
     
     const generatePassword = () => {
         const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
@@ -246,6 +279,9 @@ function SignupForm({ onSuccess }: { onSuccess: () => void }) {
     const handleSignup = async (values: z.infer<typeof signupSchema>) => {
         setIsLoading(true);
         try {
+            if (usernameStatus !== 'available') {
+                throw new Error("Username is not available.");
+            }
             await checkAndCreateUser(values);
             onSuccess();
             toast({ title: `Successfully signed up!`, description: "Welcome!" });
@@ -267,7 +303,20 @@ function SignupForm({ onSuccess }: { onSuccess: () => void }) {
                     <FormItem><Label>Name</Label><FormControl><Input placeholder="John Doe" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="username" render={({ field }) => (
-                    <FormItem><Label>Username</Label><FormControl><Input placeholder="johndoe" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem>
+                        <Label>Username</Label>
+                        <div className="relative">
+                            <FormControl>
+                                <Input placeholder="johndoe" {...field} onChange={handleUsernameChange} />
+                            </FormControl>
+                            <div className="absolute top-1/2 right-2 -translate-y-1/2">
+                                {isCheckingUsername && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                                {usernameStatus === 'available' && <Check className="h-5 w-5 text-green-500" />}
+                                {usernameStatus === 'taken' && <X className="h-5 w-5 text-red-500" />}
+                            </div>
+                        </div>
+                        <FormMessage />
+                    </FormItem>
                 )} />
                 <FormField control={form.control} name="email" render={({ field }) => (
                     <FormItem><Label>Email</Label><FormControl><Input placeholder="m@example.com" {...field} /></FormControl><FormMessage /></FormItem>
@@ -303,7 +352,7 @@ function SignupForm({ onSuccess }: { onSuccess: () => void }) {
                         <FormMessage />
                     </FormItem>
                 )} />
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full" disabled={isLoading || usernameStatus !== 'available'}>
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Sign Up
                 </Button>
@@ -312,4 +361,4 @@ function SignupForm({ onSuccess }: { onSuccess: () => void }) {
     )
 }
 
-    
+      
