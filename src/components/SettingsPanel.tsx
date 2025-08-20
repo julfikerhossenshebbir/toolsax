@@ -19,19 +19,13 @@ import { useTheme } from 'next-themes';
 import { ThemeToggle } from './ThemeToggle';
 
 const colorOptions = [
-    { name: 'neutral', value: '#18181b' },
-    { name: 'slate', value: '#475569' },
-    { name: 'stone', value: '#44403c' },
-    { name: 'gray', value: '#4b5563' },
-    { name: 'zinc', value: '#52525b' },
+    { name: 'violet', value: '#8b5cf6' }, // Default
     { name: 'red', value: '#ef4444' },
+    { name: 'rose', value: '#f43f5e' },
     { name: 'orange', value: '#f97316' },
     { name: 'green', value: '#22c55e' },
     { name: 'blue', value: '#3b82f6' },
-    { name: 'indigo', value: '#6366f1' },
-    { name: 'violet', value: '#673de6' },
-    { name: 'purple', value: '#8b5cf6' },
-    { name: 'pink', value: '#ec4899' },
+    { name: 'yellow', value: '#f59e0b' },
 ];
 
 export function SettingsPanel({ children }: { children: React.ReactNode }) {

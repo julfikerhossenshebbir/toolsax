@@ -97,38 +97,26 @@ export function CustomThemeProvider({ children, ...props }: ThemeProviderProps) 
     const isDark = theme === 'dark';
 
     const colors: {[key: string]: {light: string, dark: string}} = {
-      neutral: { light: '240 10% 3.9%', dark: '0 0% 98%' },
-      slate: { light: '215 28% 47%', dark: '215 14% 65%' },
-      stone: { light: '25 15% 35%', dark: '25 8% 65%' },
-      gray: { light: '220 9% 46%', dark: '215 10% 65%' },
-      zinc: { light: '224 14% 40%', dark: '220 10% 68%' },
+      violet: { light: '262 84% 60%', dark: '262 84% 75%' },
       red: { light: '0 84.2% 60.2%', dark: '0 80% 65%' },
+      rose: { light: '346.8 93.2% 57.1%', dark: '346.8 90% 65%' },
       orange: { light: '25.3 93.2% 54.9%', dark: '25.3 90% 60%' },
       green: { light: '142.1 76.2% 36.3%', dark: '142.1 65% 50%' },
       blue: { light: '221 83% 53%', dark: '221 83% 65%' },
-      indigo: { light: '243 75% 59%', dark: '243 75% 70%' },
-      purple: { light: '262 84% 60%', dark: '262 84% 75%' },
-      pink: { light: '336 84% 60%', dark: '336 84% 75%' },
-      violet: { light: '256 79% 56%', dark: '256 79% 70%'},
+      yellow: { light: '47.9 95.8% 53.1%', dark: '47.9 90% 60%' },
 
-      neutral_foreground: { light: '0 0% 98%', dark: '240 10% 3.9%' },
-      slate_foreground: { light: '0 0% 98%', dark: '215 28% 15%' },
-      stone_foreground: { light: '0 0% 98%', dark: '25 15% 15%' },
-      gray_foreground: { light: '0 0% 98%', dark: '220 9% 15%' },
-      zinc_foreground: { light: '0 0% 98%', dark: '224 14% 15%' },
+      violet_foreground: { light: '0 0% 98%', dark: '262 84% 25%' },
       red_foreground: { light: '0 0% 98%', dark: '0 85.7% 97.3%' },
+      rose_foreground: { light: '0 0% 98%', dark: '346.8 85.7% 97.3%' },
       orange_foreground: { light: '24 9.8% 10%', dark: '20 14.3% 4.1%' },
       green_foreground: { light: '144.9 80.4% 97.3%', dark: '144.9 80.4% 97.3%' },
       blue_foreground: { light: '0 0% 98%', dark: '221 83% 20%' },
-      indigo_foreground: { light: '0 0% 98%', dark: '243 75% 25%' },
-      purple_foreground: { light: '0 0% 98%', dark: '262 84% 25%' },
-      pink_foreground: { light: '0 0% 98%', dark: '336 84% 25%' },
-      violet_foreground: { light: '0 0% 98%', dark: '256 79% 25%' },
+      yellow_foreground: { light: '24 9.8% 10%', dark: '48 9.8% 10%' },
     };
     
-    const selectedColor = colors[primaryColor] || colors.neutral;
+    const selectedColor = colors[primaryColor] || colors.violet;
     const primaryValue = isDark ? selectedColor.dark : selectedColor.light;
-    const primaryForegroundValue = isDark ? (colors[`${primaryColor}_foreground` as keyof typeof colors]?.dark || colors.neutral_foreground.dark) : (colors[`${primaryColor}_foreground` as keyof typeof colors]?.light || colors.neutral_foreground.light);
+    const primaryForegroundValue = isDark ? (colors[`${primaryColor}_foreground` as keyof typeof colors]?.dark || colors.violet_foreground.dark) : (colors[`${primaryColor}_foreground` as keyof typeof colors]?.light || colors.violet_foreground.light);
     
     document.documentElement.style.setProperty('--primary', primaryValue);
     document.documentElement.style.setProperty('--primary-foreground', primaryForegroundValue);
