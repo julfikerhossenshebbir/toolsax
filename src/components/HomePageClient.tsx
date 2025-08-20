@@ -71,22 +71,22 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
       <Header />
 
       <div id="filters-section" className="mb-8 w-full">
-        <div className="relative -mx-4 px-4">
-          <div className="overflow-x-auto pb-4 -mb-4">
-            <div className="flex justify-start gap-2 whitespace-nowrap">
-              {categories.map(category => (
-                  <Button
-                      key={category}
-                      variant={selectedCategory === category ? 'default' : 'outline'}
-                      onClick={() => setSelectedCategory(category)}
-                      className="transition-all duration-200 shrink-0"
-                  >
-                      {categoryIcons[category]}
-                      {category}
-                  </Button>
-              ))}
+        <div className="flex justify-center">
+            <div className="overflow-x-auto pb-4 -mb-4">
+                <div className="inline-flex justify-center gap-2 whitespace-nowrap px-4 sm:px-0">
+                {categories.map(category => (
+                    <Button
+                        key={category}
+                        variant={selectedCategory === category ? 'default' : 'outline'}
+                        onClick={() => setSelectedCategory(category)}
+                        className="transition-all duration-200 shrink-0"
+                    >
+                        {categoryIcons[category]}
+                        {category}
+                    </Button>
+                ))}
+                </div>
             </div>
-          </div>
         </div>
       </div>
 
