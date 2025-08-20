@@ -6,6 +6,7 @@ import AppHeader from '@/components/AppHeader';
 import AppFooter from '@/components/AppFooter';
 import { CustomThemeProvider } from '@/components/ThemeProvider';
 import GridBackground from '@/components/GridBackground';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://toolsax.com'),
@@ -33,6 +34,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className={'font-body antialiased min-h-screen flex flex-col bg-background'}>
+        <AuthProvider>
           <CustomThemeProvider>
               <GridBackground />
               <div className="flex flex-col w-full">
@@ -44,6 +46,7 @@ export default function RootLayout({
               </div>
               <Toaster />
           </CustomThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

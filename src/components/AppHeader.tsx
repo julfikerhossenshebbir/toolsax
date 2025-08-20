@@ -11,6 +11,7 @@ import { getNotificationMessage, Notification } from '@/lib/firebase';
 import Icon from './Icon';
 import AppSidebar from './AppSidebar';
 import FavoriteTools from './FavoriteTools';
+import UserAvatar from './UserAvatar';
 
 const Logo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -126,6 +127,7 @@ export default function AppHeader() {
                     <Settings className="w-5 h-5" />
                 </Button>
             </SettingsPanel>
+            <UserAvatar />
         </div>
       </div>
     </header>

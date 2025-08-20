@@ -1,9 +1,21 @@
+
 // This is a placeholder for Firebase configuration.
 // To enable Firebase features, you need to set up a Firebase project and
 // add your configuration here.
 
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { getDatabase, ref, runTransaction, onValue, get, type Database } from "firebase/database";
+import { 
+    getAuth, 
+    onAuthStateChanged,
+    GoogleAuthProvider,
+    signInWithPopup,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    type Auth,
+    type User
+} from "firebase/auth";
 import { v4 as uuidv4 } from 'uuid';
 
 export interface Notification {
@@ -23,9 +35,9 @@ const firebaseConfig = {
 
 let app: FirebaseApp | undefined;
 let db: Database | undefined;
+let auth: Auth | undefined;
 
 const isFirebaseEnabled = true;
-
 
 // Check if all necessary config values are present
 const isFirebaseConfigured =
@@ -37,13 +49,41 @@ if (isFirebaseConfigured && isFirebaseEnabled && getApps().length === 0) {
   try {
     app = initializeApp(firebaseConfig);
     db = getDatabase(app);
+    auth = getAuth(app);
   } catch (error) {
     console.error("Firebase initialization error:", error);
   }
 }
 
-// --- User Management ---
+// --- Auth Functions ---
+const googleProvider = auth ? new GoogleAuthProvider() : undefined;
 
+export const signInWithGoogle = () => {
+    if (!auth || !googleProvider) throw new Error("Firebase not configured for Google Sign-In.");
+    return signInWithPopup(auth, googleProvider);
+};
+
+export const signUpWithEmail = (email: string, pass: string) => {
+    if (!auth) throw new Error("Firebase not configured for Email Sign-Up.");
+    return createUserWithEmailAndPassword(auth, email, pass);
+};
+
+export const signInWithEmail = (email: string, pass: string) => {
+    if (!auth) throw new Error("Firebase not configured for Email Sign-In.");
+    return signInWithEmailAndPassword(auth, email, pass);
+};
+
+export const logout = () => {
+    if (!auth) throw new Error("Firebase not configured for Sign-Out.");
+    return signOut(auth);
+};
+
+export const onAuthStateChange = (callback: (user: User | null) => void) => {
+    if (!auth) return () => {};
+    return onAuthStateChanged(auth, callback);
+};
+
+// --- User Management ---
 const getUserId = (): string => {
   if (typeof window === 'undefined') return '';
   let userId = localStorage.getItem('toolsax_user_id');
@@ -55,7 +95,6 @@ const getUserId = (): string => {
 };
 
 // --- Database Functions ---
-
 const incrementCounter = (path: string) => {
   if (!db) return;
   const counterRef = ref(db, path);
@@ -141,6 +180,5 @@ export const getNotificationMessage = (callback: (messages: Notification[]) => v
 
   return unsubscribe;
 }
-
 
 export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;
