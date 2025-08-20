@@ -88,6 +88,7 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
                 </div>
             </div>
         </div>
+        <div className="w-full h-px border-b border-dashed mt-8"></div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
