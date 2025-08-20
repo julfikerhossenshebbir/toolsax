@@ -37,7 +37,7 @@ const signupSchema = z.object({
 });
 
 interface LoginDialogProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -64,9 +64,7 @@ export default function LoginDialog({ children, open, onOpenChange }: LoginDialo
     }
   };
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+  const content = (
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Welcome to Toolsax</DialogTitle>
@@ -119,6 +117,22 @@ export default function LoginDialog({ children, open, onOpenChange }: LoginDialo
           Google
         </Button>
       </DialogContent>
+  );
+
+  // If children are provided, wrap them in a trigger.
+  if (children) {
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogTrigger asChild>{children}</DialogTrigger>
+            {content}
+        </Dialog>
+    );
+  }
+
+  // If no children, it's a controlled dialog.
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {content}
     </Dialog>
   );
 }

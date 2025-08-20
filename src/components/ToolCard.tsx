@@ -85,10 +85,7 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
         onClose={() => setShowAd(false)}
         onContinue={handleContinueToTool}
       />
-      <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-         {/* This is just a trigger wrapper, it won't be visible */}
-         <div />
-      </LoginDialog>
+      <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen} />
 
       <div
         onClick={handleCardClick}
