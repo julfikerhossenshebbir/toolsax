@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
-import { updateUserProfile } from '@/lib/firebase';
+import { updateUserProfile, getUserData, updateUserData } from '@/lib/firebase';
 import { Loader2, Upload, User, Scissors } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -19,9 +19,9 @@ import 'react-image-crop/dist/ReactCrop.css';
 
 
 async function uploadToImgBB(imageFile: File | Blob): Promise<string | null> {
-    const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
+    const apiKey = "81b8c0708e71005a41112b81b0c0375b";
     if (!apiKey) {
-        console.error("imgbb API key is not set in environment variables.");
+        console.error("imgbb API key is not set.");
         return null;
     }
 
@@ -55,7 +55,7 @@ function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: numbe
     )
 }
 
-function getCroppedImg(image: HTMLImageElement, crop: PixelCrop, fileName: string): Promise<Blob | null> {
+function getCroppedImg(image: HTMLImageElement, crop: PixelCrop): Promise<Blob | null> {
   const canvas = document.createElement('canvas');
   const scaleX = image.naturalWidth / image.width;
   const scaleY = image.naturalHeight / image.height;
@@ -96,6 +96,7 @@ export default function ProfilePage() {
   const { toast } = useToast();
   
   const [displayName, setDisplayName] = useState('');
+  const [username, setUsername] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [photoURL, setPhotoURL] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -112,11 +113,18 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!loading && !user) {
       router.push('/');
+      return;
     }
     if (user) {
       setDisplayName(user.displayName || '');
       setPhotoURL(user.photoURL || '');
-      setContactNumber(localStorage.getItem(`contact_${user.uid}`) || '');
+      
+      getUserData(user.uid).then(data => {
+        if(data) {
+          setUsername(data.username || '');
+          setContactNumber(data.contactNumber || '');
+        }
+      });
     }
   }, [user, loading, router]);
 
@@ -146,7 +154,7 @@ export default function ProfilePage() {
     setIsCropModalOpen(false);
     setIsSaving(true);
     try {
-        const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop, "avatar.png");
+        const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop);
         if (!croppedImageBlob) {
             throw new Error("Could not crop image.");
         }
@@ -154,6 +162,7 @@ export default function ProfilePage() {
         const uploadedUrl = await uploadToImgBB(croppedImageBlob);
         if (uploadedUrl) {
             await updateUserProfile(user, { photoURL: uploadedUrl });
+            await updateUserData(user.uid, { photoURL: uploadedUrl });
             setPhotoURL(uploadedUrl);
             toast({ title: "Profile picture updated!" });
         } else {
@@ -177,7 +186,7 @@ export default function ProfilePage() {
     setIsSaving(true);
     try {
       await updateUserProfile(user, { displayName });
-      localStorage.setItem(`contact_${user.uid}`, contactNumber);
+      await updateUserData(user.uid, { name: displayName, contactNumber });
       toast({ title: 'Profile saved successfully!' });
     } catch (error: any) {
       toast({
@@ -260,6 +269,16 @@ export default function ProfilePage() {
               />
             </div>
             
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                value={username}
+                disabled
+                className="cursor-not-allowed bg-muted"
+              />
+            </div>
+
              <div className="space-y-2">
               <Label htmlFor="email">Email Address</Label>
               <Input
@@ -317,5 +336,7 @@ export default function ProfilePage() {
     </>
   );
 }
+
+    
 
     

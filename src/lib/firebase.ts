@@ -4,7 +4,7 @@
 // add your configuration here.
 
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
-import { getDatabase, ref, runTransaction, onValue, get, set, type Database, serverTimestamp, push, child } from "firebase/database";
+import { getDatabase, ref, runTransaction, onValue, get, set, type Database, serverTimestamp, push, child, update } from "firebase/database";
 import { 
     getAuth, 
     onAuthStateChanged,
@@ -86,16 +86,6 @@ export const onAuthStateChange = (callback: (user: User | null) => void) => {
 };
 
 export const updateUserProfile = (user: User, profile: { displayName?: string, photoURL?: string }) => {
-    if (db) {
-        const userRef = ref(db, `users/${user.uid}`);
-        runTransaction(userRef, (userData) => {
-            if(userData) {
-                if(profile.displayName) userData.name = profile.displayName;
-                if(profile.photoURL) userData.photoURL = profile.photoURL;
-            }
-            return userData;
-        })
-    }
     return updateProfile(user, profile);
 };
 
@@ -126,19 +116,56 @@ export const initializeUser = () => {
     });
 };
 
-export const saveUserToDatabase = async (uid: string, data: { name?: string | null, username?: string, email?: string | null }) => {
+export const isUsernameAvailable = async (username: string): Promise<boolean> => {
+    if (!db) return false;
+    const usernameRef = ref(db, `usernames/${username}`);
+    const snapshot = await get(usernameRef);
+    return !snapshot.exists();
+}
+
+export const checkAndCreateUser = async (data: { name: string, username: string, email: string, password:  string }) => {
+    if (!auth || !db) throw new Error("Firebase not configured.");
+    
+    const usernameAvailable = await isUsernameAvailable(data.username);
+    if (!usernameAvailable) {
+        throw new Error(`Username '${data.username}' is already taken. Please choose another one.`);
+    }
+
+    const userCredential = await signUpWithEmail(data.email, data.password);
+    const user = userCredential.user;
+
+    await updateProfile(user, { displayName: data.name });
+
+    const userRef = ref(db, `users/${user.uid}`);
+    await set(userRef, {
+        name: data.name,
+        username: data.username,
+        email: data.email,
+        createdAt: serverTimestamp(),
+        lastLogin: serverTimestamp(),
+    });
+
+    const usernameRef = ref(db, `usernames/${data.username}`);
+    await set(usernameRef, user.uid);
+};
+
+export const saveUserToDatabase = async (user: User) => {
     if (!db) return;
-    const userRef = ref(db, `users/${uid}`);
+    const userRef = ref(db, `users/${user.uid}`);
     const snapshot = await get(userRef);
     if (!snapshot.exists()) {
-        // Only set initial data if user is new
-        return set(userRef, {
-            name: data.name || 'Anonymous',
-            username: data.username || '',
-            email: data.email,
+        const username = user.email?.split('@')[0] || `user_${user.uid.substring(0, 5)}`;
+        // This is for Google sign-in, create a basic profile
+        await set(userRef, {
+            name: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+            username: username,
             createdAt: serverTimestamp(),
             lastLogin: serverTimestamp(),
         });
+        const usernameRef = ref(db, `usernames/${username}`);
+        await set(usernameRef, user.uid);
     } else {
         // Update last login for existing users
          return runTransaction(userRef, (userData) => {
@@ -148,6 +175,19 @@ export const saveUserToDatabase = async (uid: string, data: { name?: string | nu
             return userData;
         });
     }
+};
+
+export const getUserData = async (uid: string) => {
+    if (!db) return null;
+    const userRef = ref(db, `users/${uid}`);
+    const snapshot = await get(userRef);
+    return snapshot.val();
+};
+
+export const updateUserData = (uid: string, data: object) => {
+    if (!db) return;
+    const userRef = ref(db, `users/${uid}`);
+    return update(userRef, data);
 };
 
 export const saveSearchQuery = (userId: string, query: string) => {
@@ -261,3 +301,5 @@ export const getNotificationMessage = (callback: (messages: Notification[]) => v
 }
 
 export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;
+
+    

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { Tool } from '@/lib/types';
 import ToolCard from './ToolCard';
 import Header from './Header';
@@ -14,7 +14,6 @@ import Icon from './Icon';
 import FeaturesSection from './FeaturesSection';
 import SectionDivider from './SectionDivider';
 import { useAuth } from '@/contexts/AuthContext';
-import { debounce } from 'lodash';
 
 interface HomePageClientProps {
   tools: Tool[];
@@ -55,20 +54,15 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
     return () => clearInterval(interval);
   }, []);
 
-  const debouncedSaveSearch = useCallback(
-    debounce((query: string, userId: string) => {
-      if (query.trim().length > 2) {
-        saveSearchQuery(userId, query);
+  const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      const query = event.currentTarget.value.trim();
+      if (user && query.length > 2) {
+        saveSearchQuery(user.uid, query);
       }
-    }, 1000),
-    []
-  );
-
-  useEffect(() => {
-    if (user && searchQuery) {
-      debouncedSaveSearch(searchQuery, user.uid);
     }
-  }, [searchQuery, user, debouncedSaveSearch]);
+  };
+
 
   const categories = useMemo(() => {
     const allCategories = tools.map(tool => tool.category);
@@ -108,6 +102,7 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
                 placeholder={placeholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
                 className="w-full pl-10 h-12 text-base rounded-lg border-2 focus:border-primary transition-colors"
               />
             </div>
@@ -157,3 +152,5 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
     </div>
   );
 }
+
+    

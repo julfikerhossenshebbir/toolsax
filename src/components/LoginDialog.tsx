@@ -19,8 +19,8 @@ import {
   signInWithGoogle,
   signUpWithEmail,
   signInWithEmail,
-  updateUserProfile,
-  saveUserToDatabase,
+  checkAndCreateUser,
+  saveUserToDatabase
 } from '@/lib/firebase';
 import { Loader2, Eye, EyeOff, Wand2 } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -35,7 +35,7 @@ const loginSchema = z.object({
 
 const signupSchema = z.object({
   name: z.string().min(1, { message: 'Name cannot be empty.' }),
-  username: z.string().min(3, { message: 'Username must be at least 3 characters.' }),
+  username: z.string().min(3, { message: 'Username must be at least 3 characters.' }).regex(/^[a-z0-9_.]+$/, { message: 'Username can only contain lowercase letters, numbers, underscores, and dots.' }),
   email: z.string().email({ message: 'Please enter a valid email.' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
 });
@@ -47,7 +47,6 @@ interface LoginDialogProps {
 }
 
 export default function LoginDialog({ children, open, onOpenChange }: LoginDialogProps) {
-  const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { toast } = useToast();
 
@@ -56,10 +55,7 @@ export default function LoginDialog({ children, open, onOpenChange }: LoginDialo
     try {
       const userCredential = await signInWithGoogle();
       if (userCredential.user) {
-        await saveUserToDatabase(userCredential.user.uid, {
-            name: userCredential.user.displayName,
-            email: userCredential.user.email,
-        });
+        await saveUserToDatabase(userCredential.user);
       }
       onOpenChange(false); // Close dialog on success
       toast({ title: 'Successfully signed in with Google!' });
@@ -115,7 +111,7 @@ export default function LoginDialog({ children, open, onOpenChange }: LoginDialo
             </span>
           </div>
         </div>
-        <Button variant="outline" onClick={handleGoogleSignIn} disabled={isGoogleLoading || isLoading}>
+        <Button variant="outline" onClick={handleGoogleSignIn} disabled={isGoogleLoading}>
           {isGoogleLoading ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
@@ -250,13 +246,7 @@ function SignupForm({ onSuccess }: { onSuccess: () => void }) {
     const handleSignup = async (values: z.infer<typeof signupSchema>) => {
         setIsLoading(true);
         try {
-            const userCredential = await signUpWithEmail(values.email, values.password);
-            await updateUserProfile(userCredential.user, { displayName: values.name });
-            await saveUserToDatabase(userCredential.user.uid, {
-                name: values.name,
-                username: values.username,
-                email: values.email,
-            });
+            await checkAndCreateUser(values);
             onSuccess();
             toast({ title: `Successfully signed up!`, description: "Welcome!" });
         } catch (error: any) {
@@ -321,3 +311,5 @@ function SignupForm({ onSuccess }: { onSuccess: () => void }) {
         </Form>
     )
 }
+
+    
