@@ -70,18 +70,24 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
     <div className="container mx-auto px-4">
       <Header />
 
-      <div id="filters-section" className="flex flex-wrap justify-center gap-2 mb-8">
-        {categories.map(category => (
-            <Button
-                key={category}
-                variant={selectedCategory === category ? 'default' : 'outline'}
-                onClick={() => setSelectedCategory(category)}
-                className="transition-all duration-200"
-            >
-                {categoryIcons[category]}
-                {category}
-            </Button>
-        ))}
+      <div id="filters-section" className="mb-8 w-full">
+        <div className="relative">
+          <div className="overflow-x-auto pb-4 -mb-4">
+            <div className="flex justify-center gap-2 whitespace-nowrap">
+              {categories.map(category => (
+                  <Button
+                      key={category}
+                      variant={selectedCategory === category ? 'default' : 'outline'}
+                      onClick={() => setSelectedCategory(category)}
+                      className="transition-all duration-200 shrink-0"
+                  >
+                      {categoryIcons[category]}
+                      {category}
+                  </Button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
