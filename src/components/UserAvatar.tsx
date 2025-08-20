@@ -3,7 +3,7 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from './ui/button';
-import { logout } from '@/lib/firebase';
+import { logout, getUserData } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import {
   DropdownMenu,
@@ -14,15 +14,32 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { LogOut, User as UserIcon, Settings } from 'lucide-react';
+import { LogOut, User as UserIcon, Settings, Shield } from 'lucide-react';
 import LoginDialog from './LoginDialog';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function UserAvatar() {
   const { user, loading } = useAuth();
   const { toast } = useToast();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+      const checkAdminStatus = async () => {
+          if (user) {
+              const userData = await getUserData(user.uid);
+              if (userData?.role === 'admin') {
+                  setIsAdmin(true);
+              } else {
+                  setIsAdmin(false);
+              }
+          } else {
+              setIsAdmin(false);
+          }
+      };
+      checkAdminStatus();
+  }, [user]);
 
   const handleLogout = async () => {
     try {
@@ -81,6 +98,14 @@ export default function UserAvatar() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {isAdmin && (
+            <DropdownMenuItem asChild>
+                <Link href="/admin/dashboard">
+                    <Shield className="mr-2 h-4 w-4" />
+                    <span>Dashboard</span>
+                </Link>
+            </DropdownMenuItem>
+        )}
         <DropdownMenuItem asChild>
           <Link href="/profile">
             <Settings className="mr-2 h-4 w-4" />
