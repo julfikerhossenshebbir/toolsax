@@ -5,40 +5,50 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Heart, Star } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { Tool } from '@/lib/types';
 import { ALL_TOOLS } from '@/lib/tools';
 import Icon from './Icon';
 import { getColorByIndex } from '@/lib/utils';
-
+import { useAuth } from '@/contexts/AuthContext';
+import { getUserFavorites } from '@/lib/firebase';
 
 export default function FavoriteTools() {
+    const { user } = useAuth();
     const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
-        const handleStorageChange = () => {
+        if (user) {
+            const unsubscribe = getUserFavorites(user.uid, (favorites) => {
+                setFavoriteIds(favorites || []);
+            });
+            return () => unsubscribe();
+        } else {
+            // Read from local storage if user is not logged in
             const favorites = JSON.parse(localStorage.getItem('favorite_tools') || '[]');
             setFavoriteIds(favorites);
+        }
+
+        const handleStorageChange = () => {
+             if (!user) {
+                const favorites = JSON.parse(localStorage.getItem('favorite_tools') || '[]');
+                setFavoriteIds(favorites);
+             }
         };
-        
-        handleStorageChange(); // Initial load
 
         window.addEventListener('storage', handleStorageChange);
-        
-        // Custom event to listen for changes from the same tab
         window.addEventListener('favoritesChanged', handleStorageChange);
 
         return () => {
             window.removeEventListener('storage', handleStorageChange);
             window.removeEventListener('favoritesChanged', handleStorageChange);
         };
-    }, []);
+    }, [user]);
 
     const favoriteTools = ALL_TOOLS.filter(tool => favoriteIds.includes(tool.id));
     
-    // Create a map for original indices
     const originalIndexMap = new Map<string, number>();
     ALL_TOOLS.forEach((tool, index) => {
         originalIndexMap.set(tool.id, index);

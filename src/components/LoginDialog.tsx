@@ -20,6 +20,7 @@ import {
   signUpWithEmail,
   signInWithEmail,
   updateUserProfile,
+  saveUserToDatabase,
 } from '@/lib/firebase';
 import { Loader2, Eye, EyeOff, Wand2 } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -53,7 +54,13 @@ export default function LoginDialog({ children, open, onOpenChange }: LoginDialo
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     try {
-      await signInWithGoogle();
+      const userCredential = await signInWithGoogle();
+      if (userCredential.user) {
+        await saveUserToDatabase(userCredential.user.uid, {
+            name: userCredential.user.displayName,
+            email: userCredential.user.email,
+        });
+      }
       onOpenChange(false); // Close dialog on success
       toast({ title: 'Successfully signed in with Google!' });
     } catch (error: any) {
@@ -245,7 +252,11 @@ function SignupForm({ onSuccess }: { onSuccess: () => void }) {
         try {
             const userCredential = await signUpWithEmail(values.email, values.password);
             await updateUserProfile(userCredential.user, { displayName: values.name });
-            // Here you might want to save the username to your database
+            await saveUserToDatabase(userCredential.user.uid, {
+                name: values.name,
+                username: values.username,
+                email: values.email,
+            });
             onSuccess();
             toast({ title: `Successfully signed up!`, description: "Welcome!" });
         } catch (error: any) {

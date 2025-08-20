@@ -1,11 +1,11 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import type { Tool } from '@/lib/types';
 import ToolCard from './ToolCard';
 import Header from './Header';
-import { incrementViews } from '@/lib/firebase';
+import { incrementViews, saveSearchQuery } from '@/lib/firebase';
 import FirebaseStats from './FirebaseStats';
 import { Input } from './ui/input';
 import { Search, Wrench, Lock, Code, Palette, LayoutGrid } from 'lucide-react';
@@ -13,6 +13,8 @@ import { Button } from './ui/button';
 import Icon from './Icon';
 import FeaturesSection from './FeaturesSection';
 import SectionDivider from './SectionDivider';
+import { useAuth } from '@/contexts/AuthContext';
+import { debounce } from 'lodash';
 
 interface HomePageClientProps {
   tools: Tool[];
@@ -35,6 +37,7 @@ const searchPlaceholders = [
 ];
 
 export default function HomePageClient({ tools }: HomePageClientProps) {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [placeholder, setPlaceholder] = useState(searchPlaceholders[0]);
@@ -51,6 +54,21 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  const debouncedSaveSearch = useCallback(
+    debounce((query: string, userId: string) => {
+      if (query.trim().length > 2) {
+        saveSearchQuery(userId, query);
+      }
+    }, 1000),
+    []
+  );
+
+  useEffect(() => {
+    if (user && searchQuery) {
+      debouncedSaveSearch(searchQuery, user.uid);
+    }
+  }, [searchQuery, user, debouncedSaveSearch]);
 
   const categories = useMemo(() => {
     const allCategories = tools.map(tool => tool.category);

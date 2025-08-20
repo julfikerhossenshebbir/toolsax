@@ -10,6 +10,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/t
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import DisqusComments from './DisqusComments';
 import { Tool } from '@/lib/types';
+import { useAuth } from '@/contexts/AuthContext';
+import { toggleFavoriteInDb, getUserFavorites } from '@/lib/firebase';
+import LoginDialog from './LoginDialog';
 
 
 interface ToolActionsProps {
@@ -17,38 +20,36 @@ interface ToolActionsProps {
 }
 
 export default function ToolActions({ tool }: ToolActionsProps) {
+  const { user } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     setIsClient(true);
-    // Check favorites from localStorage
-    const favorites = JSON.parse(localStorage.getItem('favorite_tools') || '[]');
-    setIsFavorite(favorites.includes(tool.id));
-  }, [tool.id]);
-
-  const toggleFavorite = () => {
-    const favorites = JSON.parse(localStorage.getItem('favorite_tools') || '[]');
-    const newIsFavorite = !isFavorite;
-
-    if (newIsFavorite) {
-      favorites.push(tool.id);
+    if (user) {
+        const unsubscribe = getUserFavorites(user.uid, (favorites) => {
+            setIsFavorite(favorites?.includes(tool.id) || false);
+        });
+        return () => unsubscribe();
     } else {
-      const index = favorites.indexOf(tool.id);
-      if (index > -1) {
-        favorites.splice(index, 1);
-      }
+        const favorites = JSON.parse(localStorage.getItem('favorite_tools') || '[]');
+        setIsFavorite(favorites.includes(tool.id));
     }
+  }, [tool.id, user]);
 
-    localStorage.setItem('favorite_tools', JSON.stringify(favorites));
-    setIsFavorite(newIsFavorite);
+  const handleToggleFavorite = () => {
+    if (!user) {
+        setIsLoginOpen(true);
+        return;
+    }
     
-    // Dispatch a custom event to notify other components (like the header)
-    window.dispatchEvent(new Event('favoritesChanged'));
-
-    toast({
-      title: newIsFavorite ? 'Added to favorites!' : 'Removed from favorites.',
+    toggleFavoriteInDb(user.uid, tool.id).then(newIsFavorite => {
+        setIsFavorite(newIsFavorite);
+        toast({
+          title: newIsFavorite ? 'Added to favorites!' : 'Removed from favorites.',
+        });
     });
   };
 
@@ -69,7 +70,6 @@ export default function ToolActions({ tool }: ToolActionsProps) {
         });
       }
     } else {
-        // Fallback for browsers that do not support Web Share API
         navigator.clipboard.writeText(window.location.href);
         toast({
             title: 'Link Copied!',
@@ -80,11 +80,12 @@ export default function ToolActions({ tool }: ToolActionsProps) {
 
 
   if (!isClient) {
-    // Render a skeleton or null during SSR to avoid hydration errors
     return null;
   }
 
   return (
+    <>
+    <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen} />
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -101,7 +102,7 @@ export default function ToolActions({ tool }: ToolActionsProps) {
 
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline" size="icon" onClick={toggleFavorite}>
+          <Button variant="outline" size="icon" onClick={handleToggleFavorite}>
             <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
           </Button>
         </TooltipTrigger>
@@ -157,5 +158,6 @@ export default function ToolActions({ tool }: ToolActionsProps) {
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
+    </>
   );
 }

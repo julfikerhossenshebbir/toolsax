@@ -4,7 +4,7 @@
 // add your configuration here.
 
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
-import { getDatabase, ref, runTransaction, onValue, get, type Database } from "firebase/database";
+import { getDatabase, ref, runTransaction, onValue, get, set, type Database, serverTimestamp, push, child } from "firebase/database";
 import { 
     getAuth, 
     onAuthStateChanged,
@@ -86,22 +86,81 @@ export const onAuthStateChange = (callback: (user: User | null) => void) => {
 };
 
 export const updateUserProfile = (user: User, profile: { displayName?: string, photoURL?: string }) => {
+    if (db) {
+        const userRef = ref(db, `users/${user.uid}`);
+        runTransaction(userRef, (userData) => {
+            if(userData) {
+                if(profile.displayName) userData.name = profile.displayName;
+                if(profile.photoURL) userData.photoURL = profile.photoURL;
+            }
+            return userData;
+        })
+    }
     return updateProfile(user, profile);
 };
 
 
-// --- User Management ---
-const getUserId = (): string => {
+// --- User Management & Database Functions ---
+const getAnonymousUserId = (): string => {
   if (typeof window === 'undefined') return '';
-  let userId = localStorage.getItem('toolsax_user_id');
+  let userId = localStorage.getItem('toolsax_anonymous_user_id');
   if (!userId) {
     userId = uuidv4();
-    localStorage.setItem('toolsax_user_id', userId);
+    localStorage.setItem('toolsax_anonymous_user_id', userId);
   }
   return userId;
 };
 
-// --- Database Functions ---
+export const initializeUser = () => {
+    if (!db || typeof window === 'undefined') return;
+
+    const userId = getAnonymousUserId();
+    const userRef = ref(db, `anonymous_users/${userId}`);
+
+    runTransaction(userRef, (userData) => {
+        if (userData === null) {
+            incrementCounter('stats/users'); // counts both anonymous and registered
+            return { createdAt: new Date().toISOString() };
+        }
+        return userData;
+    });
+};
+
+export const saveUserToDatabase = async (uid: string, data: { name?: string | null, username?: string, email?: string | null }) => {
+    if (!db) return;
+    const userRef = ref(db, `users/${uid}`);
+    const snapshot = await get(userRef);
+    if (!snapshot.exists()) {
+        // Only set initial data if user is new
+        return set(userRef, {
+            name: data.name || 'Anonymous',
+            username: data.username || '',
+            email: data.email,
+            createdAt: serverTimestamp(),
+            lastLogin: serverTimestamp(),
+        });
+    } else {
+        // Update last login for existing users
+         return runTransaction(userRef, (userData) => {
+            if (userData) {
+                userData.lastLogin = serverTimestamp();
+            }
+            return userData;
+        });
+    }
+};
+
+export const saveSearchQuery = (userId: string, query: string) => {
+    if(!db) return;
+    const searchHistoryRef = ref(db, `users/${userId}/searchHistory`);
+    const newSearchRef = push(searchHistoryRef);
+    set(newSearchRef, {
+        query: query,
+        timestamp: serverTimestamp()
+    });
+};
+
+// --- General Database Functions ---
 const incrementCounter = (path: string) => {
   if (!db) return;
   const counterRef = ref(db, path);
@@ -109,7 +168,7 @@ const incrementCounter = (path: string) => {
 };
 
 export const incrementViews = () => {
-  if (!isFirebaseConfigured || !isFirebaseEnabled) return;
+  if (!isConfigured || !isFirebaseEnabled) return;
   incrementCounter('stats/views');
 };
 
@@ -119,18 +178,31 @@ export const incrementClicks = (toolId: string) => {
   incrementCounter(`tools/${toolId}/clicks`);
 };
 
-export const initializeUser = () => {
-    if (!db || typeof window === 'undefined') return;
+export const toggleFavoriteInDb = async (userId: string, toolId: string): Promise<boolean> => {
+    if (!db) return false;
+    const favoritesRef = ref(db, `users/${userId}/favorites`);
+    const snapshot = await get(favoritesRef);
+    const favorites = snapshot.val() || [];
+    const newIsFavorite = !favorites.includes(toolId);
 
-    const userId = getUserId();
-    const userRef = ref(db, `users/${userId}`);
+    let newFavorites;
+    if (newIsFavorite) {
+        newFavorites = [...favorites, toolId];
+    } else {
+        newFavorites = favorites.filter((id: string) => id !== toolId);
+    }
+    await set(favoritesRef, newFavorites);
+    return newIsFavorite;
+};
 
-    runTransaction(userRef, (userData) => {
-        if (userData === null) {
-            incrementCounter('stats/users');
-            return { createdAt: new Date().toISOString() };
-        }
-        return userData; // User already exists
+export const getUserFavorites = (userId: string, callback: (favorites: string[]) => void) => {
+    if (!db) {
+        callback([]);
+        return () => {};
+    }
+    const favoritesRef = ref(db, `users/${userId}/favorites`);
+    return onValue(favoritesRef, (snapshot) => {
+        callback(snapshot.val() || []);
     });
 };
 
