@@ -109,7 +109,6 @@ export default function AppHeader() {
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center px-4">
         <div className="flex items-center gap-2 mr-auto">
-            <div className="md:hidden"></div>
             <AppSidebar />
              <Link href="/" className="flex items-center gap-2">
                 <Logo />
@@ -122,17 +121,13 @@ export default function AppHeader() {
               <Search className="w-5 h-5" />
             </Button>
             <NotificationBell />
-            <div className="hidden md:inline-flex">
-                <FavoriteTools />
-            </div>
+            <FavoriteTools />
             <SettingsPanel>
                 <Button variant="ghost" size="icon" aria-label="Settings">
                     <Settings className="w-5 h-5" />
                 </Button>
             </SettingsPanel>
-            <div className="hidden md:inline-flex">
-                <UserAvatar />
-            </div>
+            <UserAvatar />
         </div>
       </div>
     </header>

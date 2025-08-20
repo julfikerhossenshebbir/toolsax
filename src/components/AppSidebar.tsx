@@ -1,3 +1,4 @@
+
 'use client'
 
 import {
@@ -87,18 +88,19 @@ const AppSidebar = forwardRef<HTMLDivElement, AppSidebarProps>(({ open, onOpenCh
       </SheetContent>
     );
 
+    // Default trigger for desktop
+    const defaultTrigger = (
+      <Button variant="ghost" size="icon" className="h-10 w-10">
+        <PanelLeft className="h-5 w-5" />
+        <span className="sr-only">Toggle Menu</span>
+      </Button>
+    );
+
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-            {trigger ? (
-                <SheetTrigger asChild>{trigger}</SheetTrigger>
-            ) : (
-                <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon" className="hidden md:inline-flex h-10 w-10">
-                        <PanelLeft className="h-5 w-5" />
-                        <span className="sr-only">Toggle Menu</span>
-                    </Button>
-                </SheetTrigger>
-            )}
+            <SheetTrigger asChild>
+              {trigger || defaultTrigger}
+            </SheetTrigger>
             {sidebarContent}
         </Sheet>
     )

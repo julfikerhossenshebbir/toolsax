@@ -2,34 +2,25 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, Search, Heart, User, PanelLeft } from 'lucide-react';
+import { Home, Search, Bug, PanelLeft, Sun, Moon } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Button } from './ui/button';
 import { useState } from 'react';
 import AppSidebar from './AppSidebar';
-import { useAuth } from '@/contexts/AuthContext';
-import LoginDialog from './LoginDialog';
+import { useTheme } from 'next-themes';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Button } from './ui/button';
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
-  const { user } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
-  const handleProfileClick = (e: React.MouseEvent) => {
-    if (!user) {
-      e.preventDefault();
-      setIsLoginOpen(true);
-    }
-  };
-  
   const handleSearchClick = () => {
     const searchBox = document.getElementById('search-box');
     if (searchBox) {
@@ -37,40 +28,46 @@ export default function MobileBottomNav() {
         setTimeout(() => searchBox.focus(), 300);
     }
   };
-
+  
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
 
   const navItems = [
-    { href: '/', icon: Home, label: 'Home' },
-    { action: handleSearchClick, icon: Search, label: 'Search' },
-    { href: '/#favorites', icon: Heart, label: 'Favorites' },
-    { href: '/profile', icon: User, label: 'Profile', action: handleProfileClick },
+    { href: '/', icon: Home, label: 'Home', isLink: true },
+    { action: handleSearchClick, icon: Search, label: 'Search', isLink: false },
+    { href: '/report-a-bug', icon: Bug, label: 'Report Bug', isLink: true },
+    { action: toggleTheme, icon: theme === 'light' ? Moon : Sun, label: 'Theme', isLink: false },
   ];
 
   return (
     <>
-    <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen} />
     <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-background border-t z-50">
       <nav className="flex justify-around items-center h-full">
         {navItems.map((item) => (
             <TooltipProvider key={item.label} delayDuration={0}>
                 <Tooltip>
                     <TooltipTrigger asChild>
-                    {item.href ? (
-                        <Link href={item.href} onClick={item.action} legacyBehavior>
-                            <a className={cn(
-                                'flex flex-col items-center justify-center text-muted-foreground w-full h-full',
-                                { 'text-primary': pathname === item.href }
-                            )}>
-                                <item.icon className="h-6 w-6" />
-                                <span className="text-xs mt-1">{item.label}</span>
-                            </a>
-                        </Link>
-                    ) : (
-                        <button onClick={item.action} className="flex flex-col items-center justify-center text-muted-foreground w-full h-full">
-                            <item.icon className="h-6 w-6" />
-                            <span className="text-xs mt-1">{item.label}</span>
-                        </button>
-                    )}
+                      {item.isLink ? (
+                           <Link href={item.href || '/'} legacyBehavior>
+                               <a className={cn(
+                                   'flex flex-col items-center justify-center text-muted-foreground w-full h-full',
+                                   { 'text-primary': pathname === item.href }
+                               )}>
+                                   <item.icon className="h-6 w-6" />
+                                   <span className="text-xs mt-1">{item.label}</span>
+                               </a>
+                           </Link>
+                      ) : (
+                           <Button
+                               variant="ghost"
+                               onClick={item.action}
+                               className="flex flex-col items-center justify-center text-muted-foreground w-full h-full"
+                           >
+                               <item.icon className="h-6 w-6" />
+                               <span className="text-xs mt-1">{item.label}</span>
+                           </Button>
+                      )}
                     </TooltipTrigger>
                     <TooltipContent>
                         <p>{item.label}</p>
@@ -85,10 +82,10 @@ export default function MobileBottomNav() {
                         open={isSidebarOpen}
                         onOpenChange={setIsSidebarOpen}
                         trigger={
-                            <button className="flex flex-col items-center justify-center text-muted-foreground w-full h-full">
+                            <Button variant="ghost" className="flex flex-col items-center justify-center text-muted-foreground w-full h-full">
                                 <PanelLeft className="h-6 w-6" />
                                 <span className="text-xs mt-1">Menu</span>
-                            </button>
+                            </Button>
                         }
                     />
                 </TooltipTrigger>
