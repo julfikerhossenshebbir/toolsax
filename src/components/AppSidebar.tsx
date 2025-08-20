@@ -1,4 +1,3 @@
-
 'use client'
 
 import {
@@ -9,9 +8,10 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import Link from "next/link";
-import { Home, Bug, PanelLeft } from "lucide-react";
+import { Home, Bug, PanelLeft, FileText, Cookie, Shield, Lock, Coffee, Mail } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
 
 const Logo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -23,8 +23,15 @@ const Logo = () => (
 );
 
 const mainNavLinks = [
-    { href: "/", icon: <Home />, label: "Home" },
-    { href: "/report-a-bug", icon: <Bug />, label: "Report a Bug" },
+    { href: "/", icon: <Home className="h-4 w-4" />, label: "Home" },
+    { href: "/report-a-bug", icon: <Bug className="h-4 w-4" />, label: "Report a Bug" },
+];
+
+const secondaryNavLinks = [
+    { href: "/contact", icon: <Mail className="h-4 w-4" />, label: "Contact Us" },
+    { href: "/cookies", icon: <Cookie className="h-4 w-4" />, label: "Cookie Policy" },
+    { href: "/dmca", icon: <Shield className="h-4 w-4" />, label: "DMCA" },
+    { href: "/privacy", icon: <Lock className="h-4 w-4" />, label: "Privacy Policy" },
 ];
 
 export default function AppSidebar() {
@@ -46,8 +53,9 @@ export default function AppSidebar() {
                         <span className="font-bold text-lg">Toolsax</span>
                     </div>
                 </SheetHeader>
-                <div className="p-4 flex-grow">
+                <div className="p-4 flex-grow overflow-y-auto">
                     <nav className="flex flex-col gap-2">
+                        <p className="text-xs font-semibold text-muted-foreground px-2">MAIN</p>
                         {mainNavLinks.map(link => (
                             <Link key={link.href} href={link.href} onClick={() => setIsOpen(false)}>
                                 <Button variant="ghost" className="w-full justify-start gap-2">
@@ -57,6 +65,26 @@ export default function AppSidebar() {
                             </Link>
                         ))}
                     </nav>
+                    <Separator className="my-4" />
+                    <nav className="flex flex-col gap-2">
+                        <p className="text-xs font-semibold text-muted-foreground px-2">INFO</p>
+                        {secondaryNavLinks.map(link => (
+                            <Link key={link.href} href={link.href} onClick={() => setIsOpen(false)}>
+                                <Button variant="ghost" className="w-full justify-start gap-2">
+                                    {link.icon}
+                                    <span>{link.label}</span>
+                                </Button>
+                            </Link>
+                        ))}
+                    </nav>
+                </div>
+                <div className="p-4 border-t">
+                    <a href="https://www.buymeacoffee.com/anaroul" target="_blank" rel="noopener noreferrer">
+                         <Button className="w-full bg-yellow-400 text-black hover:bg-yellow-500">
+                           <Coffee className="h-4 w-4 mr-2" />
+                           Buy me a coffee
+                         </Button>
+                    </a>
                 </div>
             </SheetContent>
         </Sheet>
