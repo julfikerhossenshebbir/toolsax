@@ -10,7 +10,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/t
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import DisqusComments from './DisqusComments';
 import { Tool } from '@/lib/types';
-import { ShareButtons } from './ShareButtons';
 
 
 interface ToolActionsProps {
@@ -53,7 +52,37 @@ export default function ToolActions({ tool }: ToolActionsProps) {
     });
   };
 
-  const toolUrl = isClient ? `${window.location.origin}/${tool.id}` : '';
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: tool.name,
+          text: tool.description,
+          url: window.location.href,
+        });
+      } catch (error) {
+        console.error('Error sharing:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Could not share',
+          description: 'An error occurred while trying to share.',
+        });
+      }
+    } else {
+        // Fallback for browsers that do not support Web Share API
+        navigator.clipboard.writeText(window.location.href);
+        toast({
+            title: 'Link Copied!',
+            description: 'Share functionality is not supported on this browser. The link has been copied to your clipboard.',
+        });
+    }
+  };
+
+
+  if (!isClient) {
+    // Render a skeleton or null during SSR to avoid hydration errors
+    return null;
+  }
 
   return (
     <TooltipProvider>
@@ -81,28 +110,16 @@ export default function ToolActions({ tool }: ToolActionsProps) {
         </TooltipContent>
       </Tooltip>
       
-      <Dialog>
-        <Tooltip>
-            <TooltipTrigger asChild>
-                <DialogTrigger asChild>
-                    <Button variant="outline" size="icon">
-                        <Share2 className="h-4 w-4" />
-                    </Button>
-                </DialogTrigger>
-            </TooltipTrigger>
-            <TooltipContent>
-                <p>Share Tool</p>
-            </TooltipContent>
-        </Tooltip>
-        <DialogContent className="max-w-md">
-            <DialogHeader>
-                <DialogTitle>Share "{tool.name}"</DialogTitle>
-            </DialogHeader>
-            <div className="mt-4 flex justify-center">
-                {isClient && <ShareButtons title={tool.name} url={toolUrl} />}
-            </div>
-        </DialogContent>
-      </Dialog>
+      <Tooltip>
+        <TooltipTrigger asChild>
+            <Button variant="outline" size="icon" onClick={handleNativeShare}>
+                <Share2 className="h-4 w-4" />
+            </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+            <p>Share Tool</p>
+        </TooltipContent>
+      </Tooltip>
 
       <Dialog>
         <Tooltip>
