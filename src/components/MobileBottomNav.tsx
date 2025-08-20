@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, Search, Bug, PanelLeft, Sun, Moon } from 'lucide-react';
+import { Home, Search, Bug, Sun, Moon } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -15,6 +15,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Button } from './ui/button';
+import { PanelLeft } from 'lucide-react';
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
@@ -49,20 +50,18 @@ export default function MobileBottomNav() {
                 <Tooltip>
                     <TooltipTrigger asChild>
                       {item.isLink ? (
-                           <Link href={item.href || '/'} legacyBehavior>
-                               <a className={cn(
+                           <Link href={item.href || '/'} className={cn(
                                    'flex flex-col items-center justify-center text-muted-foreground w-full h-full',
                                    { 'text-primary': pathname === item.href }
                                )}>
-                                   <item.icon className="h-6 w-6" />
-                                   <span className="text-xs mt-1">{item.label}</span>
-                               </a>
+                               <item.icon className="h-6 w-6" />
+                               <span className="text-xs mt-1">{item.label}</span>
                            </Link>
                       ) : (
                            <Button
                                variant="ghost"
                                onClick={item.action}
-                               className="flex flex-col items-center justify-center text-muted-foreground w-full h-full"
+                               className="flex flex-col items-center justify-center text-muted-foreground w-full h-full p-0"
                            >
                                <item.icon className="h-6 w-6" />
                                <span className="text-xs mt-1">{item.label}</span>
@@ -82,7 +81,7 @@ export default function MobileBottomNav() {
                         open={isSidebarOpen}
                         onOpenChange={setIsSidebarOpen}
                         trigger={
-                            <Button variant="ghost" className="flex flex-col items-center justify-center text-muted-foreground w-full h-full">
+                            <Button variant="ghost" className="flex flex-col items-center justify-center text-muted-foreground w-full h-full p-0">
                                 <PanelLeft className="h-6 w-6" />
                                 <span className="text-xs mt-1">Menu</span>
                             </Button>
