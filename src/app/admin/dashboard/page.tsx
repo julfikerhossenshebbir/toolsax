@@ -16,9 +16,15 @@ export default async function AdminDashboardPage() {
                 <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <StatCard title="Total Users" value={stats.users.toLocaleString()} icon={Users} />
-                <StatCard title="Total Clicks" value={stats.tool_clicks.toLocaleString()} icon={BarChart} />
-                <StatCard title="Total Views" value={stats.views.toLocaleString()} icon={AreaChart} />
+                <StatCard title="Total Users" value={stats.users.toLocaleString()}>
+                    <Users />
+                </StatCard>
+                <StatCard title="Total Clicks" value={stats.tool_clicks.toLocaleString()}>
+                    <BarChart />
+                </StatCard>
+                <StatCard title="Total Views" value={stats.views.toLocaleString()}>
+                    <AreaChart />
+                </StatCard>
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                 <Card className="col-span-4">

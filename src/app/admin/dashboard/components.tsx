@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +11,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { format, formatDistanceToNow } from 'date-fns';
-import { AreaChart, BarChart, Users, Trash2 as Trash2Icon } from 'lucide-react';
+import { Users, Trash2 as Trash2Icon } from 'lucide-react';
 import type { UserData, Notification } from '../types';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -26,15 +27,15 @@ import { Loader2 } from 'lucide-react';
 interface StatCardProps {
   title: string;
   value: string;
-  icon: React.ElementType;
+  children: React.ReactNode;
 }
 
-export function StatCard({ title, value, icon: Icon }: StatCardProps) {
+export function StatCard({ title, value, children }: StatCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <Icon className="h-4 w-4 text-muted-foreground" />
+        <div className="h-4 w-4 text-muted-foreground">{children}</div>
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
