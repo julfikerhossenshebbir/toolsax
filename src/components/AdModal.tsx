@@ -18,10 +18,11 @@ interface AdModalProps {
   isOpen: boolean;
   onClose: () => void;
   onContinue: (ad: Advertisement) => void;
+  onAdClick: (ad: Advertisement) => void;
   advertisement: Advertisement | null;
 }
 
-export function AdModal({ isOpen, onClose, onContinue, advertisement }: AdModalProps) {
+export function AdModal({ isOpen, onClose, onContinue, onAdClick, advertisement }: AdModalProps) {
   const [countdown, setCountdown] = useState(10);
 
   useEffect(() => {
@@ -49,9 +50,10 @@ export function AdModal({ isOpen, onClose, onContinue, advertisement }: AdModalP
     }
   }
   
-  const handleAdClick = () => {
-      window.open(advertisement.linkUrl, '_blank');
-      handleContinueClick();
+  const handleAdImageClick = () => {
+      if (advertisement) {
+        onAdClick(advertisement);
+      }
   }
 
   return (
@@ -77,7 +79,7 @@ export function AdModal({ isOpen, onClose, onContinue, advertisement }: AdModalP
             Enjoy our free tools! Please take a moment to view this ad from {advertisement.advertiserName}.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="my-4 rounded-md overflow-hidden cursor-pointer" onClick={handleAdClick}>
+        <div className="my-4 rounded-md overflow-hidden cursor-pointer" onClick={handleAdImageClick}>
             <Image
                 src={advertisement.imageUrl}
                 alt={`Advertisement from ${advertisement.advertiserName}`}

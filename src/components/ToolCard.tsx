@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { Tool } from '@/lib/types';
 import Icon from './Icon';
 import { Card, CardContent } from './ui/card';
-import { incrementClicks, getToolStats, isConfigured, getAdSettings, getActiveAdvertisement, incrementAdViews, incrementAdClicks } from '@/lib/firebase';
+import { incrementClicks, getToolStats, isConfigured, getAdSettings, getActiveAdvertisement, incrementAdViews, incrementAdClicks, markAdAsSeen, getSeenAds } from '@/lib/firebase';
 import { MousePointerClick, Lock } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 import { AdModal } from './AdModal';
@@ -16,8 +16,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import LoginDialog from './LoginDialog';
 import type { AdSettings, Advertisement } from '@/app/admin/types';
 
-const AD_STORAGE_KEY_COUNT = 'toolsax_ad_views';
-const AD_STORAGE_KEY_TIMESTAMP = 'toolsax_last_ad_timestamp';
 
 interface ToolCardProps {
   tool: Tool;
@@ -67,28 +65,15 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
         return;
     }
 
-    const adViews = parseInt(localStorage.getItem(AD_STORAGE_KEY_COUNT) || '0', 10);
-    const lastAdTimestamp = parseInt(localStorage.getItem(AD_STORAGE_KEY_TIMESTAMP) || '0', 10);
-    
-    const now = new Date().getTime();
-    const cooldownInMillis = (adSettings.cooldownMinutes || 30) * 60 * 1000;
+    const seenAds = await getSeenAds(user?.uid);
+    const adToShow = await getActiveAdvertisement(seenAds);
 
-    const isCooldownOver = now - lastAdTimestamp > cooldownInMillis;
-    
-    if (isCooldownOver) {
-        localStorage.setItem(AD_STORAGE_KEY_COUNT, '0');
-    }
-    
-    const currentAdViews = isCooldownOver ? 0 : adViews;
-
-    if (currentAdViews < (adSettings.viewLimit || 3)) {
-      const adToShow = await getActiveAdvertisement();
-      if (adToShow) {
+    if (adToShow) {
         setActiveAd(adToShow);
         setShowAd(true);
         incrementAdViews(adToShow.id);
+        markAdAsSeen(user?.uid, adToShow.id);
         return;
-      }
     }
     
     // No ad to show, proceed to tool
@@ -96,14 +81,19 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
   };
 
   const handleContinueToTool = (ad: Advertisement) => {
-    const currentViews = parseInt(localStorage.getItem(AD_STORAGE_KEY_COUNT) || '0', 10);
-    localStorage.setItem(AD_STORAGE_KEY_COUNT, (currentViews + 1).toString());
-    localStorage.setItem(AD_STORAGE_KEY_TIMESTAMP, new Date().getTime().toString());
-    
     if (ad.linkUrl) {
-      incrementAdClicks(ad.id);
+      // This click is only tracked when the user *continues* after seeing the ad.
+      // Clicks on the ad image itself are handled in the AdModal.
     }
+    setShowAd(false);
+    router.push(`/${tool.id}`);
+  };
 
+  const handleAdClicked = (ad: Advertisement) => {
+    if (ad.linkUrl) {
+        incrementAdClicks(ad.id);
+        window.open(ad.linkUrl, '_blank');
+    }
     setShowAd(false);
     router.push(`/${tool.id}`);
   };
@@ -114,6 +104,7 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
         isOpen={showAd}
         onClose={() => setShowAd(false)}
         onContinue={handleContinueToTool}
+        onAdClick={handleAdClicked}
         advertisement={activeAd}
       />
       <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen} />

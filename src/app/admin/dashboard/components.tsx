@@ -25,6 +25,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ALL_TOOLS } from '@/lib/tools';
+import { getMonthlyUserGrowth, getTopToolsByClicks } from '@/lib/firebase';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 // --- Stat Cards ---
@@ -355,22 +357,30 @@ export function AdSettingsForm({ currentAdSettings }: { currentAdSettings: AdSet
 }
 
 // --- User Overview Chart ---
-const userChartData = [
-  { name: 'Jan', total: 150 },
-  { name: 'Feb', total: 200 },
-  { name: 'Mar', total: 180 },
-  { name: 'Apr', total: 250 },
-  { name: 'May', total: 220 },
-  { name: 'Jun', total: 300 },
-  { name: 'Jul', total: 280 },
-  { name: 'Aug', total: 320 },
-  { name: 'Sep', total: 290 },
-  { name: 'Oct', total: 350 },
-  { name: 'Nov', total: 380 },
-  { name: 'Dec', total: 400 },
-];
-
 export function UserOverviewChart() {
+    const [data, setData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getMonthlyUserGrowth().then((chartData) => {
+            setData(chartData);
+            setLoading(false);
+        });
+    }, []);
+
+    if (loading) {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>User Growth Overview</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="w-full h-[300px]" />
+                </CardContent>
+            </Card>
+        )
+    }
+
     return (
         <Card>
             <CardHeader>
@@ -378,7 +388,7 @@ export function UserOverviewChart() {
             </CardHeader>
             <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={userChartData}>
+                    <BarChart data={data}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
                         <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}`} />
@@ -398,17 +408,30 @@ export function UserOverviewChart() {
 }
 
 // --- Tool Popularity Chart ---
-const toolPopularityData = [
-  { name: 'JSON Formatter', clicks: 4000 },
-  { name: 'QR Generator', clicks: 3000 },
-  { name: 'Case Converter', clicks: 2000 },
-  { name: 'Password Gen', clicks: 2780 },
-  { name: 'Color Conv', clicks: 1890 },
-  { name: 'Lorem Ipsum', clicks: 2390 },
-  { name: 'Unit Conv', clicks: 3490 },
-];
-
 export function ToolPopularityChart() {
+    const [data, setData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getTopToolsByClicks().then((chartData) => {
+            setData(chartData);
+            setLoading(false);
+        });
+    }, []);
+
+    if (loading) {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Tool Popularity</CardTitle>
+                </CardHeader>
+                <CardContent>
+                     <Skeleton className="w-full h-[300px]" />
+                </CardContent>
+            </Card>
+        )
+    }
+
     return (
         <Card>
             <CardHeader>
@@ -416,7 +439,7 @@ export function ToolPopularityChart() {
             </CardHeader>
             <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={toolPopularityData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                    <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                         <defs>
                             <linearGradient id="colorClicks" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>

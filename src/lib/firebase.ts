@@ -4,7 +4,7 @@
 // add your configuration here.
 
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
-import { getDatabase, ref, runTransaction, onValue, get, set, type Database, serverTimestamp, push, child, update, remove } from "firebase/database";
+import { getDatabase, ref, runTransaction, onValue, get, set, type Database, serverTimestamp, push, child, update, remove, query, orderByChild, equalTo, limitToLast } from "firebase/database";
 import { 
     getAuth, 
     onAuthStateChanged,
@@ -19,6 +19,8 @@ import {
 } from "firebase/auth";
 import { v4 as uuidv4 } from 'uuid';
 import type { AdSettings, Advertisement } from "@/app/admin/types";
+import { ALL_TOOLS } from "./tools";
+import { subMonths, format, startOfMonth } from 'date-fns';
 
 
 export interface Notification {
@@ -430,7 +432,40 @@ export const getAllAdvertisements = (subscribe: boolean = true, callback: (ads: 
     return unsubscribe;
 };
 
-export const getActiveAdvertisement = async (): Promise<Advertisement | null> => {
+export const getSeenAds = async (userId?: string): Promise<string[]> => {
+    if (!db) return [];
+    if (userId) {
+        const seenAdsRef = ref(db, `users/${userId}/seenAds`);
+        const snapshot = await get(seenAdsRef);
+        return snapshot.val() || [];
+    } else {
+        const seenAdsJson = localStorage.getItem('seen_ads');
+        return seenAdsJson ? JSON.parse(seenAdsJson) : [];
+    }
+};
+
+export const markAdAsSeen = (userId?: string, adId?: string) => {
+    if (!adId) return;
+    if (userId && db) {
+        const seenAdsRef = ref(db, `users/${userId}/seenAds`);
+        runTransaction(seenAdsRef, (seenAds) => {
+            if (!seenAds) seenAds = [];
+            if (!seenAds.includes(adId)) {
+                seenAds.push(adId);
+            }
+            return seenAds;
+        });
+    } else {
+        const seenAds = JSON.parse(localStorage.getItem('seen_ads') || '[]');
+        if (!seenAds.includes(adId)) {
+            seenAds.push(adId);
+            localStorage.setItem('seen_ads', JSON.stringify(seenAds));
+        }
+    }
+};
+
+
+export const getActiveAdvertisement = async (seenAdIds: string[] = []): Promise<Advertisement | null> => {
     if (!db) return null;
     const adsRef = ref(db, 'advertisements');
     const snapshot = await get(adsRef);
@@ -438,11 +473,15 @@ export const getActiveAdvertisement = async (): Promise<Advertisement | null> =>
 
     const adsData = snapshot.val();
     const activeAds = Object.values(adsData).filter((ad: any) => {
-        if (!ad.isActive) return false;
+        if (!ad.isActive || seenAdIds.includes(ad.id)) return false;
+        
         const maxViews = ad.maxViews || Infinity;
         const maxClicks = ad.maxClicks || Infinity;
+        const currentViews = ad.currentViews || 0;
+        const currentClicks = ad.currentClicks || 0;
+        
         // Use 0 as a default for currentViews/currentClicks if they are undefined
-        return (ad.currentViews || 0) < maxViews && (ad.currentClicks || 0) < maxClicks;
+        return currentViews < maxViews && currentClicks < maxClicks;
     }) as Advertisement[];
 
     if (activeAds.length === 0) return null;
@@ -476,6 +515,83 @@ export const deleteAdvertisement = (adId: string) => {
     const adRef = ref(db, `advertisements/${adId}`);
     return remove(adRef);
 }
+
+// --- Dashboard Chart Data ---
+
+export const getMonthlyUserGrowth = async (): Promise<{ name: string; total: number }[]> => {
+    if (!db) return [];
+    
+    const now = new Date();
+    const monthlyData: { [key: string]: number } = {};
+    const monthLabels: string[] = [];
+
+    // Initialize last 12 months
+    for (let i = 11; i >= 0; i--) {
+        const d = subMonths(now, i);
+        const monthKey = format(d, 'yyyy-MM');
+        const monthLabel = format(d, 'MMM');
+        monthlyData[monthKey] = 0;
+        if (!monthLabels.includes(monthLabel)) {
+            monthLabels.push(monthLabel);
+        }
+    }
+    
+    const usersRef = ref(db, 'users');
+    const userQuery = query(usersRef, orderByChild('createdAt'));
+    
+    try {
+        const snapshot = await get(userQuery);
+        if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+                const user = childSnapshot.val();
+                if (user.createdAt) {
+                    const monthKey = format(new Date(user.createdAt), 'yyyy-MM');
+                    if (monthlyData.hasOwnProperty(monthKey)) {
+                        monthlyData[monthKey]++;
+                    }
+                }
+            });
+        }
+    } catch(e) {
+        console.error("Error fetching user growth data: ", e);
+    }
+
+    // Format for chart
+    return monthLabels.map(label => {
+        const monthKey = Object.keys(monthlyData).find(key => format(new Date(key), 'MMM') === label) || '';
+        return { name: label, total: monthlyData[monthKey] || 0 };
+    });
+};
+
+
+export const getTopToolsByClicks = async (limit: number = 7): Promise<{ name: string; clicks: number }[]> => {
+    if (!db) return [];
+    
+    const toolsRef = ref(db, 'tools');
+    const toolQuery = query(toolsRef, orderByChild('clicks'), limitToLast(limit));
+
+    try {
+        const snapshot = await get(toolQuery);
+        if (snapshot.exists()) {
+            const toolsData: { name: string, clicks: number }[] = [];
+            snapshot.forEach((childSnapshot) => {
+                const toolId = childSnapshot.key;
+                const toolData = childSnapshot.val();
+                const toolInfo = ALL_TOOLS.find(t => t.id === toolId);
+                if (toolInfo) {
+                    toolsData.push({
+                        name: toolInfo.name,
+                        clicks: toolData.clicks || 0,
+                    });
+                }
+            });
+            return toolsData.reverse(); // To show most clicked first
+        }
+    } catch(e) {
+         console.error("Error fetching tool popularity data: ", e);
+    }
+    return [];
+};
 
 
 export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;
