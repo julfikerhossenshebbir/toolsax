@@ -92,9 +92,7 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
     <div className="container mx-auto px-4">
       <Header />
       
-      <FirebaseStats />
-      
-      <section id="filters-section" className="mb-12">
+      <section id="filters-section" className="my-12">
         <div className="w-full mx-auto flex flex-col items-center gap-y-6">
             <div className="relative w-full md:w-3/4">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -146,6 +144,9 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
 
       <SectionDivider />
       <FeaturesSection />
+
+      <SectionDivider />
+      <FirebaseStats />
 
     </div>
   );

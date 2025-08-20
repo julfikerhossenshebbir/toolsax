@@ -30,7 +30,7 @@ const FirebaseStats = () => {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-3 my-8">
+    <div className="grid gap-4 md:grid-cols-3 mb-8">
       <StatCard
         title="Total Views"
         value={stats?.views}
