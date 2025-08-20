@@ -7,7 +7,6 @@ import { CustomThemeProvider } from '@/components/ThemeProvider';
 import GridBackground from '@/components/GridBackground';
 import { AuthProvider } from '@/contexts/AuthContext';
 import MobileBottomNav from '@/components/MobileBottomNav';
-import AppSidebar from '@/components/AppSidebar';
 import { AppStateProvider } from '@/contexts/AppStateContext';
 
 export const metadata: Metadata = {

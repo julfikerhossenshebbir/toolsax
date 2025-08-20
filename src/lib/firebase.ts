@@ -441,7 +441,8 @@ export const getActiveAdvertisement = async (): Promise<Advertisement | null> =>
         if (!ad.isActive) return false;
         const maxViews = ad.maxViews || Infinity;
         const maxClicks = ad.maxClicks || Infinity;
-        return ad.currentViews < maxViews && ad.currentClicks < maxClicks;
+        // Use 0 as a default for currentViews/currentClicks if they are undefined
+        return (ad.currentViews || 0) < maxViews && (ad.currentClicks || 0) < maxClicks;
     }) as Advertisement[];
 
     if (activeAds.length === 0) return null;

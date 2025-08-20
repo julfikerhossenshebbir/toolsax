@@ -5,14 +5,13 @@ import { useMemo, useEffect, useState } from 'react';
 import type { Tool } from '@/lib/types';
 import ToolCard from './ToolCard';
 import Header from './Header';
-import { incrementViews, saveSearchQuery } from '@/lib/firebase';
+import { incrementViews } from '@/lib/firebase';
 import FeaturesSection from './FeaturesSection';
 import SectionDivider from './SectionDivider';
 import { useAuth } from '@/contexts/AuthContext';
 import FirebaseStats from './FirebaseStats';
 import { useAppState } from '@/contexts/AppStateContext';
 import { Button } from './ui/button';
-import { cn } from '@/lib/utils';
 import { LayoutGrid, Palette, Code, Wrench, Lock, FileText, ImageIcon, File as FileIcon, Share2, Search, Smile, Paintbrush, BoxSelect, Square, Scan, Code2, GitCompareArrows, Mic, Volume2, FileAudio, Github, MessageSquare } from 'lucide-react';
 
 
@@ -81,7 +80,7 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
                         onClick={() => setSelectedCategory(category)}
                         className="transition-all duration-200 shrink-0"
                     >
-                        {categoryIcons[category]}
+                        {categoryIcons[category] || <Wrench className="w-4 h-4 mr-2" />}
                         {category}
                     </Button>
                 ))}
