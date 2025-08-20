@@ -139,7 +139,9 @@ export const getUserPublicProfile = async (username: string) => {
         uid: uid,
         name: data.name,
         username: data.username,
-        photoURL: data.photoURL
+        photoURL: data.photoURL,
+        lastLogin: data.lastLogin,
+        favorites: data.favorites || [],
     };
 };
 
@@ -186,6 +188,7 @@ export const saveUserToDatabase = async (user: User) => {
         });
         const usernameRef = ref(db, `usernames/${username}`);
         await set(usernameRef, user.uid);
+        incrementCounter('stats/users');
     } else {
         // Update last login for existing users
          return runTransaction(userRef, (userData) => {

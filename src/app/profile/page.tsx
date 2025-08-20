@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import ReactCrop, { type Crop, type PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import Link from 'next/link';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
 async function uploadToImgBB(imageFile: File | Blob): Promise<string | null> {
@@ -237,11 +238,21 @@ export default function ProfilePage() {
                     <CardDescription>Update your personal information and profile picture.</CardDescription>
                 </div>
                 {username && (
-                    <Button asChild variant="outline">
-                        <Link href={`/u/${username}`}>
-                            <EyeIcon className="mr-2 h-4 w-4"/> View Public Profile
-                        </Link>
-                    </Button>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button asChild variant="outline" size="icon">
+                            <Link href={`/u/${username}`}>
+                                <EyeIcon className="h-4 w-4"/>
+                                <span className="sr-only">View Public Profile</span>
+                            </Link>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>View Public Profile</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                 )}
             </div>
         </CardHeader>
