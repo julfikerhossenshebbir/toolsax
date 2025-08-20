@@ -53,12 +53,12 @@ export default function MobileBottomNav() {
       // Render a placeholder or null on the server and during initial client render
       return null;
     }
-    return theme === 'light' ? <Moon className="h-6 w-6" /> : <Sun className="h-6 w-6" />;
+    return theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />;
   }
 
   return (
     <>
-    <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-background border-t z-50">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 h-14 bg-background border-t z-50">
       <nav className="flex justify-around items-center h-full">
         {navItems.map((item) => (
             <TooltipProvider key={item.label} delayDuration={0}>
@@ -72,7 +72,7 @@ export default function MobileBottomNav() {
                                    { 'text-primary': pathname === item.href }
                                )}
                            >
-                               <item.icon className="h-6 w-6" />
+                               <item.icon className="h-5 w-5" />
                                <span className="text-xs mt-1">{item.label}</span>
                            </Link>
                       ) : (
@@ -81,7 +81,7 @@ export default function MobileBottomNav() {
                                onClick={item.action}
                                className="flex flex-col items-center justify-center text-muted-foreground w-full h-full p-0 rounded-none hover:bg-transparent"
                            >
-                               <item.icon className="h-6 w-6" />
+                               <item.icon className="h-5 w-5" />
                                <span className="text-xs mt-1">{item.label}</span>
                            </Button>
                       )}
@@ -118,7 +118,7 @@ export default function MobileBottomNav() {
                         onOpenChange={setIsSidebarOpen}
                         trigger={
                             <Button variant="ghost" className="flex flex-col items-center justify-center text-muted-foreground w-full h-full p-0 rounded-none hover:bg-transparent">
-                                <PanelLeft className="h-6 w-6" />
+                                <PanelLeft className="h-5 w-5" />
                                 <span className="text-xs mt-1">Menu</span>
                             </Button>
                         }
