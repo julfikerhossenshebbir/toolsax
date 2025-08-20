@@ -4,6 +4,8 @@
 import * as React from 'react';
 import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes';
 import { type ThemeProviderProps } from 'next-themes/dist/types';
+import { useAuth } from '@/contexts/AuthContext';
+import { getUserThemeSettings, saveUserThemeSettings } from '@/lib/firebase';
 
 const DEFAULT_COLOR = 'violet';
 const DEFAULT_RADIUS = 0.5;
@@ -24,41 +26,68 @@ const CustomThemeContext = React.createContext<CustomThemeContextType | undefine
 
 export function CustomThemeProvider({ children, ...props }: ThemeProviderProps) {
   const { theme } = useTheme()
+  const { user } = useAuth();
+
   const [primaryColor, setPrimaryColor] = React.useState(DEFAULT_COLOR);
   const [radius, setRadius] = React.useState(DEFAULT_RADIUS);
   const [fontSize, setFontSize] = React.useState(DEFAULT_FONT_SIZE);
 
   React.useEffect(() => {
-    const savedColor = localStorage.getItem('theme-primary-color');
-    const savedRadius = localStorage.getItem('theme-radius');
-    const savedFontSize = localStorage.getItem('theme-font-size');
-    if (savedColor) setPrimaryColor(savedColor);
-    if (savedRadius) setRadius(parseFloat(savedRadius));
-    if (savedFontSize) setFontSize(parseInt(savedFontSize, 10));
-  }, []);
+    const loadSettings = async () => {
+      if (user) {
+        // User is logged in, load from Firebase
+        const dbSettings = await getUserThemeSettings(user.uid);
+        if (dbSettings) {
+          setPrimaryColor(dbSettings.primaryColor || DEFAULT_COLOR);
+          setRadius(dbSettings.radius ?? DEFAULT_RADIUS);
+          setFontSize(dbSettings.fontSize ?? DEFAULT_FONT_SIZE);
+          return;
+        }
+      }
+      // User is not logged in or has no settings, load from localStorage
+      const savedColor = localStorage.getItem('theme-primary-color');
+      const savedRadius = localStorage.getItem('theme-radius');
+      const savedFontSize = localStorage.getItem('theme-font-size');
+      if (savedColor) setPrimaryColor(savedColor);
+      if (savedRadius) setRadius(parseFloat(savedRadius));
+      if (savedFontSize) setFontSize(parseInt(savedFontSize, 10));
+    };
+    
+    loadSettings();
+  }, [user]);
 
   const handleSetPrimaryColor = (color: string) => {
     setPrimaryColor(color);
     localStorage.setItem('theme-primary-color', color);
+    if(user) saveUserThemeSettings(user.uid, { primaryColor: color });
   };
 
   const handleSetRadius = (newRadius: number) => {
     setRadius(newRadius);
     localStorage.setItem('theme-radius', newRadius.toString());
+    if(user) saveUserThemeSettings(user.uid, { radius: newRadius });
   };
 
   const handleSetFontSize = (newSize: number) => {
     setFontSize(newSize);
     localStorage.setItem('theme-font-size', newSize.toString());
+    if(user) saveUserThemeSettings(user.uid, { fontSize: newSize });
   };
 
   const resetTheme = () => {
+    const defaultSettings = {
+        primaryColor: DEFAULT_COLOR,
+        radius: DEFAULT_RADIUS,
+        fontSize: DEFAULT_FONT_SIZE,
+    };
     setPrimaryColor(DEFAULT_COLOR);
     setRadius(DEFAULT_RADIUS);
     setFontSize(DEFAULT_FONT_SIZE);
+    
     localStorage.removeItem('theme-primary-color');
     localStorage.removeItem('theme-radius');
     localStorage.removeItem('theme-font-size');
+    if(user) saveUserThemeSettings(user.uid, defaultSettings);
   };
 
   React.useEffect(() => {

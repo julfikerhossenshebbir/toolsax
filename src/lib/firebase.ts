@@ -200,6 +200,20 @@ export const saveSearchQuery = (userId: string, query: string) => {
     });
 };
 
+export const saveUserThemeSettings = (uid: string, settings: object) => {
+    if (!db) return;
+    const themeRef = ref(db, `users/${uid}/themeSettings`);
+    return update(themeRef, settings);
+};
+
+export const getUserThemeSettings = async (uid: string) => {
+    if (!db) return null;
+    const themeRef = ref(db, `users/${uid}/themeSettings`);
+    const snapshot = await get(themeRef);
+    return snapshot.val();
+};
+
+
 // --- General Database Functions ---
 const incrementCounter = (path: string) => {
   if (!db) return;
