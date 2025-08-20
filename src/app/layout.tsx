@@ -41,6 +41,7 @@ export default function RootLayout({
             <AppStateProvider>
               <GridBackground />
               <div className="flex flex-col w-full flex-grow">
+                  <AppHeader />
                   <main className="flex-grow pb-16 md:pb-0">
                       {children}
                   </main>

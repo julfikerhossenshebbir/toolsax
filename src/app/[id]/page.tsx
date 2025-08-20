@@ -12,8 +12,6 @@ import ToolRenderer from '@/components/tools/ToolRenderer';
 import { ALL_TOOLS } from '@/lib/tools';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import AppHeader from '@/components/AppHeader';
-import { useAppState } from '@/contexts/AppStateContext';
 
 
 type Props = {
@@ -33,7 +31,6 @@ function getTool(id: string): { tool: Tool | undefined, index: number } {
 
 export default function ToolPage({ params }: Props) {
   const { id } = params;
-  const { setSearchQuery } = useAppState();
   const [tool, setTool] = useState<Tool | undefined>(undefined);
   const [index, setIndex] = useState(-1);
   const [loading, setLoading] = useState(true);
@@ -53,7 +50,6 @@ export default function ToolPage({ params }: Props) {
   if (loading) {
     return (
         <>
-            <AppHeader onSearchChange={setSearchQuery} />
             <div className="container mx-auto px-4 py-12">
                 <div className="max-w-4xl mx-auto">
                      <div className="text-center mb-8">
@@ -83,7 +79,6 @@ export default function ToolPage({ params }: Props) {
 
   return (
     <>
-      <AppHeader onSearchChange={setSearchQuery} />
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">

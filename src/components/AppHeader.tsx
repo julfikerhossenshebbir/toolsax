@@ -13,9 +13,10 @@ import AppSidebar from './AppSidebar';
 import FavoriteTools from './FavoriteTools';
 import UserAvatar from './UserAvatar';
 import { Input } from './ui/input';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useDebounce } from 'use-debounce';
 import { cn } from '@/lib/utils';
+import { useAppState } from '@/contexts/AppStateContext';
 
 
 const Logo = () => (
@@ -101,27 +102,29 @@ const NotificationBell = () => {
     )
 }
 
-const HeaderSearch = ({ onSearchChange }: { onSearchChange: (query: string) => void }) => {
-    const searchParams = useSearchParams();
-    const pathname = usePathname();
+const HeaderSearch = () => {
+    const { searchQuery, setSearchQuery } = useAppState();
     const router = useRouter();
+    const pathname = usePathname();
 
     const [isSearchVisible, setIsSearchVisible] = useState(false);
-    const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-    const [debouncedQuery] = useDebounce(searchQuery, 300);
+    
+    const [inputValue, setInputValue] = useState(searchQuery);
+    const [debouncedQuery] = useDebounce(inputValue, 300);
 
     useEffect(() => {
-        onSearchChange(debouncedQuery);
-    }, [debouncedQuery, onSearchChange]);
+        setSearchQuery(debouncedQuery);
+    }, [debouncedQuery, setSearchQuery]);
+    
+    useEffect(() => {
+        setInputValue(searchQuery);
+    }, [searchQuery]);
 
     const handleSearchClick = () => {
         if (pathname !== '/') {
             router.push('/');
-            // Give time for router to push before showing search
-            setTimeout(() => setIsSearchVisible(true), 100);
-        } else {
-            setIsSearchVisible(true);
         }
+        setIsSearchVisible(true);
     };
     
     return (
@@ -135,7 +138,7 @@ const HeaderSearch = ({ onSearchChange }: { onSearchChange: (query: string) => v
                     </Link>
                 </div>
                 
-                <div className="flex items-center gap-2">
+                <div className={cn("flex items-center gap-2", { "hidden": isSearchVisible && !window.matchMedia('(min-width: 768px)').matches })}>
                     <Button variant="ghost" size="icon" onClick={handleSearchClick} aria-label="Search">
                         <Search className="w-5 h-5" />
                     </Button>
@@ -152,7 +155,7 @@ const HeaderSearch = ({ onSearchChange }: { onSearchChange: (query: string) => v
 
             <div 
                 className={cn(
-                  "absolute inset-0 flex items-center w-full h-full p-2 pr-4 transition-all duration-300",
+                  "absolute inset-0 z-10 flex items-center w-full h-full p-2 pr-4 transition-all duration-300",
                   isSearchVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
                 )}
             >
@@ -162,14 +165,14 @@ const HeaderSearch = ({ onSearchChange }: { onSearchChange: (query: string) => v
                 <div className="relative w-full">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input 
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
                         placeholder="Search for tools..."
                         className="w-full pl-12 pr-10"
                         autoFocus
                     />
-                    {searchQuery && (
-                        <Button variant="ghost" size="icon" onClick={() => setSearchQuery('')} className="absolute top-1/2 right-2 -translate-y-1/2 h-7 w-7">
+                    {inputValue && (
+                        <Button variant="ghost" size="icon" onClick={() => setInputValue('')} className="absolute top-1/2 right-2 -translate-y-1/2 h-7 w-7">
                             <X className="h-4 w-4" />
                         </Button>
                     )}
@@ -180,11 +183,11 @@ const HeaderSearch = ({ onSearchChange }: { onSearchChange: (query: string) => v
 };
 
 
-export default function AppHeader({ onSearchChange }: { onSearchChange: (query: string) => void }) {
+export default function AppHeader() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container relative flex h-14 items-center px-4 justify-between">
-        <HeaderSearch onSearchChange={onSearchChange} />
+        <HeaderSearch />
       </div>
     </header>
   );

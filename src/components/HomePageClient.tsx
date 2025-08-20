@@ -1,15 +1,12 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useMemo, useEffect } from 'react';
 import type { Tool } from '@/lib/types';
 import ToolCard from './ToolCard';
 import Header from './Header';
 import { incrementViews, saveSearchQuery } from '@/lib/firebase';
-import { Input } from './ui/input';
 import { Wrench, Lock, Code, Palette, LayoutGrid } from 'lucide-react';
-import { Button } from './ui/button';
-import Icon from './Icon';
 import FeaturesSection from './FeaturesSection';
 import SectionDivider from './SectionDivider';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,7 +18,6 @@ interface HomePageClientProps {
 }
 
 const categoryIcons: { [key: string]: React.ComponentType<{ className?: string }> } = {
-    All: LayoutGrid,
     Utilities: Wrench,
     Security: Lock,
     Development: Code,
@@ -31,7 +27,6 @@ const categoryIcons: { [key: string]: React.ComponentType<{ className?: string }
 export default function HomePageClient({ tools }: HomePageClientProps) {
   const { user } = useAuth();
   const { searchQuery } = useAppState();
-  const [selectedCategory, setSelectedCategory] = useState('All');
   
   useEffect(() => {
     incrementViews();
@@ -47,20 +42,28 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
   };
 
 
-  const categories = useMemo(() => {
-    const allCategories = tools.map(tool => tool.category);
-    return ['All', ...[...new Set(allCategories)].sort()];
-  }, [tools]);
+  const groupedTools = useMemo(() => {
+    const groups: { [key: string]: Tool[] } = {};
+    
+    tools.forEach(tool => {
+        if (!groups[tool.category]) {
+            groups[tool.category] = [];
+        }
+        
+        const matchesSearch =
+            tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            tool.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-  const filteredTools = useMemo(() => {
-    return tools.filter((tool) => {
-      const matchesCategory = selectedCategory === 'All' || tool.category === selectedCategory;
-      const matchesSearch =
-        tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tool.description.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
+        if (matchesSearch) {
+            groups[tool.category].push(tool);
+        }
     });
-  }, [tools, selectedCategory, searchQuery]);
+
+    return Object.entries(groups)
+        .filter(([_, tools]) => tools.length > 0) // Hide category if no tools match search
+        .sort(([catA], [catB]) => catA.localeCompare(catB)); // Sort categories alphabetically
+
+  }, [tools, searchQuery]);
 
   // Create a map to get the original index of each filtered tool
   const originalIndexMap = useMemo(() => {
@@ -70,46 +73,38 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
     });
     return map;
   }, [tools]);
+  
+  const totalFilteredTools = groupedTools.reduce((acc, [, tools]) => acc + tools.length, 0);
 
   return (
     <div className="container mx-auto px-4">
       <Header />
+
+      {groupedTools.map(([category, tools]) => {
+          const CategoryIcon = categoryIcons[category];
+          return (
+            <section key={category} className="my-12">
+                <div className="flex items-center gap-3 mb-6">
+                    {CategoryIcon && <CategoryIcon className="w-6 h-6 text-primary" />}
+                    <h2 className="text-2xl font-bold tracking-tight">{category}</h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {tools.map((tool) => (
+                    <ToolCard 
+                        key={tool.id} 
+                        tool={tool} 
+                        index={originalIndexMap.get(tool.id) ?? 0}
+                    />
+                    ))}
+                </div>
+            </section>
+          )
+      })}
       
-      <section id="filters-section" className="my-12">
-        <div className="w-full mx-auto flex flex-col items-center gap-y-6">
-            <div id="category-pills-container" className="flex flex-wrap items-center justify-center gap-2">
-              {categories.map((category) => {
-                const CategoryIcon = categoryIcons[category] || LayoutGrid;
-                return (
-                    <Button 
-                    key={category}
-                    variant={selectedCategory === category ? 'default' : 'outline'}
-                    onClick={() => setSelectedCategory(category)}
-                    className="rounded-full"
-                    >
-                        <CategoryIcon className="w-4 h-4 mr-2" />
-                        {category}
-                    </Button>
-                )
-            })}
-            </div>
-        </div>
-    </section>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredTools.map((tool) => (
-          <ToolCard 
-            key={tool.id} 
-            tool={tool} 
-            index={originalIndexMap.get(tool.id) ?? 0}
-          />
-        ))}
-      </div>
-
-      {filteredTools.length === 0 && (
+      {totalFilteredTools === 0 && (
         <div className="text-center py-16 col-span-full">
             <h2 className="text-2xl font-semibold">No tools found</h2>
-            <p className="text-muted-foreground mt-2">Try adjusting your search or filters.</p>
+            <p className="text-muted-foreground mt-2">Try adjusting your search query.</p>
         </div>
       )}
 
@@ -122,5 +117,3 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
     </div>
   );
 }
-
-    
