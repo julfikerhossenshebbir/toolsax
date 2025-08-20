@@ -16,7 +16,6 @@ export interface AdSettings {
     adsEnabled: boolean;
     viewLimit: number; // Per user
     cooldownMinutes: number; // Per user
-    enabledTools: string[];
 }
 
 export interface Advertisement {

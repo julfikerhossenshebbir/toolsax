@@ -60,7 +60,7 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
     incrementClicks(tool.id);
     
     // Ad logic starts here
-    if (!adSettings || !adSettings.adsEnabled || !adSettings.enabledTools.includes(tool.id)) {
+    if (!adSettings || !adSettings.adsEnabled) {
         router.push(`/${tool.id}`);
         return;
     }

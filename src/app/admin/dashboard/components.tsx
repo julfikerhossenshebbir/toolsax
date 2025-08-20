@@ -262,14 +262,6 @@ export function AdSettingsForm({ currentAdSettings }: { currentAdSettings: AdSet
         setSettings(currentAdSettings);
     }, [currentAdSettings]);
 
-    const handleToolToggle = (toolId: string) => {
-        const enabledTools = settings.enabledTools || [];
-        const newEnabledTools = enabledTools.includes(toolId)
-            ? enabledTools.filter(id => id !== toolId)
-            : [...enabledTools, toolId];
-        setSettings({ ...settings, enabledTools: newEnabledTools });
-    };
-
     const handleSubmit = async () => {
         setIsSubmitting(true);
         const result = await saveAdSettingsAction(settings);
@@ -327,22 +319,6 @@ export function AdSettingsForm({ currentAdSettings }: { currentAdSettings: AdSet
                             onChange={(e) => setSettings({ ...settings, cooldownMinutes: parseInt(e.target.value, 10) || 0 })}
                         />
                          <p className="text-xs text-muted-foreground">Time until the ad view count resets for a user.</p>
-                    </div>
-                </div>
-
-                <div>
-                    <Label className="text-base font-medium">Enable Ads on Specific Tools</Label>
-                    <div className="mt-2 space-y-2 max-h-60 overflow-y-auto border p-4 rounded-md">
-                        {ALL_TOOLS.map(tool => (
-                            <div key={tool.id} className="flex items-center space-x-2">
-                                <Checkbox
-                                    id={`tool-${tool.id}`}
-                                    checked={(settings.enabledTools || []).includes(tool.id)}
-                                    onCheckedChange={() => handleToolToggle(tool.id)}
-                                />
-                                <Label htmlFor={`tool-${tool.id}`} className="font-normal">{tool.name}</Label>
-                            </div>
-                        ))}
                     </div>
                 </div>
 
