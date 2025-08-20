@@ -4,12 +4,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { Home, MessageSquareWarning, Heart, MessageCircle } from 'lucide-react';
+import { Home, MessageSquareWarning, Heart, MessageCircle, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import DisqusComments from './DisqusComments';
 import { Tool } from '@/lib/types';
+import { ShareButtons } from './ShareButtons';
 
 
 interface ToolActionsProps {
@@ -18,9 +19,11 @@ interface ToolActionsProps {
 
 export default function ToolActions({ tool }: ToolActionsProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
+    setIsClient(true);
     // Check favorites from localStorage
     const favorites = JSON.parse(localStorage.getItem('favorite_tools') || '[]');
     setIsFavorite(favorites.includes(tool.id));
@@ -50,6 +53,8 @@ export default function ToolActions({ tool }: ToolActionsProps) {
     });
   };
 
+  const toolUrl = isClient ? `${window.location.origin}/${tool.id}` : '';
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -75,6 +80,29 @@ export default function ToolActions({ tool }: ToolActionsProps) {
           <p>{isFavorite ? 'Remove from favorites' : 'Add to Favorite'}</p>
         </TooltipContent>
       </Tooltip>
+      
+      <Dialog>
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <DialogTrigger asChild>
+                    <Button variant="outline" size="icon">
+                        <Share2 className="h-4 w-4" />
+                    </Button>
+                </DialogTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>Share Tool</p>
+            </TooltipContent>
+        </Tooltip>
+        <DialogContent className="max-w-md">
+            <DialogHeader>
+                <DialogTitle>Share "{tool.name}"</DialogTitle>
+            </DialogHeader>
+            <div className="mt-4 flex justify-center">
+                {isClient && <ShareButtons title={tool.name} url={toolUrl} />}
+            </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog>
         <Tooltip>
