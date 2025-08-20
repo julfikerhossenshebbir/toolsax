@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { updateUserProfile } from '@/lib/firebase';
 import { Loader2, Upload, User } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 async function uploadToImgBB(imageFile: File): Promise<string | null> {
     const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
@@ -114,12 +115,34 @@ export default function ProfilePage() {
   };
   
   if (loading || !user) {
-      return null; // Or a loading skeleton
+    return (
+      <div className="container mx-auto px-4 py-12 flex-grow flex items-center justify-center">
+        <Card className="max-w-2xl w-full mx-auto">
+            <CardHeader>
+                <Skeleton className="h-8 w-1/2 mb-2" />
+                <Skeleton className="h-4 w-3/4" />
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-6">
+                    <div className="flex flex-col items-center space-y-4">
+                        <Skeleton className="h-24 w-24 rounded-full" />
+                    </div>
+                    <div className="space-y-4">
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                    </div>
+                    <Skeleton className="h-10 w-full" />
+                </div>
+            </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <Card className="max-w-2xl mx-auto">
+    <div className="container mx-auto px-4 py-12 flex-grow flex flex-col justify-center">
+      <Card className="max-w-2xl mx-auto w-full">
         <CardHeader>
           <CardTitle>Your Profile</CardTitle>
           <CardDescription>Update your personal information and profile picture.</CardDescription>
@@ -192,4 +215,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
