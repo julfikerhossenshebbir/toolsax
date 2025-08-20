@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Home, Search, Bug, Sun, Moon } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AppSidebar from './AppSidebar';
 import { useTheme } from 'next-themes';
 import {
@@ -22,6 +22,11 @@ export default function MobileBottomNav() {
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleSearchClick = () => {
      if (pathname !== '/') {
@@ -41,8 +46,15 @@ export default function MobileBottomNav() {
     { href: '/', icon: Home, label: 'Home', isLink: true },
     { action: handleSearchClick, icon: Search, label: 'Search', isLink: false },
     { href: '/report-a-bug', icon: Bug, label: 'Report Bug', isLink: true },
-    { action: toggleTheme, icon: theme === 'light' ? Moon : Sun, label: 'Theme', isLink: false },
   ];
+  
+  const ThemeIcon = () => {
+    if (!isMounted) {
+      // Render a placeholder or null on the server and during initial client render
+      return <div className="h-6 w-6"></div>;
+    }
+    return theme === 'light' ? <Moon className="h-6 w-6" /> : <Sun className="h-6 w-6" />;
+  }
 
   return (
     <>
@@ -80,6 +92,24 @@ export default function MobileBottomNav() {
                 </Tooltip>
             </TooltipProvider>
         ))}
+        <TooltipProvider delayDuration={0}>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        onClick={toggleTheme}
+                        className="flex flex-col items-center justify-center text-muted-foreground w-full h-full p-0 rounded-none hover:bg-transparent"
+                    >
+                        <ThemeIcon />
+                        <span className="text-xs mt-1">Theme</span>
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>Theme</p>
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
+
          <TooltipProvider delayDuration={0}>
             <Tooltip>
                 <TooltipTrigger asChild>
