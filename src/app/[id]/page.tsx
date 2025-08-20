@@ -66,7 +66,7 @@ export default async function ToolPage({ params }: Props) {
 
   const iconColor = getColorByIndex(index);
 
-  const relatedTools = allTools.filter(t => t.category === tool.category && t.id !== tool.id).slice(0, 3);
+  const relatedTools = allTools.filter(t => t.category === tool.category && t.id !== tool.id).slice(0, 6);
   const originalIndexMap = new Map<string, number>();
   allTools.forEach((tool, index) => {
     originalIndexMap.set(tool.id, index);
