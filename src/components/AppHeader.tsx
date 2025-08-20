@@ -15,6 +15,8 @@ import UserAvatar from './UserAvatar';
 import { Input } from './ui/input';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useDebounce } from 'use-debounce';
+import { cn } from '@/lib/utils';
+
 
 const Logo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -143,7 +145,7 @@ const HeaderSearch = ({ onSearchChange }: { onSearchChange: (query: string) => v
                 <Button variant="ghost" size="icon" onClick={() => setIsSearchVisible(false)} className="flex-shrink-0">
                     <ArrowLeft className="w-5 h-5"/>
                 </Button>
-                <div className="relative w-full">
+                <div className="relative w-full md:mr-[190px]">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input 
                         value={searchQuery}
@@ -159,8 +161,10 @@ const HeaderSearch = ({ onSearchChange }: { onSearchChange: (query: string) => v
                     )}
                 </div>
             </div>
-
-            <div className="flex items-center gap-2">
+            
+            <div className={cn("flex items-center gap-2", {
+                "hidden md:flex": isSearchVisible,
+            })}>
                 <Button variant="ghost" size="icon" onClick={handleSearchClick} aria-label="Search">
                     <Search className="w-5 h-5" />
                 </Button>
