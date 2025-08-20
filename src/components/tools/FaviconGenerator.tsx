@@ -30,7 +30,6 @@ function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: numbe
 }
 
 export default function FaviconGenerator() {
-  const [originalFile, setOriginalFile] = useState<File | null>(null);
   const [originalUrl, setOriginalUrl] = useState<string | null>(null);
   const [generatedFavicons, setGeneratedFavicons] = useState<string[]>([]);
   const { toast } = useToast();
@@ -49,7 +48,6 @@ export default function FaviconGenerator() {
         return;
       }
       resetState();
-      setOriginalFile(file);
       setOriginalUrl(URL.createObjectURL(file));
     }
   };
@@ -64,7 +62,6 @@ export default function FaviconGenerator() {
         return;
       }
       resetState();
-      setOriginalFile(file);
       setOriginalUrl(URL.createObjectURL(file));
       e.dataTransfer.clearData();
     }
@@ -141,7 +138,6 @@ export default function FaviconGenerator() {
   }
 
   const resetState = () => {
-    setOriginalFile(null);
     setOriginalUrl(null);
     setGeneratedFavicons([]);
     setCrop(undefined);
@@ -238,3 +234,5 @@ export default function FaviconGenerator() {
     </Card>
   );
 }
+
+    

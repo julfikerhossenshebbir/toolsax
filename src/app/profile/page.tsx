@@ -11,10 +11,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { updateUserProfile } from '@/lib/firebase';
-import { Loader2, Upload, User } from 'lucide-react';
+import { Loader2, Upload, User, Scissors } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import ReactCrop, { type Crop, type PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
-async function uploadToImgBB(imageFile: File): Promise<string | null> {
+
+async function uploadToImgBB(imageFile: File | Blob): Promise<string | null> {
     const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
     if (!apiKey) {
         console.error("imgbb API key is not set in environment variables.");
@@ -42,6 +46,50 @@ async function uploadToImgBB(imageFile: File): Promise<string | null> {
     }
 }
 
+
+function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: number) {
+    return centerCrop(
+        makeAspectCrop({ unit: '%', width: 90 }, aspect, mediaWidth, mediaHeight),
+        mediaWidth,
+        mediaHeight,
+    )
+}
+
+function getCroppedImg(image: HTMLImageElement, crop: PixelCrop, fileName: string): Promise<Blob | null> {
+  const canvas = document.createElement('canvas');
+  const scaleX = image.naturalWidth / image.width;
+  const scaleY = image.naturalHeight / image.height;
+  canvas.width = crop.width;
+  canvas.height = crop.height;
+  const ctx = canvas.getContext('2d');
+
+  if (!ctx) {
+    return Promise.resolve(null);
+  }
+
+  const cropX = crop.x * scaleX;
+  const cropY = crop.y * scaleY;
+
+  ctx.drawImage(
+    image,
+    cropX,
+    cropY,
+    crop.width * scaleX,
+    crop.height * scaleY,
+    0,
+    0,
+    crop.width,
+    crop.height
+  );
+
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => {
+      resolve(blob);
+    }, 'image/png', 1);
+  });
+}
+
+
 export default function ProfilePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -53,7 +101,14 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const imgRef = useRef<HTMLImageElement>(null);
+  
+  const [crop, setCrop] = useState<Crop>();
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+  const [imgSrc, setImgSrc] = useState('');
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  
+  
   useEffect(() => {
     if (!loading && !user) {
       router.push('/');
@@ -61,7 +116,6 @@ export default function ProfilePage() {
     if (user) {
       setDisplayName(user.displayName || '');
       setPhotoURL(user.photoURL || '');
-      // Save/retrieve contact number to local storage, associated with user UID
       setContactNumber(localStorage.getItem(`contact_${user.uid}`) || '');
     }
   }, [user, loading, router]);
@@ -70,27 +124,49 @@ export default function ProfilePage() {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
-    
-    setIsSaving(true);
-    const uploadedUrl = await uploadToImgBB(file);
-    setIsSaving(false);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setCrop(undefined); // Reset crop state
+      const reader = new FileReader();
+      reader.addEventListener('load', () => setImgSrc(reader.result?.toString() || ''));
+      reader.readAsDataURL(e.target.files[0]);
+      setIsCropModalOpen(true);
+    }
+  };
 
-    if (uploadedUrl) {
-      try {
-        setIsSaving(true);
-        await updateUserProfile(user, { photoURL: uploadedUrl });
-        setPhotoURL(uploadedUrl);
-        toast({ title: "Profile picture updated!" });
-      } catch (err: any) {
+  const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const { width, height } = e.currentTarget;
+    setCrop(centerAspectCrop(width, height, 1));
+  };
+  
+  const handleCropAndUpload = async () => {
+    if (!completedCrop || !imgRef.current || !user) {
+      return;
+    }
+    setIsCropModalOpen(false);
+    setIsSaving(true);
+    try {
+        const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop, "avatar.png");
+        if (!croppedImageBlob) {
+            throw new Error("Could not crop image.");
+        }
+
+        const uploadedUrl = await uploadToImgBB(croppedImageBlob);
+        if (uploadedUrl) {
+            await updateUserProfile(user, { photoURL: uploadedUrl });
+            setPhotoURL(uploadedUrl);
+            toast({ title: "Profile picture updated!" });
+        } else {
+            throw new Error("Image upload failed.");
+        }
+    } catch (err: any) {
         toast({ variant: 'destructive', title: "Update failed", description: err.message });
-      } finally {
+    } finally {
         setIsSaving(false);
-      }
-    } else {
-      toast({ variant: 'destructive', title: "Image upload failed", description: "Could not upload image to imgbb. Please check your API key." });
+        setImgSrc('');
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
     }
   };
 
@@ -141,6 +217,7 @@ export default function ProfilePage() {
   }
 
   return (
+    <>
     <div className="container mx-auto px-4 py-12 flex-grow flex flex-col justify-center">
       <Card className="max-w-2xl mx-auto w-full">
         <CardHeader>
@@ -154,7 +231,7 @@ export default function ProfilePage() {
                 <Avatar className="h-24 w-24">
                   <AvatarImage src={photoURL} alt={displayName} />
                   <AvatarFallback className="text-3xl">
-                    {displayName ? displayName[0].toUpperCase() : <User />}
+                    {displayName ? displayName.charAt(0).toUpperCase() : <User />}
                   </AvatarFallback>
                 </Avatar>
                 <Button 
@@ -165,7 +242,7 @@ export default function ProfilePage() {
                     onClick={handleAvatarClick}
                     disabled={isSaving}
                 >
-                    {isSaving && fileInputRef.current?.files?.length ? <Loader2 className="h-4 w-4 animate-spin"/> : <Upload className="h-4 w-4"/>}
+                    {isSaving && !isCropModalOpen ? <Loader2 className="h-4 w-4 animate-spin"/> : <Upload className="h-4 w-4"/>}
                     <span className="sr-only">Upload picture</span>
                 </Button>
                 <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden"/>
@@ -213,5 +290,32 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
     </div>
+    
+    <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Crop your new profile picture</DialogTitle>
+            </DialogHeader>
+            <div className="flex justify-center">
+            {imgSrc && (
+                <ReactCrop
+                    crop={crop}
+                    onChange={(_, percentCrop) => setCrop(percentCrop)}
+                    onComplete={(c) => setCompletedCrop(c)}
+                    aspect={1}
+                >
+                    <img ref={imgRef} alt="Crop me" src={imgSrc} onLoad={onImageLoad} />
+                </ReactCrop>
+            )}
+            </div>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setIsCropModalOpen(false)}>Cancel</Button>
+                <Button onClick={handleCropAndUpload}><Scissors className="mr-2 h-4 w-4" /> Crop & Save</Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+    </>
   );
 }
+
+    
