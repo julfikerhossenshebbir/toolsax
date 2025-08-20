@@ -1,71 +1,58 @@
 
 'use client';
 
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import type { Tool } from '@/lib/types';
 import ToolCard from './ToolCard';
 import Header from './Header';
 import { incrementViews, saveSearchQuery } from '@/lib/firebase';
-import { Wrench, Lock, Code, Palette, LayoutGrid } from 'lucide-react';
 import FeaturesSection from './FeaturesSection';
 import SectionDivider from './SectionDivider';
 import { useAuth } from '@/contexts/AuthContext';
 import FirebaseStats from './FirebaseStats';
 import { useAppState } from '@/contexts/AppStateContext';
+import { Button } from './ui/button';
+import { cn } from '@/lib/utils';
+import { LayoutGrid, Palette, Code, Wrench, Lock } from 'lucide-react';
+
 
 interface HomePageClientProps {
   tools: Tool[];
 }
 
-const categoryIcons: { [key: string]: React.ComponentType<{ className?: string }> } = {
-    Utilities: Wrench,
-    Security: Lock,
-    Development: Code,
-    Design: Palette,
+const categoryIcons: { [key: string]: React.ReactNode } = {
+  All: <LayoutGrid className="w-4 h-4 mr-2" />,
+  Design: <Palette className="w-4 h-4 mr-2" />,
+  Development: <Code className="w-4 h-4 mr-2" />,
+  Utilities: <Wrench className="w-4 h-4 mr-2" />,
+  Security: <Lock className="w-4 h-4 mr-2" />,
 };
+
 
 export default function HomePageClient({ tools }: HomePageClientProps) {
   const { user } = useAuth();
   const { searchQuery } = useAppState();
+  const [selectedCategory, setSelectedCategory] = useState('All');
   
   useEffect(() => {
     incrementViews();
   }, []);
 
-  const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      const query = event.currentTarget.value.trim();
-      if (user && query.length > 2) {
-        saveSearchQuery(user.uid, query);
-      }
-    }
-  };
+  const categories = useMemo(() => {
+    const uniqueCategories = new Set(tools.map(tool => tool.category));
+    return ['All', ...Array.from(uniqueCategories).sort()];
+  }, [tools]);
 
-
-  const groupedTools = useMemo(() => {
-    const groups: { [key: string]: Tool[] } = {};
-    
-    tools.forEach(tool => {
-        if (!groups[tool.category]) {
-            groups[tool.category] = [];
-        }
-        
+  const filteredTools = useMemo(() => {
+    return tools.filter(tool => {
+        const matchesCategory = selectedCategory === 'All' || tool.category === selectedCategory;
         const matchesSearch =
             tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             tool.description.toLowerCase().includes(searchQuery.toLowerCase());
-
-        if (matchesSearch) {
-            groups[tool.category].push(tool);
-        }
+        return matchesCategory && matchesSearch;
     });
+  }, [tools, searchQuery, selectedCategory]);
 
-    return Object.entries(groups)
-        .filter(([_, tools]) => tools.length > 0) // Hide category if no tools match search
-        .sort(([catA], [catB]) => catA.localeCompare(catB)); // Sort categories alphabetically
-
-  }, [tools, searchQuery]);
-
-  // Create a map to get the original index of each filtered tool
   const originalIndexMap = useMemo(() => {
     const map = new Map<string, number>();
     tools.forEach((tool, index) => {
@@ -74,37 +61,38 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
     return map;
   }, [tools]);
   
-  const totalFilteredTools = groupedTools.reduce((acc, [, tools]) => acc + tools.length, 0);
-
   return (
     <div className="container mx-auto px-4">
       <Header />
 
-      {groupedTools.map(([category, tools]) => {
-          const CategoryIcon = categoryIcons[category];
-          return (
-            <section key={category} className="my-12">
-                <div className="flex items-center gap-3 mb-6">
-                    {CategoryIcon && <CategoryIcon className="w-6 h-6 text-primary" />}
-                    <h2 className="text-2xl font-bold tracking-tight">{category}</h2>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {tools.map((tool) => (
-                    <ToolCard 
-                        key={tool.id} 
-                        tool={tool} 
-                        index={originalIndexMap.get(tool.id) ?? 0}
-                    />
-                    ))}
-                </div>
-            </section>
-          )
-      })}
+      <div id="filters-section" className="flex flex-wrap justify-center gap-2 mb-8">
+        {categories.map(category => (
+            <Button
+                key={category}
+                variant={selectedCategory === category ? 'default' : 'outline'}
+                onClick={() => setSelectedCategory(category)}
+                className="transition-all duration-200"
+            >
+                {categoryIcons[category]}
+                {category}
+            </Button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredTools.map((tool) => (
+          <ToolCard 
+              key={tool.id} 
+              tool={tool} 
+              index={originalIndexMap.get(tool.id) ?? 0}
+          />
+        ))}
+      </div>
       
-      {totalFilteredTools === 0 && (
+      {filteredTools.length === 0 && (
         <div className="text-center py-16 col-span-full">
             <h2 className="text-2xl font-semibold">No tools found</h2>
-            <p className="text-muted-foreground mt-2">Try adjusting your search query.</p>
+            <p className="text-muted-foreground mt-2">Try adjusting your search or filter.</p>
         </div>
       )}
 
