@@ -243,18 +243,18 @@ export function NotificationForm({ currentNotifications }: { currentNotification
 
 // --- User Overview Chart ---
 const userChartData = [
-  { name: 'Jan', total: Math.floor(Math.random() * 200) + 100 },
-  { name: 'Feb', total: Math.floor(Math.random() * 200) + 100 },
-  { name: 'Mar', total: Math.floor(Math.random() * 200) + 100 },
-  { name: 'Apr', total: Math.floor(Math.random() * 200) + 100 },
-  { name: 'May', total: Math.floor(Math.random() * 200) + 100 },
-  { name: 'Jun', total: Math.floor(Math.random() * 200) + 100 },
-  { name: 'Jul', total: Math.floor(Math.random() * 200) + 100 },
-  { name: 'Aug', total: Math.floor(Math.random() * 200) + 100 },
-  { name: 'Sep', total: Math.floor(Math.random() * 200) + 100 },
-  { name: 'Oct', total: Math.floor(Math.random() * 200) + 100 },
-  { name: 'Nov', total: Math.floor(Math.random() * 200) + 100 },
-  { name: 'Dec', total: Math.floor(Math.random() * 200) + 100 },
+  { name: 'Jan', total: 150 },
+  { name: 'Feb', total: 200 },
+  { name: 'Mar', total: 180 },
+  { name: 'Apr', total: 250 },
+  { name: 'May', total: 220 },
+  { name: 'Jun', total: 300 },
+  { name: 'Jul', total: 280 },
+  { name: 'Aug', total: 320 },
+  { name: 'Sep', total: 290 },
+  { name: 'Oct', total: 350 },
+  { name: 'Nov', total: 380 },
+  { name: 'Dec', total: 400 },
 ];
 
 export function UserOverviewChart() {

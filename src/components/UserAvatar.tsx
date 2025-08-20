@@ -61,9 +61,9 @@ export default function UserAvatar() {
   if (!user) {
     return (
       <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-        <Button variant="ghost" size="icon" onClick={() => setIsLoginOpen(true)} className="h-8 w-8 rounded-full">
-            <UserIcon className="h-5 w-5" />
-            <span className="sr-only">Login</span>
+        <Button variant="ghost" onClick={() => setIsLoginOpen(true)}>
+            <UserIcon className="mr-2 h-4 w-4" />
+            Login
         </Button>
       </LoginDialog>
     );
@@ -112,6 +112,7 @@ export default function UserAvatar() {
             <span>Profile</span>
           </Link>
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
