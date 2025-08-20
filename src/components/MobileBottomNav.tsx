@@ -50,10 +50,13 @@ export default function MobileBottomNav() {
                 <Tooltip>
                     <TooltipTrigger asChild>
                       {item.isLink ? (
-                           <Link href={item.href || '/'} className={cn(
-                                   'flex flex-col items-center justify-center text-muted-foreground w-full h-full',
+                           <Link
+                               href={item.href || '/'}
+                               className={cn(
+                                   'flex flex-col items-center justify-center text-muted-foreground w-full h-full rounded-none',
                                    { 'text-primary': pathname === item.href }
-                               )}>
+                               )}
+                           >
                                <item.icon className="h-6 w-6" />
                                <span className="text-xs mt-1">{item.label}</span>
                            </Link>
@@ -61,7 +64,7 @@ export default function MobileBottomNav() {
                            <Button
                                variant="ghost"
                                onClick={item.action}
-                               className="flex flex-col items-center justify-center text-muted-foreground w-full h-full p-0"
+                               className="flex flex-col items-center justify-center text-muted-foreground w-full h-full p-0 rounded-none hover:bg-transparent"
                            >
                                <item.icon className="h-6 w-6" />
                                <span className="text-xs mt-1">{item.label}</span>
@@ -81,7 +84,7 @@ export default function MobileBottomNav() {
                         open={isSidebarOpen}
                         onOpenChange={setIsSidebarOpen}
                         trigger={
-                            <Button variant="ghost" className="flex flex-col items-center justify-center text-muted-foreground w-full h-full p-0">
+                            <Button variant="ghost" className="flex flex-col items-center justify-center text-muted-foreground w-full h-full p-0 rounded-none hover:bg-transparent">
                                 <PanelLeft className="h-6 w-6" />
                                 <span className="text-xs mt-1">Menu</span>
                             </Button>
