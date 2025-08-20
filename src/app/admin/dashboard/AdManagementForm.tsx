@@ -15,6 +15,7 @@ import { saveAdvertisementAction, deleteAdvertisementAction } from './actions';
 import { Loader2, Trash2, Edit, PlusCircle, AlertTriangle } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import type { Advertisement } from '../types';
+import { Badge } from '@/components/ui/badge';
 
 const emptyAd: Advertisement = {
     id: '',
