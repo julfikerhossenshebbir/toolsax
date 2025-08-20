@@ -167,6 +167,7 @@ export const checkAndCreateUser = async (data: { name: string, username: string,
         email: data.email,
         createdAt: serverTimestamp(),
         lastLogin: serverTimestamp(),
+        role: 'user', // Default role
     });
 
     const usernameRef = ref(db, `usernames/${data.username}`);
@@ -187,6 +188,7 @@ export const saveUserToDatabase = async (user: User) => {
             username: username,
             createdAt: serverTimestamp(),
             lastLogin: serverTimestamp(),
+            role: 'user', // Default role for Google Sign-in
         });
         const usernameRef = ref(db, `usernames/${username}`);
         await set(usernameRef, user.uid);
@@ -208,6 +210,21 @@ export const getUserData = async (uid: string) => {
     const snapshot = await get(userRef);
     return snapshot.val();
 };
+
+export const getAllUsers = async () => {
+    if (!db) return [];
+    const usersRef = ref(db, 'users');
+    const snapshot = await get(usersRef);
+    if (snapshot.exists()) {
+        const usersData = snapshot.val();
+        return Object.keys(usersData).map(uid => ({
+            uid,
+            ...usersData[uid]
+        }));
+    }
+    return [];
+};
+
 
 export const updateUserData = (uid: string, data: object) => {
     if (!db) return;
@@ -285,20 +302,25 @@ export const getUserFavorites = (userId: string, callback: (favorites: string[])
     });
 };
 
-export const getStats = (callback: (stats: { views: number; tool_clicks: number; users: number }) => void) => {
+export const getStats = (subscribe: boolean = true, callback?: (stats: { views: number; tool_clicks: number; users: number }) => void) => {
   if (!db) {
-    callback({ views: 0, tool_clicks: 0, users: 0 });
+    if(callback) callback({ views: 0, tool_clicks: 0, users: 0 });
     return () => {};
   }
-
+  
   const statsRef = ref(db, 'stats');
-  const unsubscribe = onValue(statsRef, (snapshot) => {
-    const data = snapshot.val() || { views: 0, tool_clicks: 0, users: 0 };
-    callback(data);
-  });
-
-  return unsubscribe;
+  
+  if (subscribe && callback) {
+      const unsubscribe = onValue(statsRef, (snapshot) => {
+        const data = snapshot.val() || { views: 0, tool_clicks: 0, users: 0 };
+        callback(data);
+      });
+      return unsubscribe;
+  } else {
+      return get(statsRef).then(snapshot => snapshot.val() || { views: 0, tool_clicks: 0, users: 0 });
+  }
 };
+
 
 export const getToolStats = (toolId: string, callback: (stats: { clicks: number }) => void) => {
   if (!db) {
@@ -315,7 +337,7 @@ export const getToolStats = (toolId: string, callback: (stats: { clicks: number 
   return unsubscribe;
 };
 
-export const getNotificationMessage = (callback: (messages: Notification[]) => void) => {
+export const getNotificationMessage = (subscribe: boolean = true, callback?: (messages: Notification[]) => void) => {
   const defaultMessages: Notification[] = [
     { message: "New tool added: PDF Merger!", icon: "FilePlus" },
     { message: "Dark mode is now available.", icon: "Moon" },
@@ -323,20 +345,33 @@ export const getNotificationMessage = (callback: (messages: Notification[]) => v
   ];
   
   if (!db) {
-    callback(defaultMessages);
+    if(callback) callback(defaultMessages);
     return () => {};
   }
 
   const notificationRef = ref(db, 'notif');
-  const unsubscribe = onValue(notificationRef, (snapshot) => {
-    const messages = snapshot.val();
-    callback(Array.isArray(messages) && messages.length > 0 ? messages : defaultMessages);
-  }, (error) => {
-      console.error("Error fetching notification: ", error);
-      callback(defaultMessages)
-  });
 
-  return unsubscribe;
+  if(subscribe && callback) {
+    const unsubscribe = onValue(notificationRef, (snapshot) => {
+        const messages = snapshot.val();
+        callback(Array.isArray(messages) && messages.length > 0 ? messages : defaultMessages);
+    }, (error) => {
+        console.error("Error fetching notification: ", error);
+        callback(defaultMessages)
+    });
+    return unsubscribe;
+  } else {
+     return get(notificationRef).then(snapshot => {
+        const messages = snapshot.val();
+        return Array.isArray(messages) && messages.length > 0 ? messages : defaultMessages;
+     });
+  }
 }
+
+export const updateGlobalNotifications = (notifications: Notification[]) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const notificationRef = ref(db, 'notif');
+    return set(notificationRef, notifications);
+};
 
 export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;

@@ -1,0 +1,38 @@
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getAllUsers, getStats, getNotificationMessage } from '@/lib/firebase';
+import { StatCard, UsersTable, columns, NotificationForm } from './components';
+import { AreaChart, BarChart, Bell, Users } from 'lucide-react';
+import type { UserData, Notification as NotifType } from '../types';
+
+export default async function AdminDashboardPage() {
+    
+    const stats = await getStats(false);
+    const users = await getAllUsers();
+    const notifications = await getNotificationMessage(false);
+
+    return (
+        <div className="flex-1 space-y-4 p-8 pt-6">
+            <div className="flex items-center justify-between space-y-2">
+                <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <StatCard title="Total Users" value={stats.users.toLocaleString()} icon={Users} />
+                <StatCard title="Total Clicks" value={stats.tool_clicks.toLocaleString()} icon={BarChart} />
+                <StatCard title="Total Views" value={stats.views.toLocaleString()} icon={AreaChart} />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                <Card className="col-span-4">
+                    <CardHeader>
+                        <CardTitle>User Management</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                       <UsersTable columns={columns} data={users as UserData[]} />
+                    </CardContent>
+                </Card>
+                 <div className="col-span-3">
+                     <NotificationForm currentNotifications={notifications as NotifType[]} />
+                </div>
+            </div>
+        </div>
+    );
+}

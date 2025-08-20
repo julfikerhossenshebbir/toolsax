@@ -13,9 +13,10 @@ const FirebaseStats = () => {
   useEffect(() => {
     if (isConfigured) {
       initializeUser();
-      const unsubscribe = getStats((newStats) => {
+      const unsubscribe = getStats(true, (newStats) => {
         setStats(newStats);
       });
+      // @ts-ignore
       return () => unsubscribe();
     }
   }, []);

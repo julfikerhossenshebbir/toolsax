@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, Bell, Settings } from 'lucide-react';
+import { Search, Bell, Settings, User } from 'lucide-react';
 import { Button } from './ui/button';
 import { SettingsPanel } from './SettingsPanel';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
@@ -28,7 +28,7 @@ const NotificationBell = () => {
     const [hasUnread, setHasUnread] = useState(false);
 
     useEffect(() => {
-        const unsubscribe = getNotificationMessage((newNotifications) => {
+        const unsubscribe = getNotificationMessage(true, (newNotifications) => {
             setNotifications(newNotifications);
             setIsLoading(false);
             
@@ -42,6 +42,7 @@ const NotificationBell = () => {
                 setHasUnread(true);
             }
         });
+        // @ts-ignore
         return () => unsubscribe();
     }, []);
 
