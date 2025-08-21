@@ -3,13 +3,13 @@
 
 import { useState, useEffect } from 'react';
 import type { Comment as CommentType, Reply } from '@/lib/types';
-import { formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import CommentForm from './CommentForm';
 import CommentAvatar from './CommentAvatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUserData, deleteComment, deleteReply } from '@/lib/firebase';
-import { MoreHorizontal, Pencil, Trash2, BadgeCheck, CornerUpLeft } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2, BadgeCheck, MessageSquare, Minus } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -19,6 +19,7 @@ interface CommentProps {
   comment: CommentType;
   toolId: string;
   onCommentDeleted: (commentId: string) => void;
+  onReplyUpdated: (commentId: string, updatedReplies: Reply[]) => void;
 }
 
 const CommentActions = ({ authorId, onEdit, onDelete }: { authorId: string, onEdit: () => void, onDelete: () => void }) => {
@@ -29,7 +30,7 @@ const CommentActions = ({ authorId, onEdit, onDelete }: { authorId: string, onEd
         <AlertDialog>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full">
                         <MoreHorizontal className="h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
@@ -46,7 +47,7 @@ const CommentActions = ({ authorId, onEdit, onDelete }: { authorId: string, onEd
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete your comment.
+                        This action cannot be undone. This will permanently delete this item.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -101,21 +102,19 @@ const ReplyItem = ({ reply, toolId, commentId, onReplyDeleted }: { reply: Reply;
                     />
                 ) : (
                     <>
-                        <div className="bg-muted rounded-lg p-3">
-                             <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  <p className="font-semibold text-sm flex items-center gap-1.5">
-                                    {reply.authorName}
-                                    {authorRole === 'admin' && <BadgeCheck className="h-4 w-4 text-blue-500" />}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {formatDistanceToNow(new Date(reply.timestamp), { addSuffix: true })}
-                                  </p>
-                                </div>
-                                <CommentActions authorId={reply.uid} onEdit={() => setIsEditing(true)} onDelete={handleDelete} />
-                             </div>
-                             <p className="text-sm mt-1 whitespace-pre-wrap">{reply.text}</p>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <p className="font-semibold text-sm flex items-center gap-1.5">
+                                {reply.authorName}
+                                {authorRole === 'admin' && <BadgeCheck className="h-4 w-4 text-primary" />}
+                                </p>
+                            </div>
+                           <CommentActions authorId={reply.uid} onEdit={() => setIsEditing(true)} onDelete={handleDelete} />
                         </div>
+                        <p className="text-xs text-muted-foreground">
+                            {format(new Date(reply.timestamp), "MMMM d, yyyy 'at' h:mm a")}
+                        </p>
+                        <p className="text-sm mt-2 whitespace-pre-wrap">{reply.text}</p>
                     </>
                 )}
             </div>
@@ -124,7 +123,8 @@ const ReplyItem = ({ reply, toolId, commentId, onReplyDeleted }: { reply: Reply;
 };
 
 
-export default function Comment({ comment, toolId, onCommentDeleted }: CommentProps) {
+export default function Comment({ comment, toolId, onCommentDeleted, onReplyUpdated }: CommentProps) {
+  const [showReplies, setShowReplies] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const { user } = useAuth();
@@ -152,9 +152,13 @@ export default function Comment({ comment, toolId, onCommentDeleted }: CommentPr
     }
   }
 
+  const handleReplyDeleted = (replyId: string) => {
+    const updatedReplies = comment.replies.filter(r => r.id !== replyId);
+    onReplyUpdated(comment.id, updatedReplies);
+  }
+
   return (
-    <div className="flex flex-col p-4 border rounded-lg">
-      <div className="flex gap-3">
+    <div className="flex gap-3">
         <CommentAvatar user={{ name: comment.authorName, photoURL: comment.authorPhotoURL }} />
         <div className="flex-1">
             {isEditing ? (
@@ -168,58 +172,61 @@ export default function Comment({ comment, toolId, onCommentDeleted }: CommentPr
             ) : (
                 <>
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+                         <div className="flex items-center gap-2">
                           <p className="font-semibold text-sm flex items-center gap-1.5">
                             {comment.authorName}
-                             {authorRole === 'admin' && <BadgeCheck className="h-4 w-4 text-blue-500" />}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            added a comment {formatDistanceToNow(new Date(comment.timestamp), { addSuffix: true })}
+                             {authorRole === 'admin' && <BadgeCheck className="h-4 w-4 text-primary" />}
                           </p>
                         </div>
                         <CommentActions authorId={comment.uid} onEdit={() => setIsEditing(true)} onDelete={handleDelete} />
                     </div>
+                     <p className="text-xs text-muted-foreground">
+                        {format(new Date(comment.timestamp), "MMMM d, yyyy 'at' h:mm a")}
+                     </p>
                     <p className="text-sm mt-2 whitespace-pre-wrap">{comment.text}</p>
                 </>
             )}
-          <div className="mt-2">
-            <Button variant="link" size="sm" className="p-0 h-auto text-xs" onClick={() => setShowReplyForm(!showReplyForm)}>
-                <CornerUpLeft className="mr-1 h-3 w-3" />
-                {showReplyForm ? 'Cancel Reply' : 'Reply'}
+
+          <div className="mt-2 flex items-center gap-4">
+            <Button variant="link" size="sm" className="p-0 h-auto text-xs text-muted-foreground" onClick={() => setShowReplyForm(!showReplyForm)}>
+                <MessageSquare className="mr-1 h-3 w-3" />
+                Reply
             </Button>
+            {comment.replies && comment.replies.length > 0 && (
+                 <Button variant="link" size="sm" className="p-0 h-auto text-xs text-muted-foreground" onClick={() => setShowReplies(!showReplies)}>
+                    <Minus className="mr-1 h-3 w-3" />
+                    {showReplies ? 'Hide' : `Show ${comment.replies.length}`} replies
+                </Button>
+            )}
           </div>
-        </div>
-      </div>
-
-      {showReplyForm && (
-        <div className="pl-12 pt-4">
-          <CommentForm
-            toolId={toolId}
-            commentId={comment.id}
-            onSuccess={() => setShowReplyForm(false)}
-            placeholder="Write a reply..."
-            isReply
-          />
-        </div>
-      )}
-
-      {comment.replies && comment.replies.length > 0 && (
-        <div className="pl-12 pt-4 space-y-4">
-          {comment.replies.map((reply) => (
-            <ReplyItem 
-                key={reply.id} 
-                reply={reply} 
+          
+          {showReplyForm && (
+            <div className="pt-4">
+              <CommentForm
                 toolId={toolId}
                 commentId={comment.id}
-                onReplyDeleted={(replyId) => {
-                    // This is a simplistic update. For a more robust solution,
-                    // you'd re-fetch comments or manage state more centrally.
-                    comment.replies = comment.replies.filter(r => r.id !== replyId);
-                }}
-            />
-          ))}
+                onSuccess={() => setShowReplyForm(false)}
+                placeholder="Write a reply..."
+                isReply
+              />
+            </div>
+          )}
+
+          {showReplies && comment.replies && comment.replies.length > 0 && (
+            <div className="pt-4 mt-4 border-l-2 border-border pl-6 space-y-4">
+              {comment.replies.map((reply) => (
+                <ReplyItem 
+                    key={reply.id} 
+                    reply={reply} 
+                    toolId={toolId}
+                    commentId={comment.id}
+                    onReplyDeleted={handleReplyDeleted}
+                />
+              ))}
+            </div>
+          )}
+
         </div>
-      )}
     </div>
   );
 }

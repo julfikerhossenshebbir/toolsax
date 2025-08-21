@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { Comment as CommentType } from '@/lib/types';
+import type { Comment as CommentType, Reply } from '@/lib/types';
 import { getComments } from '@/lib/firebase';
 import Comment from './Comment';
 import CommentForm from './CommentForm';
@@ -14,12 +14,12 @@ interface CommentSystemProps {
 
 function CommentSkeleton() {
     return (
-        <div className="flex items-start space-x-4 border rounded-lg p-4">
-            <Skeleton className="h-10 w-10 rounded-full" />
+        <div className="flex items-start space-x-3 p-4">
+            <Skeleton className="h-8 w-8 rounded-full" />
             <div className="space-y-2 flex-1">
                 <Skeleton className="h-4 w-[150px]" />
+                <Skeleton className="h-4 w-[200px]" />
                 <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
             </div>
         </div>
     );
@@ -42,12 +42,18 @@ export default function CommentSystem({ toolId }: CommentSystemProps) {
     setComments(prev => prev.filter(c => c.id !== commentId));
   }
 
+  const handleReplyUpdated = (commentId: string, updatedReplies: Reply[]) => {
+      setComments(prev => prev.map(c => 
+          c.id === commentId ? { ...c, replies: updatedReplies } : c
+      ));
+  }
+
   return (
-    <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-4">
-      <h2 className="text-xl font-bold">Comments</h2>
+    <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-4">
+      <h2 className="text-xl font-bold">Comments ({comments.length})</h2>
       <CommentForm toolId={toolId} />
       
-      <div className="space-y-4">
+      <div className="space-y-6">
         {loading ? (
             <div className="space-y-4">
                 <CommentSkeleton />
@@ -55,7 +61,13 @@ export default function CommentSystem({ toolId }: CommentSystemProps) {
             </div>
         ) : comments.length > 0 ? (
           comments.map((comment) => (
-            <Comment key={comment.id} comment={comment} toolId={toolId} onCommentDeleted={handleCommentDeleted} />
+            <Comment 
+                key={comment.id} 
+                comment={comment} 
+                toolId={toolId} 
+                onCommentDeleted={handleCommentDeleted}
+                onReplyUpdated={handleReplyUpdated}
+            />
           ))
         ) : (
           <div className="text-center py-8">
