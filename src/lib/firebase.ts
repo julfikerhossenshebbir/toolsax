@@ -1,4 +1,5 @@
 
+
 // This is a placeholder for Firebase configuration.
 // To enable Firebase features, you need to set up a Firebase project and
 // add your configuration here.
@@ -575,24 +576,30 @@ export const getTopToolsByClicks = async (limit: number = 7): Promise<{ name: st
     if (!db) return [];
     
     const toolsRef = ref(db, 'tools');
-    const toolQuery = query(toolsRef, orderByChild('clicks'), limitToLast(limit));
 
     try {
-        const snapshot = await get(toolQuery);
+        const snapshot = await get(toolsRef);
         if (snapshot.exists()) {
-            const toolsData: { name: string, clicks: number }[] = [];
+            const allToolsData: {id: string, clicks: number}[] = [];
             snapshot.forEach((childSnapshot) => {
-                const toolId = childSnapshot.key;
-                const toolData = childSnapshot.val();
-                const toolInfo = ALL_TOOLS.find(t => t.id === toolId);
-                if (toolInfo) {
-                    toolsData.push({
-                        name: toolInfo.name,
-                        clicks: toolData.clicks || 0,
-                    });
-                }
+                allToolsData.push({
+                    id: childSnapshot.key!,
+                    clicks: childSnapshot.val().clicks || 0,
+                });
             });
-            return toolsData.reverse(); // To show most clicked first
+
+            // Sort by clicks descending and take the limit
+            const sortedTools = allToolsData.sort((a, b) => b.clicks - a.clicks);
+            const topTools = sortedTools.slice(0, limit);
+
+            // Map to the final format with tool names
+            return topTools.map(toolData => {
+                const toolInfo = ALL_TOOLS.find(t => t.id === toolData.id);
+                return {
+                    name: toolInfo ? toolInfo.name : 'Unknown Tool',
+                    clicks: toolData.clicks,
+                };
+            });
         }
     } catch(e) {
          console.error("Error fetching tool popularity data: ", e);
@@ -602,5 +609,7 @@ export const getTopToolsByClicks = async (limit: number = 7): Promise<{ name: st
 
 
 export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;
+
+    
 
     
