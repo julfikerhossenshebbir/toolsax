@@ -389,7 +389,7 @@ export const updateGlobalNotifications = (notifications: Notification[]) => {
 // --- Ad Settings ---
 export const getAdSettings = (subscribe: boolean = true, callback?: (settings: AdSettings) => void) => {
     if (!db) {
-        if (callback) callback({ adsEnabled: false, viewLimit: 3, cooldownMinutes: 30, enabledTools: [] });
+        if (callback) callback({ adsEnabled: false, viewLimit: 3, cooldownMinutes: 30 });
         return () => {};
     }
     const adSettingsRef = ref(db, 'settings/ads');
@@ -537,17 +537,24 @@ export const getMonthlyUserGrowth = async (): Promise<{ name: string; total: num
     }
     
     const usersRef = ref(db, 'users');
-    const userQuery = query(usersRef, orderByChild('createdAt'));
     
     try {
-        const snapshot = await get(userQuery);
+        const snapshot = await get(usersRef);
         if (snapshot.exists()) {
             snapshot.forEach((childSnapshot) => {
                 const user = childSnapshot.val();
                 if (user.createdAt) {
-                    const monthKey = format(new Date(user.createdAt), 'yyyy-MM');
-                    if (monthlyData.hasOwnProperty(monthKey)) {
-                        monthlyData[monthKey]++;
+                    try {
+                        const date = new Date(user.createdAt);
+                         // Check if the date is valid
+                        if (!isNaN(date.getTime())) {
+                            const monthKey = format(date, 'yyyy-MM');
+                            if (monthlyData.hasOwnProperty(monthKey)) {
+                                monthlyData[monthKey]++;
+                            }
+                        }
+                    } catch (e) {
+                        // Ignore invalid date formats
                     }
                 }
             });
@@ -595,3 +602,5 @@ export const getTopToolsByClicks = async (limit: number = 7): Promise<{ name: st
 
 
 export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;
+
+    
