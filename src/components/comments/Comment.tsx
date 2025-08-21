@@ -29,7 +29,7 @@ const CommentActions = ({ authorId, onEdit, onDelete }: { authorId: string, onEd
         <AlertDialog>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-6 w-6">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
                         <MoreHorizontal className="h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
@@ -153,7 +153,7 @@ export default function Comment({ comment, toolId, onCommentDeleted }: CommentPr
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col p-4 border rounded-lg">
       <div className="flex gap-3">
         <CommentAvatar user={{ name: comment.authorName, photoURL: comment.authorPhotoURL }} />
         <div className="flex-1">
@@ -166,7 +166,7 @@ export default function Comment({ comment, toolId, onCommentDeleted }: CommentPr
                     onSuccess={() => setIsEditing(false)}
                 />
             ) : (
-                <div className="bg-muted rounded-lg p-3">
+                <>
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <p className="font-semibold text-sm flex items-center gap-1.5">
@@ -174,24 +174,24 @@ export default function Comment({ comment, toolId, onCommentDeleted }: CommentPr
                              {authorRole === 'admin' && <BadgeCheck className="h-4 w-4 text-blue-500" />}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {formatDistanceToNow(new Date(comment.timestamp), { addSuffix: true })}
+                            added a comment {formatDistanceToNow(new Date(comment.timestamp), { addSuffix: true })}
                           </p>
                         </div>
                         <CommentActions authorId={comment.uid} onEdit={() => setIsEditing(true)} onDelete={handleDelete} />
                     </div>
-                    <p className="text-sm mt-1 whitespace-pre-wrap">{comment.text}</p>
-                </div>
+                    <p className="text-sm mt-2 whitespace-pre-wrap">{comment.text}</p>
+                </>
             )}
-          <div className="pl-3 mt-1">
-            <Button variant="link" size="sm" className="p-0 h-auto" onClick={() => setShowReplyForm(!showReplyForm)}>
-              {showReplyForm ? 'Cancel' : 'Reply'}
+          <div className="mt-2">
+            <Button variant="link" size="sm" className="p-0 h-auto text-xs" onClick={() => setShowReplyForm(!showReplyForm)}>
+              {showReplyForm ? 'Cancel Reply' : 'Reply'}
             </Button>
           </div>
         </div>
       </div>
 
       {showReplyForm && (
-        <div className="pl-8 pt-4 border-l-2 border-muted ml-4">
+        <div className="pl-12 pt-4">
           <CommentForm
             toolId={toolId}
             commentId={comment.id}
@@ -203,7 +203,7 @@ export default function Comment({ comment, toolId, onCommentDeleted }: CommentPr
       )}
 
       {comment.replies && comment.replies.length > 0 && (
-        <div className="pl-8 pt-4 space-y-4 border-l-2 border-muted ml-4">
+        <div className="pl-12 pt-4 space-y-4">
           {comment.replies.map((reply) => (
             <ReplyItem 
                 key={reply.id} 

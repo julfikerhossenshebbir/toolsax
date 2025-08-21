@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import CommentAvatar from './CommentAvatar';
 import LoginDialog from '../LoginDialog';
+import { Input } from '../ui/input';
 
 interface CommentFormProps {
   toolId: string;
@@ -27,7 +28,7 @@ export default function CommentForm({
   commentId,
   replyId,
   onSuccess,
-  placeholder = 'Add a comment...',
+  placeholder = 'Type your comment here...',
   isReply = false,
   isEditing = false,
   initialText = '',
@@ -82,7 +83,7 @@ export default function CommentForm({
     }
   };
 
-  if (!user) {
+  if (!user && !isReply) {
     return (
         <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
             <div className="text-center p-4 border rounded-lg">
@@ -96,27 +97,63 @@ export default function CommentForm({
         </LoginDialog>
     );
   }
-
-  return (
-    <div className="flex gap-3 items-start">
-      {!isReply && <CommentAvatar user={user} />}
-      <div className="flex-1 space-y-2">
+  
+  if (isReply && !user) {
+      return (
+          <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
+              <Button variant="link" onClick={() => setIsLoginOpen(true)}>
+                    Log in to reply
+              </Button>
+          </LoginDialog>
+      )
+  }
+  
+  if (isEditing) {
+      return (
+         <div className="flex-1 space-y-2">
+            <Textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder={placeholder}
+              className="min-h-[80px]"
+              autoFocus={isEditing}
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={onSuccess}>Cancel</Button>
+              <Button onClick={handleSubmit} disabled={isSubmitting || !text.trim()}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save
+              </Button>
+            </div>
+         </div>
+      );
+  }
+  
+  const formContent = (
+      <div className="relative w-full">
         <Textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={placeholder}
-          className="min-h-[60px]"
-          autoFocus={isEditing}
+          className="pr-24 min-h-[40px] h-10"
         />
-        <div className="flex justify-end gap-2">
-          {isEditing && (
-            <Button variant="ghost" onClick={onSuccess}>Cancel</Button>
-          )}
+        <div className="absolute top-1/2 right-2 -translate-y-1/2 flex items-center gap-2">
           <Button onClick={handleSubmit} disabled={isSubmitting || !text.trim()}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isEditing ? 'Save' : (isReply ? 'Post Reply' : 'Post Comment')}
+            {isSubmitting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+                'Publish'
+            )}
           </Button>
         </div>
+      </div>
+  );
+
+  return (
+    <div className="flex gap-3 items-start w-full">
+      {isReply && <CommentAvatar user={user} />}
+      <div className="flex-1">
+        {formContent}
       </div>
     </div>
   );

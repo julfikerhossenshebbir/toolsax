@@ -14,7 +14,7 @@ interface CommentSystemProps {
 
 function CommentSkeleton() {
     return (
-        <div className="flex items-start space-x-4">
+        <div className="flex items-start space-x-4 border rounded-lg p-4">
             <Skeleton className="h-10 w-10 rounded-full" />
             <div className="space-y-2 flex-1">
                 <Skeleton className="h-4 w-[150px]" />
@@ -44,12 +44,12 @@ export default function CommentSystem({ toolId }: CommentSystemProps) {
 
   return (
     <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-4">
-      <h2 className="text-xl font-bold">Comments ({comments.length})</h2>
+      <h2 className="text-xl font-bold">Comments</h2>
       <CommentForm toolId={toolId} />
       
-      <div className="space-y-6">
+      <div className="space-y-4">
         {loading ? (
-            <div className="space-y-6">
+            <div className="space-y-4">
                 <CommentSkeleton />
                 <CommentSkeleton />
             </div>
