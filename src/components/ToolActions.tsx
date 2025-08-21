@@ -8,11 +8,11 @@ import { Home, MessageSquareWarning, Heart, MessageCircle, Share2 } from 'lucide
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import DisqusComments from './DisqusComments';
 import { Tool } from '@/lib/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { toggleFavoriteInDb, getUserFavorites } from '@/lib/firebase';
 import LoginDialog from './LoginDialog';
+import CommentSystem from '@/components/comments/CommentSystem';
 
 
 interface ToolActionsProps {
@@ -140,7 +140,7 @@ export default function ToolActions({ tool }: ToolActionsProps) {
                 <DialogTitle>Comments on {tool.name}</DialogTitle>
             </DialogHeader>
             <div className="mt-4">
-                <DisqusComments tool={tool} />
+                <CommentSystem toolId={tool.id} />
             </div>
         </DialogContent>
       </Dialog>

@@ -19,7 +19,7 @@ import {
     type User
 } from "firebase/auth";
 import { v4 as uuidv4 } from 'uuid';
-import type { AdSettings, Advertisement } from "@/app/admin/types";
+import type { AdSettings, Advertisement, Comment, Reply } from "@/app/admin/types";
 import { ALL_TOOLS } from "./tools";
 import { subMonths, format, startOfMonth } from 'date-fns';
 
@@ -605,6 +605,69 @@ export const getTopToolsByClicks = async (limit: number = 7): Promise<{ name: st
          console.error("Error fetching tool popularity data: ", e);
     }
     return [];
+};
+
+// --- Comments System ---
+
+export const postComment = async (toolId: string, text: string, user: User) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const commentsRef = ref(db, `comments/${toolId}`);
+    const newCommentRef = push(commentsRef);
+    const commentData = {
+        id: newCommentRef.key,
+        uid: user.uid,
+        authorName: user.displayName,
+        authorPhotoURL: user.photoURL,
+        text: text,
+        timestamp: serverTimestamp()
+    };
+    await set(newCommentRef, commentData);
+}
+
+export const postReply = async (toolId: string, commentId: string, text: string, user: User) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const repliesRef = ref(db, `comments/${toolId}/${commentId}/replies`);
+    const newReplyRef = push(repliesRef);
+    const replyData = {
+        id: newReplyRef.key,
+        uid: user.uid,
+        authorName: user.displayName,
+        authorPhotoURL: user.photoURL,
+        text: text,
+        timestamp: serverTimestamp()
+    };
+    await set(newReplyRef, replyData);
+}
+
+export const getComments = (toolId: string, callback: (comments: Comment[]) => void) => {
+    if (!db) {
+        callback([]);
+        return () => {};
+    }
+    const commentsRef = query(ref(db, `comments/${toolId}`), orderByChild('timestamp'));
+    
+    return onValue(commentsRef, (snapshot) => {
+        if (snapshot.exists()) {
+            const commentsData = snapshot.val();
+            const commentsList = Object.keys(commentsData).map(key => {
+                const comment = commentsData[key];
+                const replies = comment.replies ? Object.keys(comment.replies).map(replyKey => ({
+                    ...comment.replies[replyKey],
+                    id: replyKey,
+                })).sort((a,b) => a.timestamp - b.timestamp) : [];
+
+                return {
+                    ...comment,
+                    id: key,
+                    replies: replies
+                };
+            });
+            // Reverse to show newest comments first
+            callback(commentsList.reverse());
+        } else {
+            callback([]);
+        }
+    });
 };
 
 

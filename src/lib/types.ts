@@ -12,3 +12,22 @@ export interface ToolStat {
   views: number;
   users: number;
 }
+
+export interface Reply {
+  id: string;
+  uid: string;
+  authorName: string;
+  authorPhotoURL?: string;
+  text: string;
+  timestamp: number;
+}
+
+export interface Comment {
+  id: string;
+  uid: string;
+  authorName: string;
+  authorPhotoURL?: string;
+  text: string;
+  timestamp: number;
+  replies: Reply[];
+}
