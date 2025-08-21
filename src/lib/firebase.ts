@@ -10,6 +10,8 @@ import {
     getAuth, 
     onAuthStateChanged,
     GoogleAuthProvider,
+    GithubAuthProvider,
+    FacebookAuthProvider,
     signInWithPopup,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
@@ -64,11 +66,25 @@ if (isFirebaseConfigured && isFirebaseEnabled && getApps().length === 0) {
 
 // --- Auth Functions ---
 const googleProvider = auth ? new GoogleAuthProvider() : undefined;
+const githubProvider = auth ? new GithubAuthProvider() : undefined;
+const facebookProvider = auth ? new FacebookAuthProvider() : undefined;
+
 
 export const signInWithGoogle = () => {
     if (!auth || !googleProvider) throw new Error("Firebase not configured for Google Sign-In.");
     return signInWithPopup(auth, googleProvider);
 };
+
+export const signInWithGithub = () => {
+    if (!auth || !githubProvider) throw new Error("Firebase not configured for GitHub Sign-In.");
+    return signInWithPopup(auth, githubProvider);
+};
+
+export const signInWithFacebook = () => {
+    if (!auth || !facebookProvider) throw new Error("Firebase not configured for Facebook Sign-In.");
+    return signInWithPopup(auth, facebookProvider);
+};
+
 
 export const signUpWithEmail = (email: string, pass: string) => {
     if (!auth) throw new Error("Firebase not configured for Email Sign-Up.");
@@ -123,14 +139,14 @@ export const initializeUser = () => {
 
 export const isUsernameAvailable = async (username: string): Promise<boolean> => {
     if (!db) return false;
-    const usernameRef = ref(db, `usernames/${username}`);
+    const usernameRef = ref(db, `usernames/${username.toLowerCase()}`);
     const snapshot = await get(usernameRef);
     return !snapshot.exists();
 }
 
 export const getUidByUsername = async (username: string): Promise<string | null> => {
     if (!db) return null;
-    const usernameRef = ref(db, `usernames/${username}`);
+    const usernameRef = ref(db, `usernames/${username.toLowerCase()}`);
     const snapshot = await get(usernameRef);
     return snapshot.val() || null;
 };
@@ -152,7 +168,16 @@ export const getUserPublicProfile = async (username: string) => {
     };
 };
 
-export const checkAndCreateUser = async (data: { name: string, username: string, email: string, password:  string, dob?: Date, country?: string }) => {
+export const checkAndCreateUser = async (data: { 
+    name: string, 
+    username: string, 
+    email: string, 
+    password:  string, 
+    photoURL?: string,
+    phone?: string,
+    dob?: Date, 
+    country?: string 
+}) => {
     if (!auth || !db) throw new Error("Firebase not configured.");
     
     const usernameAvailable = await isUsernameAvailable(data.username);
@@ -163,31 +188,30 @@ export const checkAndCreateUser = async (data: { name: string, username: string,
     const userCredential = await signUpWithEmail(data.email, data.password);
     const user = userCredential.user;
 
-    await updateProfile(user, { displayName: data.name });
+    await updateProfile(user, { displayName: data.name, photoURL: data.photoURL });
 
     const userRef = ref(db, `users/${user.uid}`);
     
     const userData: any = {
         name: data.name,
-        username: data.username,
+        username: data.username.toLowerCase(),
         email: data.email,
+        photoURL: data.photoURL || '',
         createdAt: serverTimestamp(),
         lastLogin: serverTimestamp(),
         role: 'user', // Default role
     };
 
-    if (data.dob) {
-        userData.dob = format(data.dob, 'yyyy-MM-dd');
-    }
-    if (data.country) {
-        userData.country = data.country;
-    }
+    if (data.phone) userData.contactNumber = data.phone;
+    if (data.dob) userData.dob = format(data.dob, 'yyyy-MM-dd');
+    if (data.country) userData.country = data.country;
     
     await set(userRef, userData);
 
-    const usernameRef = ref(db, `usernames/${data.username}`);
+    const usernameRef = ref(db, `usernames/${data.username.toLowerCase()}`);
     await set(usernameRef, user.uid);
 };
+
 
 export const saveUserToDatabase = async (user: User) => {
     if (!db) return;
@@ -200,12 +224,12 @@ export const saveUserToDatabase = async (user: User) => {
             name: user.displayName,
             email: user.email,
             photoURL: user.photoURL,
-            username: username,
+            username: username.toLowerCase(),
             createdAt: serverTimestamp(),
             lastLogin: serverTimestamp(),
-            role: 'user', // Default role for Google Sign-in
+            role: 'user', // Default role for social Sign-in
         });
-        const usernameRef = ref(db, `usernames/${username}`);
+        const usernameRef = ref(db, `usernames/${username.toLowerCase()}`);
         await set(usernameRef, user.uid);
         incrementCounter('stats/users');
     } else {
@@ -213,6 +237,7 @@ export const saveUserToDatabase = async (user: User) => {
          return runTransaction(userRef, (userData) => {
             if (userData) {
                 userData.lastLogin = serverTimestamp();
+                userData.photoURL = user.photoURL; // Also update photoURL on social login
             }
             return userData;
         });
@@ -722,6 +747,7 @@ export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;
     
 
     
+
 
 
 

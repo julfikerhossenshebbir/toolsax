@@ -11,8 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tool } from '@/lib/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { toggleFavoriteInDb, getUserFavorites } from '@/lib/firebase';
-import LoginDialog from './LoginDialog';
 import CommentSystem from '@/components/comments/CommentSystem';
+import { useRouter } from 'next/navigation';
 
 
 interface ToolActionsProps {
@@ -23,8 +23,8 @@ export default function ToolActions({ tool }: ToolActionsProps) {
   const { user } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     setIsClient(true);
@@ -41,7 +41,7 @@ export default function ToolActions({ tool }: ToolActionsProps) {
 
   const handleToggleFavorite = () => {
     if (!user) {
-        setIsLoginOpen(true);
+        router.push('/login');
         return;
     }
     
@@ -85,7 +85,6 @@ export default function ToolActions({ tool }: ToolActionsProps) {
 
   return (
     <>
-    <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen} />
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>

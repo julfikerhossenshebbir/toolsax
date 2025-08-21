@@ -5,13 +5,14 @@ import * as React from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import ReactCountryFlag from 'react-country-flag';
 import { getName } from 'country-list';
 
+
 const countries = Object.entries(require('country-list').getNameList()).map(([code, name]) => ({
-  value: code,
+  value: code.toUpperCase(),
   label: name,
 }));
 
@@ -49,18 +50,20 @@ export function CountrySelect({ onValueChange, defaultValue }: CountrySelectProp
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command>
           <CommandInput placeholder="Search country..." />
-          <CommandEmpty>No country found.</CommandEmpty>
-          <CommandGroup className="max-h-[200px] overflow-y-auto">
-            {countries.map((country) => (
-              <CommandItem key={country.value} value={country.label} onSelect={() => handleSelect(country.value)}>
-                <Check className={cn('mr-2 h-4 w-4', value === country.value ? 'opacity-100' : 'opacity-0')} />
-                <div className="flex items-center gap-2">
-                  <ReactCountryFlag countryCode={country.value} svg style={{ width: '1.5em', height: '1.5em' }} />
-                  {country.label}
-                </div>
-              </CommandItem>
-            ))}
-          </CommandGroup>
+          <CommandList>
+            <CommandEmpty>No country found.</CommandEmpty>
+            <CommandGroup>
+              {countries.map((country) => (
+                <CommandItem key={country.value} value={country.label} onSelect={() => handleSelect(country.value)}>
+                  <Check className={cn('mr-2 h-4 w-4', value === country.value ? 'opacity-100' : 'opacity-0')} />
+                  <div className="flex items-center gap-2">
+                    <ReactCountryFlag countryCode={country.value} svg style={{ width: '1.5em', height: '1.5em' }} />
+                    {country.label}
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>

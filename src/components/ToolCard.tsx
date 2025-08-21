@@ -13,7 +13,6 @@ import { Skeleton } from './ui/skeleton';
 import { AdModal } from './AdModal';
 import { getColorByIndex } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
-import LoginDialog from './LoginDialog';
 import type { AdSettings, Advertisement } from '@/app/admin/types';
 
 
@@ -29,7 +28,6 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
   const [activeAd, setActiveAd] = useState<Advertisement | null>(null);
   const router = useRouter();
   const { user } = useAuth();
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
   
   const iconColor = getColorByIndex(index);
 
@@ -53,7 +51,7 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
     e.preventDefault();
 
     if (tool.authRequired && !user) {
-        setIsLoginOpen(true);
+        router.push('/login');
         return;
     }
       
@@ -107,7 +105,6 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
         onAdClick={handleAdClicked}
         advertisement={activeAd}
       />
-      <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen} />
 
       <div
         onClick={handleCardClick}

@@ -15,14 +15,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LogOut, User as UserIcon, Settings, Shield } from 'lucide-react';
-import LoginDialog from './LoginDialog';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function UserAvatar() {
   const { user, loading } = useAuth();
   const { toast } = useToast();
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -60,12 +58,12 @@ export default function UserAvatar() {
 
   if (!user) {
     return (
-      <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-        <Button variant="ghost" size="icon" onClick={() => setIsLoginOpen(true)}>
+      <Button asChild variant="ghost" size="icon">
+        <Link href="/login">
             <UserIcon className="h-5 w-5" />
             <span className="sr-only">Login</span>
-        </Button>
-      </LoginDialog>
+        </Link>
+      </Button>
     );
   }
 

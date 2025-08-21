@@ -6,9 +6,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { postComment, postReply, updateComment, updateReply } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Send, Check, X } from 'lucide-react';
+import { Loader2, Send, Check, X, CornerUpLeft } from 'lucide-react';
 import CommentAvatar from './CommentAvatar';
-import LoginDialog from '../LoginDialog';
+import { useRouter } from 'next/navigation';
 import { Input } from '../ui/input';
 
 interface CommentFormProps {
@@ -27,7 +27,7 @@ export default function CommentForm({
   commentId,
   replyId,
   onSuccess,
-  placeholder = 'Type your comment here...',
+  placeholder = 'Add a comment...',
   isReply = false,
   isEditing = false,
   initialText = '',
@@ -35,18 +35,22 @@ export default function CommentForm({
   const { user } = useAuth();
   const [text, setText] = useState(initialText);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     if (isEditing) {
         setText(initialText);
     }
   }, [isEditing, initialText]);
+  
+  const handleLoginRedirect = () => {
+    router.push('/login');
+  };
 
   const handleSubmit = async () => {
     if (!user) {
-      setIsLoginOpen(true);
+      handleLoginRedirect();
       return;
     }
     if (!text.trim()) return;
@@ -66,7 +70,7 @@ export default function CommentForm({
             } else {
                 await postComment(toolId, text, user);
             }
-            toast({ title: isReply ? 'Reply posted!' : 'Comment posted!' });
+            toast({ title: isReply ? 'Comment posted!' : 'Comment posted!' });
         }
       
       setText('');
@@ -81,32 +85,56 @@ export default function CommentForm({
       setIsSubmitting(false);
     }
   };
-
-  if (!user && !isReply) {
+  
+  if (!user && !isReply && !isEditing) {
     return (
-        <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-            <div className="text-center p-4 border rounded-lg">
-                <p className="text-sm text-muted-foreground">
-                    You must be logged in to comment.
-                </p>
-                <Button variant="link" onClick={() => setIsLoginOpen(true)}>
-                    Log in or Sign up
-                </Button>
-            </div>
-        </LoginDialog>
+        <div className="text-center p-4 border rounded-lg">
+            <p className="text-sm text-muted-foreground">
+                You must be logged in to comment.
+            </p>
+            <Button variant="link" onClick={handleLoginRedirect}>
+                Log in or Sign up
+            </Button>
+        </div>
     );
   }
   
   if (isReply && !user) {
       return (
-          <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-              <Button variant="link" onClick={() => setIsLoginOpen(true)}>
-                    Log in to reply
-              </Button>
-          </LoginDialog>
+          <Button variant="link" onClick={handleLoginRedirect}>
+                <CornerUpLeft className="mr-2 h-4 w-4" />
+                Log in to reply
+          </Button>
       )
   }
-  
+
+  const formContent = (
+    <div className="flex gap-3 items-center w-full">
+      <CommentAvatar user={user} />
+      <Input
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder={placeholder}
+        className="flex-grow bg-muted border-transparent focus-visible:ring-primary focus-visible:ring-1 focus-visible:border-primary"
+        autoFocus={isEditing}
+        onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit();
+            }
+        }}
+      />
+      <Button onClick={handleSubmit} disabled={isSubmitting || !text.trim()} size="icon">
+        {isSubmitting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+            <Send className="h-4 w-4" />
+        )}
+        <span className="sr-only">Publish</span>
+      </Button>
+    </div>
+  );
+
   if (isEditing) {
       return (
          <div className="flex-1 space-y-2">
@@ -115,6 +143,12 @@ export default function CommentForm({
               onChange={(e) => setText(e.target.value)}
               placeholder={placeholder}
               autoFocus={isEditing}
+               onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSubmit();
+                  }
+               }}
             />
             <div className="flex justify-end gap-2">
               <Button variant="ghost" onClick={onSuccess}>
@@ -132,29 +166,6 @@ export default function CommentForm({
          </div>
       );
   }
-  
-  const formContent = (
-      <>
-        <CommentAvatar user={user} />
-        <Input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder={placeholder}
-          className="flex-grow"
-        />
-        <Button onClick={handleSubmit} disabled={isSubmitting || !text.trim()} size="icon" variant="ghost">
-          {isSubmitting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-              <Send className="h-4 w-4" />
-          )}
-        </Button>
-      </>
-  );
 
-  return (
-    <div className="flex gap-3 items-center w-full">
-        {formContent}
-    </div>
-  );
+  return formContent;
 }
