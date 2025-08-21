@@ -639,6 +639,42 @@ export const postReply = async (toolId: string, commentId: string, text: string,
     await set(newReplyRef, replyData);
 }
 
+export const updateComment = async (toolId: string, commentId: string, text: string, user: User) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const commentRef = ref(db, `comments/${toolId}/${commentId}`);
+    const snapshot = await get(commentRef);
+    if (snapshot.exists() && snapshot.val().uid === user.uid) {
+        await update(commentRef, { text, editedTimestamp: serverTimestamp() });
+    } else {
+        throw new Error("You don't have permission to edit this comment.");
+    }
+};
+
+export const deleteComment = async (toolId: string, commentId: string) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const commentRef = ref(db, `comments/${toolId}/${commentId}`);
+    await remove(commentRef);
+};
+
+
+export const updateReply = async (toolId: string, commentId: string, replyId: string, text: string, user: User) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const replyRef = ref(db, `comments/${toolId}/${commentId}/replies/${replyId}`);
+    const snapshot = await get(replyRef);
+    if (snapshot.exists() && snapshot.val().uid === user.uid) {
+        await update(replyRef, { text, editedTimestamp: serverTimestamp() });
+    } else {
+        throw new Error("You don't have permission to edit this reply.");
+    }
+};
+
+export const deleteReply = async (toolId: string, commentId: string, replyId: string) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const replyRef = ref(db, `comments/${toolId}/${commentId}/replies/${replyId}`);
+    await remove(replyRef);
+};
+
+
 export const getComments = (toolId: string, callback: (comments: Comment[]) => void) => {
     if (!db) {
         callback([]);
@@ -676,3 +712,4 @@ export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;
     
 
     
+

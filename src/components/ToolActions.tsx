@@ -135,11 +135,8 @@ export default function ToolActions({ tool }: ToolActionsProps) {
                 <p>Comments</p>
             </TooltipContent>
         </Tooltip>
-        <DialogContent className="max-w-2xl">
-            <DialogHeader>
-                <DialogTitle>Comments on {tool.name}</DialogTitle>
-            </DialogHeader>
-            <div className="mt-4">
+        <DialogContent className="max-w-2xl p-0">
+            <div className="p-6">
                 <CommentSystem toolId={tool.id} />
             </div>
         </DialogContent>

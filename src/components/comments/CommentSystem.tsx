@@ -38,8 +38,13 @@ export default function CommentSystem({ toolId }: CommentSystemProps) {
     return () => unsubscribe();
   }, [toolId]);
 
+  const handleCommentDeleted = (commentId: string) => {
+    setComments(prev => prev.filter(c => c.id !== commentId));
+  }
+
   return (
     <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-4">
+      <h2 className="text-xl font-bold">Comments ({comments.length})</h2>
       <CommentForm toolId={toolId} />
       
       <div className="space-y-6">
@@ -50,7 +55,7 @@ export default function CommentSystem({ toolId }: CommentSystemProps) {
             </div>
         ) : comments.length > 0 ? (
           comments.map((comment) => (
-            <Comment key={comment.id} comment={comment} toolId={toolId} />
+            <Comment key={comment.id} comment={comment} toolId={toolId} onCommentDeleted={handleCommentDeleted} />
           ))
         ) : (
           <div className="text-center py-8">
