@@ -112,7 +112,7 @@ const ReplyItem = ({ reply, toolId, commentId, onReplyDeleted }: { reply: Reply;
                            <CommentActions authorId={reply.uid} onEdit={() => setIsEditing(true)} onDelete={handleDelete} />
                         </div>
                         <p className="text-xs text-muted-foreground">
-                            {format(new Date(reply.timestamp), "MMMM d, yyyy 'at' h:mm a")}
+                            {format(new Date(reply.timestamp), "MMMM d, yyyy 'at' h:mm:ss a")}
                         </p>
                         <p className="text-sm mt-2 whitespace-pre-wrap">{reply.text}</p>
                     </>
@@ -181,7 +181,7 @@ export default function Comment({ comment, toolId, onCommentDeleted, onReplyUpda
                         <CommentActions authorId={comment.uid} onEdit={() => setIsEditing(true)} onDelete={handleDelete} />
                     </div>
                      <p className="text-xs text-muted-foreground">
-                        {format(new Date(comment.timestamp), "MMMM d, yyyy 'at' h:mm a")}
+                        {format(new Date(comment.timestamp), "MMMM d, yyyy 'at' h:mm:ss a")}
                      </p>
                     <p className="text-sm mt-2 whitespace-pre-wrap">{comment.text}</p>
                 </>
