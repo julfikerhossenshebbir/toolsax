@@ -152,7 +152,7 @@ export const getUserPublicProfile = async (username: string) => {
     };
 };
 
-export const checkAndCreateUser = async (data: { name: string, username: string, email: string, password:  string }) => {
+export const checkAndCreateUser = async (data: { name: string, username: string, email: string, password:  string, dob?: Date, country?: string }) => {
     if (!auth || !db) throw new Error("Firebase not configured.");
     
     const usernameAvailable = await isUsernameAvailable(data.username);
@@ -166,14 +166,24 @@ export const checkAndCreateUser = async (data: { name: string, username: string,
     await updateProfile(user, { displayName: data.name });
 
     const userRef = ref(db, `users/${user.uid}`);
-    await set(userRef, {
+    
+    const userData: any = {
         name: data.name,
         username: data.username,
         email: data.email,
         createdAt: serverTimestamp(),
         lastLogin: serverTimestamp(),
         role: 'user', // Default role
-    });
+    };
+
+    if (data.dob) {
+        userData.dob = format(data.dob, 'yyyy-MM-dd');
+    }
+    if (data.country) {
+        userData.country = data.country;
+    }
+    
+    await set(userRef, userData);
 
     const usernameRef = ref(db, `usernames/${data.username}`);
     await set(usernameRef, user.uid);
@@ -712,5 +722,6 @@ export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;
     
 
     
+
 
 
