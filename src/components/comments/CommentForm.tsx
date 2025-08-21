@@ -134,33 +134,27 @@ export default function CommentForm({
   }
   
   const formContent = (
-      <div className="relative w-full">
+      <>
+        <CommentAvatar user={user} />
         <Input
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={placeholder}
-          className="pr-28"
+          className="flex-grow"
         />
-        <div className="absolute top-1/2 right-1.5 -translate-y-1/2 flex items-center gap-2">
-          <Button onClick={handleSubmit} disabled={isSubmitting || !text.trim()}>
-            {isSubmitting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-                <>
-                  <Send className="mr-2 h-4 w-4" /> Publish
-                </>
-            )}
-          </Button>
-        </div>
-      </div>
+        <Button onClick={handleSubmit} disabled={isSubmitting || !text.trim()} size="icon" variant="ghost">
+          {isSubmitting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+              <Send className="h-4 w-4" />
+          )}
+        </Button>
+      </>
   );
 
   return (
-    <div className="flex gap-3 items-start w-full">
-      {isReply && <CommentAvatar user={user} />}
-      <div className="flex-1">
+    <div className="flex gap-3 items-center w-full">
         {formContent}
-      </div>
     </div>
   );
 }
