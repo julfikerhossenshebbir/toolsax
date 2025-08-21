@@ -2,12 +2,13 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, Bell, Settings, ArrowLeft, X } from 'lucide-react';
+import { Search, Bell, Settings, ArrowLeft, X, LayoutGrid, Palette, Code, Wrench, Lock, FileText, ImageIcon, File as FileIcon, Share2, Smile, Paintbrush, BoxSelect, Square, Scan, Code2, GitCompareArrows, Mic, Volume2, FileAudio, Github, MessageSquare, ChevronDown } from 'lucide-react';
 import { Button } from './ui/button';
 import { SettingsPanel } from './SettingsPanel';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { useEffect, useState } from 'react';
-import { getNotificationMessage, Notification } from '@/lib/firebase';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { useEffect, useState, useMemo } from 'react';
+import { getNotificationMessage, Notification, isConfigured as isFirebaseConfigured } from '@/lib/firebase';
 import Icon from './Icon';
 import AppSidebar from './AppSidebar';
 import FavoriteTools from './FavoriteTools';
@@ -17,6 +18,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useDebounce } from 'use-debounce';
 import { cn } from '@/lib/utils';
 import { useAppState } from '@/contexts/AppStateContext';
+import { ALL_TOOLS } from '@/lib/tools';
 
 
 const Logo = () => (
@@ -34,6 +36,10 @@ const NotificationBell = () => {
     const [hasUnread, setHasUnread] = useState(false);
 
     useEffect(() => {
+        if (!isFirebaseConfigured) {
+          setIsLoading(false);
+          return;
+        }
         const unsubscribe = getNotificationMessage(true, (newNotifications) => {
             setNotifications(newNotifications);
             setIsLoading(false);
@@ -102,8 +108,23 @@ const NotificationBell = () => {
     )
 }
 
+const categoryIcons: { [key: string]: React.ReactNode } = {
+  All: <LayoutGrid className="w-4 h-4 mr-2" />,
+  Design: <Palette className="w-4 h-4 mr-2" />,
+  Development: <Code className="w-4 h-4 mr-2" />,
+  Utilities: <Wrench className="w-4 h-4 mr-2" />,
+  Security: <Lock className="w-4 h-4 mr-2" />,
+  Content: <FileText className="w-4 h-4 mr-2" />,
+  Image: <ImageIcon className="w-4 h-4 mr-2" />,
+  PDF: <FileIcon className="w-4 h-4 mr-2" />,
+  "Social Media": <Share2 className="w-4 h-4 mr-2" />,
+  SEO: <Search className="w-4 h-4 mr-2" />,
+  Productivity: <Wrench className="w-4 h-4 mr-2" />,
+  Marketing: <Wrench className="w-4 h-4 mr-2" />,
+};
+
 const HeaderSearch = () => {
-    const { searchQuery, setSearchQuery } = useAppState();
+    const { searchQuery, setSearchQuery, selectedCategory, setSelectedCategory } = useAppState();
     const router = useRouter();
     const pathname = usePathname();
 
@@ -111,6 +132,11 @@ const HeaderSearch = () => {
     
     const [inputValue, setInputValue] = useState(searchQuery);
     const [debouncedQuery] = useDebounce(inputValue, 300);
+
+    const categories = useMemo(() => {
+        const uniqueCategories = new Set(ALL_TOOLS.map(tool => tool.category));
+        return ['All', ...Array.from(uniqueCategories).sort()];
+    }, []);
 
     useEffect(() => {
         setSearchQuery(debouncedQuery);
@@ -162,20 +188,40 @@ const HeaderSearch = () => {
                 <Button variant="ghost" size="icon" onClick={() => setIsSearchVisible(false)} className="flex-shrink-0">
                     <ArrowLeft className="w-5 h-5"/>
                 </Button>
-                <div className="relative w-full">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <Input 
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        placeholder="Search for tools..."
-                        className="w-full pl-12 pr-10"
-                        autoFocus
-                    />
-                    {inputValue && (
-                        <Button variant="ghost" size="icon" onClick={() => setInputValue('')} className="absolute top-1/2 right-2 -translate-y-1/2 h-7 w-7">
-                            <X className="h-4 w-4" />
-                        </Button>
-                    )}
+                <div className="relative w-full flex items-center gap-2">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                          <Button variant="outline" className="h-10 pl-3 pr-2 shrink-0">
+                            {categoryIcons[selectedCategory] || <Wrench className="w-4 h-4" />}
+                            <span className="sr-only">{selectedCategory}</span>
+                            <ChevronDown className="h-4 w-4 opacity-50 ml-1" />
+                          </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                          {categories.map((category) => (
+                              <DropdownMenuItem key={category} onSelect={() => setSelectedCategory(category)}>
+                                  {categoryIcons[category]}
+                                  <span>{category}</span>
+                              </DropdownMenuItem>
+                          ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <div className="relative w-full">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input 
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            placeholder={`Search in ${selectedCategory}...`}
+                            className="w-full h-10 pl-12 pr-10"
+                            autoFocus
+                        />
+                        {inputValue && (
+                            <Button variant="ghost" size="icon" onClick={() => setInputValue('')} className="absolute top-1/2 right-2 -translate-y-1/2 h-7 w-7">
+                                <X className="h-4 w-4" />
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </div>
         </>
