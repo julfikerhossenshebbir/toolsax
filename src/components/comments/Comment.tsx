@@ -9,7 +9,7 @@ import CommentForm from './CommentForm';
 import CommentAvatar from './CommentAvatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUserData, deleteComment, deleteReply } from '@/lib/firebase';
-import { MoreHorizontal, Pencil, Trash2, BadgeCheck } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2, BadgeCheck, CornerUpLeft } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -184,7 +184,8 @@ export default function Comment({ comment, toolId, onCommentDeleted }: CommentPr
             )}
           <div className="mt-2">
             <Button variant="link" size="sm" className="p-0 h-auto text-xs" onClick={() => setShowReplyForm(!showReplyForm)}>
-              {showReplyForm ? 'Cancel Reply' : 'Reply'}
+                <CornerUpLeft className="mr-1 h-3 w-3" />
+                {showReplyForm ? 'Cancel Reply' : 'Reply'}
             </Button>
           </div>
         </div>

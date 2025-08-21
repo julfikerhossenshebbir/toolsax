@@ -5,9 +5,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { postComment, postReply, updateComment, updateReply } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Send, Check, X } from 'lucide-react';
 import CommentAvatar from './CommentAvatar';
 import LoginDialog from '../LoginDialog';
 import { Input } from '../ui/input';
@@ -111,17 +110,22 @@ export default function CommentForm({
   if (isEditing) {
       return (
          <div className="flex-1 space-y-2">
-            <Textarea
+            <Input
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder={placeholder}
-              className="min-h-[80px]"
               autoFocus={isEditing}
             />
             <div className="flex justify-end gap-2">
-              <Button variant="ghost" onClick={onSuccess}>Cancel</Button>
+              <Button variant="ghost" onClick={onSuccess}>
+                <X className="mr-2 h-4 w-4" /> Cancel
+              </Button>
               <Button onClick={handleSubmit} disabled={isSubmitting || !text.trim()}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                    <Check className="mr-2 h-4 w-4" />
+                )}
                 Save
               </Button>
             </div>
@@ -131,18 +135,20 @@ export default function CommentForm({
   
   const formContent = (
       <div className="relative w-full">
-        <Textarea
+        <Input
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={placeholder}
-          className="pr-24 min-h-[40px] h-10"
+          className="pr-28"
         />
-        <div className="absolute top-1/2 right-2 -translate-y-1/2 flex items-center gap-2">
+        <div className="absolute top-1/2 right-1.5 -translate-y-1/2 flex items-center gap-2">
           <Button onClick={handleSubmit} disabled={isSubmitting || !text.trim()}>
             {isSubmitting ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-                'Publish'
+                <>
+                  <Send className="mr-2 h-4 w-4" /> Publish
+                </>
             )}
           </Button>
         </div>
