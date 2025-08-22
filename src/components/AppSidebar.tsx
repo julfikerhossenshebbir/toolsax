@@ -9,10 +9,11 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import Link from "next/link";
-import { Home, Bug, PanelLeft, FileText, Cookie, Shield, Lock, Coffee, Mail } from "lucide-react";
+import { Home, Bug, PanelLeft, FileText, Cookie, Shield, Lock, Coffee, Mail, Megaphone } from "lucide-react";
 import { useState, forwardRef } from "react";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
+import SidebarAd from "./SidebarAd";
 
 const Logo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -25,6 +26,7 @@ const Logo = () => (
 
 const mainNavLinks = [
     { href: "/", icon: <Home className="h-4 w-4" />, label: "Home" },
+    { href: "/advertise", icon: <Megaphone className="h-4 w-4" />, label: "Advertise" },
     { href: "/report-a-bug", icon: <Bug className="h-4 w-4" />, label: "Report a Bug" },
 ];
 
@@ -76,6 +78,8 @@ const AppSidebar = forwardRef<HTMLDivElement, AppSidebarProps>(({ open, onOpenCh
                       </Link>
                   ))}
               </nav>
+              <Separator className="my-4" />
+              <SidebarAd />
           </div>
           <div className="p-4 border-t">
               <a href="https://www.buymeacoffee.com/anaroul" target="_blank" rel="noopener noreferrer">
