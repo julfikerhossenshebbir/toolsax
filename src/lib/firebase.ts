@@ -233,22 +233,21 @@ export const saveUserToDatabase = async (user: User) => {
     const userRef = ref(db, `users/${user.uid}`);
     const snapshot = await get(userRef);
     if (!snapshot.exists()) {
-        // New user is signing in (likely via social) but hasn't completed multi-step signup.
-        // Create a basic profile.
         incrementCounter('stats/users');
         await set(userRef, {
+            uid: user.uid,
             name: user.displayName,
             email: user.email,
             photoURL: user.photoURL,
-            uid: user.uid,
             createdAt: serverTimestamp(),
             lastLogin: serverTimestamp(),
             role: 'user'
         });
     } else {
-        // Existing user, just update last login.
         await update(userRef, {
-            lastLogin: serverTimestamp()
+            lastLogin: serverTimestamp(),
+            name: user.displayName,
+            photoURL: user.photoURL,
         });
     }
 };
@@ -568,6 +567,7 @@ export const saveSubmittedAd = async (data: Omit<SubmittedAd, 'id' | 'status' | 
     const newAdRef = push(adsRef);
     const adData = {
         ...data,
+        id: newAdRef.key,
         status: 'pending' as const,
         submissionDate: new Date().toISOString(),
     };

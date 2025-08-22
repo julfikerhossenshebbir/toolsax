@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { LogOut, User as UserIcon, Settings, Shield } from 'lucide-react';
+import { LogOut, User as UserIcon, Settings, Shield, LayoutDashboard } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
@@ -96,10 +96,17 @@ export default function UserAvatar() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {isAdmin && (
+        {isAdmin ? (
             <DropdownMenuItem asChild>
                 <Link href="/admin/dashboard">
                     <Shield className="mr-2 h-4 w-4" />
+                    <span>Admin Panel</span>
+                </Link>
+            </DropdownMenuItem>
+        ) : (
+            <DropdownMenuItem asChild>
+                <Link href="/dashboard">
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
                     <span>Dashboard</span>
                 </Link>
             </DropdownMenuItem>

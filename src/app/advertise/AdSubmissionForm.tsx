@@ -14,7 +14,6 @@ import { useRouter } from 'next/navigation';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { submitAdAction } from './actions';
 import Image from 'next/image';
-import { uploadFile } from '@/lib/firebase';
 
 const formSchema = z.object({
   advertiserName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -24,6 +23,34 @@ const formSchema = z.object({
   paymentMethod: z.enum(['bKash', 'Nagad', 'Rocket'], { required_error: 'You need to select a payment method.' }),
   transactionId: z.string().min(5, { message: 'Transaction ID is required.' }),
 });
+
+async function uploadToImgBB(imageFile: File | Blob): Promise<string | null> {
+    const apiKey = "81b8c0708e71005a41112b81b0c0375b";
+    if (!apiKey) {
+        console.error("ImgBB API key is not set.");
+        return null;
+    }
+
+    const formData = new FormData();
+    formData.append("image", imageFile);
+
+    try {
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+            method: "POST",
+            body: formData,
+        });
+        const result = await response.json();
+        if (result.success) {
+            return result.data.url;
+        } else {
+            console.error("ImgBB upload failed:", result.error.message);
+            return null;
+        }
+    } catch (error) {
+        console.error("Error uploading to ImgBB:", error);
+        return null;
+    }
+}
 
 export default function AdSubmissionForm() {
   const { user } = useAuth();
@@ -65,7 +92,10 @@ export default function AdSubmissionForm() {
     setIsSubmitting(true);
     
     try {
-        const imageUrl = await uploadFile(values.image, `submitted-ads/${user.uid}`);
+        const imageUrl = await uploadToImgBB(values.image);
+        if (!imageUrl) {
+            throw new Error("Image upload failed. Please try again.");
+        }
         
         const adData = {
             userId: user.uid,
@@ -87,6 +117,7 @@ export default function AdSubmissionForm() {
           form.reset();
           setPreview(null);
           if(fileInputRef.current) fileInputRef.current.value = '';
+          router.push('/dashboard');
         } else {
            throw new Error(result.error || 'An unknown error occurred.');
         }
