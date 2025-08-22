@@ -146,7 +146,7 @@ export default function ToolsManagement({ initialTools, isLoading }: ToolsManage
             <CardContent>
                 <div className="rounded-md border">
                      <DragDropContext onDragEnd={onDragEnd}>
-                        <Droppable droppableId="tools-list">
+                        <Droppable droppableId="tools-list" isDropDisabled={false}>
                             {(provided) => (
                                 <div {...provided.droppableProps} ref={provided.innerRef}>
                                     {sortedTools.length > 0 ? sortedTools.map((tool, index) => (
@@ -253,4 +253,3 @@ export default function ToolsManagement({ initialTools, isLoading }: ToolsManage
         </Card>
     );
 }
-
