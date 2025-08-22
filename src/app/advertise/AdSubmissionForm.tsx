@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,19 +8,22 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { Loader2, UploadCloud } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { submitAdAction } from './actions';
 import Image from 'next/image';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { DollarSign } from 'lucide-react';
 
 const formSchema = z.object({
   advertiserName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   phone: z.string().min(11, { message: 'Please enter a valid phone number.' }),
   linkUrl: z.string().url({ message: 'Please enter a valid URL.' }),
   image: z.any().refine(file => file instanceof File, { message: 'Image is required.' }),
+  targetViews: z.coerce.number().min(1000, { message: 'Minimum 1,000 views required.' }).step(1000, { message: 'Views must be in multiples of 1,000.'}),
   paymentMethod: z.enum(['bKash', 'Nagad', 'Rocket'], { required_error: 'You need to select a payment method.' }),
   transactionId: z.string().min(5, { message: 'Transaction ID is required.' }),
 });
@@ -66,9 +70,20 @@ export default function AdSubmissionForm() {
       advertiserName: '',
       phone: '',
       linkUrl: 'https://',
+      targetViews: 1000,
       transactionId: '',
     },
   });
+  
+  const targetViews = form.watch('targetViews');
+
+  const calculatedCost = useMemo(() => {
+    const views = Number(targetViews) || 0;
+    if (views < 1000) return 0;
+    // BDT 100 per 1000 views
+    return (views / 1000) * 100;
+  }, [targetViews]);
+
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -103,6 +118,8 @@ export default function AdSubmissionForm() {
             phone: values.phone,
             linkUrl: values.linkUrl,
             imageUrl: imageUrl,
+            targetViews: values.targetViews,
+            cost: calculatedCost,
             paymentMethod: values.paymentMethod,
             transactionId: values.transactionId,
         };
@@ -202,6 +219,30 @@ export default function AdSubmissionForm() {
             </FormItem>
           )}
         />
+
+        <FormField
+            control={form.control}
+            name="targetViews"
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Target Views</FormLabel>
+                    <FormControl>
+                        <Input type="number" step="1000" min="1000" {...field} />
+                    </FormControl>
+                    <FormDescription>How many times your ad will be shown. Minimum 1,000.</FormDescription>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+
+        <Alert>
+            <DollarSign className="h-4 w-4" />
+            <AlertTitle>Total Cost</AlertTitle>
+            <AlertDescription>
+                Your calculated cost is <strong className="font-semibold">{calculatedCost.toLocaleString()} BDT</strong>. Please send this amount to proceed.
+            </AlertDescription>
+        </Alert>
+
         <FormField
             control={form.control}
             name="paymentMethod"

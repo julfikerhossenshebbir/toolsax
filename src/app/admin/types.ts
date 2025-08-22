@@ -24,8 +24,8 @@ export interface Advertisement {
     advertiserName: string;
     imageUrl: string;
     linkUrl: string;
-    maxViews?: number;
-    maxClicks?: number;
+    maxViews: number; // Renamed from targetViews for consistency
+    maxClicks: number;
     currentViews: number;
     currentClicks: number;
     isActive: boolean;
@@ -38,10 +38,15 @@ export interface SubmittedAd {
     phone: string;
     linkUrl: string;
     imageUrl: string;
+    targetViews: number;
+    cost: number;
     paymentMethod: 'bKash' | 'Nagad' | 'Rocket';
     transactionId: string;
     status: 'pending' | 'approved' | 'rejected';
     submissionDate: string; // ISO date string
+    // Performance data to show on user dashboard
+    currentViews?: number;
+    currentClicks?: number;
 }
 
 export interface Tool {

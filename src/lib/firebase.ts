@@ -537,14 +537,36 @@ export const getActiveAdvertisement = async (seenAdIds: string[] = []): Promise<
 
 export const incrementAdViews = (adId: string) => {
     if (!db) return;
-    const viewsRef = ref(db, `advertisements/${adId}/currentViews`);
-    runTransaction(viewsRef, (currentViews) => (currentViews || 0) + 1);
+    const adRef = ref(db, `advertisements/${adId}`);
+    runTransaction(adRef, (ad) => {
+        if (ad) {
+            ad.currentViews = (ad.currentViews || 0) + 1;
+            
+            // Also update the submitted ad for user dashboard
+            if (ad.submittedAdId) {
+                const submittedAdRef = ref(db, `submittedAds/${ad.submittedAdId}/currentViews`);
+                runTransaction(submittedAdRef, (currentViews) => (currentViews || 0) + 1);
+            }
+        }
+        return ad;
+    });
 };
 
 export const incrementAdClicks = (adId: string) => {
     if (!db) return;
-    const clicksRef = ref(db, `advertisements/${adId}/currentClicks`);
-    runTransaction(clicksRef, (currentClicks) => (currentClicks || 0) + 1);
+    const adRef = ref(db, `advertisements/${adId}`);
+    runTransaction(adRef, (ad) => {
+        if (ad) {
+            ad.currentClicks = (ad.currentClicks || 0) + 1;
+
+            // Also update the submitted ad for user dashboard
+            if (ad.submittedAdId) {
+                const submittedAdRef = ref(db, `submittedAds/${ad.submittedAdId}/currentClicks`);
+                runTransaction(submittedAdRef, (currentClicks) => (currentClicks || 0) + 1);
+            }
+        }
+        return ad;
+    });
 };
 
 
@@ -570,6 +592,8 @@ export const saveSubmittedAd = async (data: Omit<SubmittedAd, 'id' | 'status' | 
         id: newAdRef.key,
         status: 'pending' as const,
         submissionDate: new Date().toISOString(),
+        currentViews: 0,
+        currentClicks: 0,
     };
     await set(newAdRef, adData);
 };
@@ -616,10 +640,34 @@ export const getUserSubmittedAds = (userId: string, callback: (ads: SubmittedAd[
     return unsubscribe;
 };
 
-export const approveSubmittedAd = async (adId: string) => {
+export const approveSubmittedAd = async (submittedAd: SubmittedAd) => {
     if (!db) throw new Error("Firebase not configured.");
-    const adRef = ref(db, `submittedAds/${adId}`);
-    return update(adRef, { status: 'approved' });
+
+    const updates: { [key: string]: any } = {};
+    
+    // 1. Update status of the submitted ad
+    updates[`submittedAds/${submittedAd.id}/status`] = 'approved';
+
+    // 2. Create a new "live" advertisement from the submission
+    const newAdId = uuidv4();
+    const newAdvertisement: Advertisement = {
+        id: newAdId,
+        advertiserName: submittedAd.advertiserName,
+        imageUrl: submittedAd.imageUrl,
+        linkUrl: submittedAd.linkUrl,
+        maxViews: submittedAd.targetViews,
+        maxClicks: 0, // Clicks are not targeted in this version
+        currentViews: 0,
+        currentClicks: 0,
+        isActive: true,
+    };
+    updates[`advertisements/${newAdId}`] = newAdvertisement;
+    
+    // Link the submitted ad to the live ad for stat tracking
+    updates[`submittedAds/${submittedAd.id}/liveAdId`] = newAdId;
+    updates[`advertisements/${newAdId}/submittedAdId`] = submittedAd.id;
+
+    return update(ref(db), updates);
 }
 
 export const rejectSubmittedAd = async (adId: string) => {
@@ -691,7 +739,7 @@ export const getTopToolsByClicks = async (limit: number = 7): Promise<{ name: st
     const toolsStatsRef = ref(db, 'tool_stats');
 
     try {
-        const [toolsSnapshot, statsSnapshot] = await Promise.all([get(toolsRef), get(toolsStatsRef)]);
+        const [toolsSnapshot, statsSnapshot] = await Promise.all([get(toolsRef), get(statsStatsRef)]);
         
         if (statsSnapshot.exists()) {
             const allTools = toolsSnapshot.val() || {};

@@ -79,9 +79,9 @@ export async function updateToolsOrderAction(tools: Tool[]): Promise<{ success: 
 }
 
 
-export async function approveSubmittedAdAction(adId: string): Promise<{ success: boolean, error?: string }> {
+export async function approveSubmittedAdAction(ad: SubmittedAd): Promise<{ success: boolean, error?: string }> {
     try {
-        await approveSubmittedAd(adId);
+        await approveSubmittedAd(ad);
         return { success: true };
     } catch (e: any) {
         return { success: false, error: e.message };

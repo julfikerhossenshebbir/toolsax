@@ -23,13 +23,13 @@ export default function UserAdsManagement({ ads }: UserAdsManagementProps) {
   const [isActionLoading, setIsActionLoading] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const handleAction = async (action: 'approve' | 'reject', adId: string) => {
-    setIsActionLoading(adId);
+  const handleAction = async (action: 'approve' | 'reject', ad: SubmittedAd) => {
+    setIsActionLoading(ad.id);
     let result;
     if (action === 'approve') {
-      result = await approveSubmittedAdAction(adId);
+      result = await approveSubmittedAdAction(ad);
     } else {
-      result = await rejectSubmittedAdAction(adId);
+      result = await rejectSubmittedAdAction(ad.id);
     }
 
     if (result.success) {
@@ -64,6 +64,8 @@ export default function UserAdsManagement({ ads }: UserAdsManagementProps) {
             <TableHeader>
               <TableRow>
                 <TableHead>Advertiser</TableHead>
+                <TableHead>Target Views</TableHead>
+                <TableHead>Cost (BDT)</TableHead>
                 <TableHead>Submitted On</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -74,6 +76,8 @@ export default function UserAdsManagement({ ads }: UserAdsManagementProps) {
                 ads.map((ad) => (
                   <TableRow key={ad.id}>
                     <TableCell className="font-medium">{ad.advertiserName}</TableCell>
+                    <TableCell>{ad.targetViews?.toLocaleString() || 'N/A'}</TableCell>
+                    <TableCell>{ad.cost?.toLocaleString() || 'N/A'}</TableCell>
                     <TableCell>{format(new Date(ad.submissionDate), 'PPP')}</TableCell>
                     <TableCell>{getStatusBadge(ad.status)}</TableCell>
                     <TableCell className="text-right">
@@ -86,7 +90,7 @@ export default function UserAdsManagement({ ads }: UserAdsManagementProps) {
                             variant="secondary" 
                             size="sm" 
                             className="ml-2"
-                            onClick={() => handleAction('approve', ad.id)}
+                            onClick={() => handleAction('approve', ad)}
                             disabled={!!isActionLoading}
                           >
                              {isActionLoading === ad.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -96,7 +100,7 @@ export default function UserAdsManagement({ ads }: UserAdsManagementProps) {
                             variant="destructive" 
                             size="sm" 
                             className="ml-2"
-                            onClick={() => handleAction('reject', ad.id)}
+                            onClick={() => handleAction('reject', ad)}
                             disabled={!!isActionLoading}
                           >
                             {isActionLoading === ad.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -109,7 +113,7 @@ export default function UserAdsManagement({ ads }: UserAdsManagementProps) {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
+                  <TableCell colSpan={6} className="h-24 text-center">
                     No user-submitted ads found.
                   </TableCell>
                 </TableRow>
@@ -134,6 +138,8 @@ export default function UserAdsManagement({ ads }: UserAdsManagementProps) {
                       <Image src={selectedAd.imageUrl} alt="Ad creative" width={400} height={200} className="w-full h-auto object-cover"/>
                   </div>
                 )}
+                <div><strong>Target Views:</strong> {selectedAd.targetViews?.toLocaleString()}</div>
+                <div><strong>Calculated Cost:</strong> {selectedAd.cost?.toLocaleString()} BDT</div>
                 <div><strong>Link:</strong> <a href={selectedAd.linkUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline flex items-center gap-1">{selectedAd.linkUrl} <ExternalLink className="h-3 w-3" /></a></div>
                 <div><strong>Phone:</strong> {selectedAd.phone}</div>
                 <div><strong>Payment Method:</strong> {selectedAd.paymentMethod}</div>

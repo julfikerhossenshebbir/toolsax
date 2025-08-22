@@ -1,3 +1,4 @@
+
 'use server';
 
 import { saveSubmittedAd } from '@/lib/firebase';
@@ -5,7 +6,7 @@ import type { SubmittedAd } from '@/app/admin/types';
 
 
 export async function submitAdAction(
-    data: Omit<SubmittedAd, 'id' | 'status' | 'submissionDate'>
+    data: Omit<SubmittedAd, 'id' | 'status' | 'submissionDate' | 'currentViews' | 'currentClicks'>
 ): Promise<{ success: boolean; error?: string }> {
     try {
         // Validation can be done here with Zod if needed

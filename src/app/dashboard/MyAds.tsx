@@ -37,8 +37,9 @@ export default function MyAds({ ads }: MyAdsProps) {
               <TableRow>
                 <TableHead>Ad Image</TableHead>
                 <TableHead>Submitted On</TableHead>
+                <TableHead>Views</TableHead>
+                <TableHead>Clicks</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Link</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -49,17 +50,14 @@ export default function MyAds({ ads }: MyAdsProps) {
                       <Image src={ad.imageUrl} alt="Ad thumbnail" width={80} height={40} className="rounded-md object-cover" />
                     </TableCell>
                     <TableCell>{format(new Date(ad.submissionDate), 'PPP')}</TableCell>
+                    <TableCell>{ad.currentViews?.toLocaleString() || 0} / {ad.targetViews.toLocaleString()}</TableCell>
+                    <TableCell>{ad.currentClicks?.toLocaleString() || 0}</TableCell>
                     <TableCell>{getStatusBadge(ad.status)}</TableCell>
-                    <TableCell>
-                      <a href={ad.linkUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline">
-                        View Link
-                      </a>
-                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
+                  <TableCell colSpan={5} className="h-24 text-center">
                     You have not submitted any ads yet.
                   </TableCell>
                 </TableRow>
