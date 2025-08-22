@@ -1,8 +1,8 @@
 
 'use server';
 
-import { updateGlobalNotifications, updateAdSettings, saveAdvertisement, deleteAdvertisement, saveTool, deleteTool, updateToolsOrder } from '@/lib/firebase';
-import type { Notification, AdSettings, Advertisement, Tool } from '../types';
+import { updateGlobalNotifications, updateAdSettings, saveAdvertisement, deleteAdvertisement, saveTool, deleteTool, updateToolsOrder, approveSubmittedAd, rejectSubmittedAd } from '@/lib/firebase';
+import type { Notification, AdSettings, Advertisement, Tool, SubmittedAd } from '../types';
 
 export async function sendNotification(notifications: Notification[]): Promise<{ success: boolean; error?: string }> {
   try {
@@ -75,5 +75,24 @@ export async function updateToolsOrderAction(tools: Tool[]): Promise<{ success: 
     } catch (error: any) {
         console.error('Error updating tools order:', error);
         return { success: false, error: 'Failed to update tools order.' };
+    }
+}
+
+
+export async function approveSubmittedAdAction(adId: string): Promise<{ success: boolean, error?: string }> {
+    try {
+        await approveSubmittedAd(adId);
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, error: e.message };
+    }
+}
+
+export async function rejectSubmittedAdAction(adId: string): Promise<{ success: boolean, error?: string }> {
+    try {
+        await rejectSubmittedAd(adId);
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, error: e.message };
     }
 }

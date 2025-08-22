@@ -31,6 +31,19 @@ export interface Advertisement {
     isActive: boolean;
 }
 
+export interface SubmittedAd {
+    id: string;
+    userId: string; // ID of the user who submitted it
+    advertiserName: string;
+    phone: string;
+    linkUrl: string;
+    imageUrl: string;
+    paymentMethod: 'bKash' | 'Nagad' | 'Rocket';
+    transactionId: string;
+    status: 'pending' | 'approved' | 'rejected';
+    submissionDate: string; // ISO date string
+}
+
 export interface Tool {
   id: string;
   name: string;

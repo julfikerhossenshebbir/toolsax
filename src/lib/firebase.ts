@@ -1,8 +1,4 @@
 
-
-
-
-
 // This is a placeholder for Firebase configuration.
 // To enable Firebase features, you need to set up a Firebase project and
 // add your configuration here.
@@ -24,7 +20,7 @@ import {
     type User
 } from "firebase/auth";
 import { v4 as uuidv4 } from 'uuid';
-import type { AdSettings, Advertisement, Comment, Reply, Tool } from "@/app/admin/types";
+import type { AdSettings, Advertisement, Comment, Reply, Tool, SubmittedAd } from "@/app/admin/types";
 import { ALL_TOOLS as STATIC_TOOLS } from "./tools";
 import { subMonths, format, startOfMonth } from 'date-fns';
 
@@ -39,7 +35,7 @@ const firebaseConfig = {
   authDomain: "toolsaxdb.firebaseapp.com",
   databaseURL: "https://toolsaxdb-default-rtdb.firebaseio.com",
   projectId: "toolsaxdb",
-  storageBucket: "toolsaxdb.firebasestorage.app",
+  storageBucket: "toolsaxdb.appspot.com",
   messagingSenderId: "521841849034",
   appId: "1:521841849034:web:5be88041b20b3d6435fa33",
   measurementId: "G-J0SGP2CFQH"
@@ -563,6 +559,62 @@ export const deleteAdvertisement = (adId: string) => {
     const adRef = ref(db, `advertisements/${adId}`);
     return remove(adRef);
 }
+
+// --- Submitted Ads ---
+export const getSubmittedAds = (subscribe: boolean = true, callback: (ads: SubmittedAd[]) => void) => {
+    if (!db) {
+        callback([]);
+        return () => {};
+    }
+    const adsRef = ref(db, 'submittedAds');
+    const unsubscribe = onValue(adsRef, (snapshot) => {
+        if (snapshot.exists()) {
+            const adsData = snapshot.val();
+            const adsList = Object.keys(adsData).map(id => ({
+                id,
+                ...adsData[id]
+            })).sort((a,b) => new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime());
+            callback(adsList);
+        } else {
+            callback([]);
+        }
+    });
+    return unsubscribe;
+};
+
+export const getUserSubmittedAds = (userId: string, callback: (ads: SubmittedAd[]) => void) => {
+    if (!db) {
+        callback([]);
+        return () => {};
+    }
+    const adsQuery = query(ref(db, 'submittedAds'), orderByChild('userId'), equalTo(userId));
+    const unsubscribe = onValue(adsQuery, (snapshot) => {
+        if (snapshot.exists()) {
+            const adsData = snapshot.val();
+            const adsList = Object.keys(adsData).map(id => ({
+                id,
+                ...adsData[id]
+            })).sort((a,b) => new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime());
+            callback(adsList);
+        } else {
+            callback([]);
+        }
+    });
+    return unsubscribe;
+};
+
+export const approveSubmittedAd = async (adId: string) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const adRef = ref(db, `submittedAds/${adId}`);
+    return update(adRef, { status: 'approved' });
+}
+
+export const rejectSubmittedAd = async (adId: string) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const adRef = ref(db, `submittedAds/${adId}`);
+    return update(adRef, { status: 'rejected' });
+}
+
 
 // --- Dashboard Chart Data ---
 
