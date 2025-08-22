@@ -1,4 +1,5 @@
 
+
 // This is a placeholder for Firebase configuration.
 // To enable Firebase features, you need to set up a Firebase project and
 // add your configuration here.
@@ -21,7 +22,7 @@ import {
 } from "firebase/auth";
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
-import type { Comment, Reply, Tool, VipRequest } from "@/app/admin/types";
+import type { Comment, Reply, Tool, VipRequest, PaymentMethod } from "@/app/admin/types";
 import { ALL_TOOLS as STATIC_TOOLS } from "./tools";
 import { subMonths, format, startOfMonth } from 'date-fns';
 
@@ -687,6 +688,67 @@ export const updateToolsOrder = (tools: Tool[]) => {
     });
     return update(ref(db), updates);
 };
+
+
+// --- Payment Methods Management ---
+
+const STATIC_PAYMENT_METHODS: PaymentMethod[] = [
+    { id: 'bkash', name: 'bKash', icon: 'https://paylogo.pages.dev/bkash.png', accountNumber: '01964638683', isLink: false, order: 0 },
+    { id: 'nagad', name: 'Nagad', icon: 'https://paylogo.pages.dev/nagad.jpg', accountNumber: '01964638683', isLink: false, order: 1 },
+    { id: 'rocket', name: 'Rocket', icon: 'https://paylogo.pages.dev/rocket.png', accountNumber: '01964638683', isLink: false, order: 2 },
+    { id: 'upay', name: 'Upay', icon: 'https://paylogo.pages.dev/upay.png', accountNumber: '01964638683', isLink: false, order: 3 },
+    { id: 'pathaopay', name: 'PathaoPay', icon: 'https://paylogo.pages.dev/pathaopay.png', paymentLink: 'https://pathaopay.me/@helloanaroul/500', isLink: true, order: 4 },
+    { id: 'cellfin', name: 'CellFin', icon: 'https://paylogo.pages.dev/cellfin.png', accountNumber: '01964638683', isLink: false, order: 5 },
+];
+
+export const getPaymentMethods = (callback: (methods: PaymentMethod[]) => void) => {
+    if (!db) {
+        console.warn("Firebase not configured. Falling back to static payment methods.");
+        callback(STATIC_PAYMENT_METHODS);
+        return () => {};
+    }
+    const methodsRef = query(ref(db, 'payment_methods'), orderByChild('order'));
+    
+    const unsubscribe = onValue(methodsRef, (snapshot) => {
+        if (snapshot.exists()) {
+            const methodsData = snapshot.val();
+            const methodsList: PaymentMethod[] = Object.keys(methodsData).map(key => ({
+                ...methodsData[key],
+                id: key,
+            })).sort((a, b) => a.order - b.order);
+            callback(methodsList);
+        } else {
+            // Populate with static methods if DB is empty
+            const initialMethods = STATIC_PAYMENT_METHODS.reduce((acc, method) => {
+                 const newMethod: Omit<PaymentMethod, 'id'> & { id?: string } = { ...method };
+                 delete newMethod.id;
+                 acc[method.id] = newMethod;
+                 return acc;
+            }, {} as { [key: string]: Omit<PaymentMethod, 'id'> });
+            set(ref(db, 'payment_methods'), initialMethods);
+        }
+    });
+
+    return unsubscribe;
+};
+
+export const savePaymentMethod = (method: Omit<PaymentMethod, 'id'> & { id?: string }) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const id = method.id || uuidv4();
+    const methodRef = ref(db, `payment_methods/${id}`);
+    
+    const dataToSave = { ...method };
+    delete dataToSave.id;
+
+    return set(methodRef, dataToSave);
+};
+
+export const deletePaymentMethod = (methodId: string) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const methodRef = ref(db, `payment_methods/${methodId}`);
+    return remove(methodRef);
+};
+
 
 // --- VIP System ---
 export const submitVipRequest = async (requestData: Omit<VipRequest, 'status' | 'timestamp'>) => {

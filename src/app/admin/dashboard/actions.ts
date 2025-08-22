@@ -1,8 +1,8 @@
 
 'use server';
 
-import { updateGlobalNotifications, saveTool, deleteTool, updateToolsOrder, submitVipRequest, approveVipRequest, rejectVipRequest } from '@/lib/firebase';
-import type { Notification, Tool, VipRequest } from '../types';
+import { updateGlobalNotifications, saveTool, deleteTool, updateToolsOrder, submitVipRequest, approveVipRequest, rejectVipRequest, savePaymentMethod, deletePaymentMethod } from '@/lib/firebase';
+import type { Notification, Tool, VipRequest, PaymentMethod } from '../types';
 
 export async function sendNotification(notifications: Notification[]): Promise<{ success: boolean; error?: string }> {
   try {
@@ -71,5 +71,26 @@ export async function rejectVipRequestAction(uid: string): Promise<{ success: bo
   } catch (error: any) {
     console.error('Error rejecting VIP request:', error);
     return { success: false, error: 'Failed to reject VIP request.' };
+  }
+}
+
+
+export async function savePaymentMethodAction(method: PaymentMethod): Promise<{ success: boolean; error?: string }> {
+  try {
+    await savePaymentMethod(method);
+    return { success: true };
+  } catch (error: any) {
+    console.error('Error saving payment method:', error);
+    return { success: false, error: 'Failed to save payment method.' };
+  }
+}
+
+export async function deletePaymentMethodAction(methodId: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    await deletePaymentMethod(methodId);
+    return { success: true };
+  } catch (error: any) {
+    console.error('Error deleting payment method:', error);
+    return { success: false, error: 'Failed to delete payment method.' };
   }
 }

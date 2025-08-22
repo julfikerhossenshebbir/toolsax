@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,18 +13,19 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
-import Link from 'next/link';
+import { getPaymentMethods } from '@/lib/firebase';
+import type { PaymentMethod } from '@/app/admin/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
-const paymentMethods = [
-    { name: 'bKash', icon: 'https://paylogo.pages.dev/bkash.png' },
-    { name: 'Nagad', icon: 'https://paylogo.pages.dev/nagad.jpg' },
-    { name: 'Rocket', icon: 'https://paylogo.pages.dev/rocket.png' },
-    { name: 'Upay', icon: 'https://paylogo.pages.dev/upay.png' },
-    { name: 'PathaoPay', icon: 'https://paylogo.pages.dev/pathaopay.png', isLink: true, link: 'https://pathaopay.me/@helloanaroul/500' },
-    { name: 'CellFin', icon: 'https://paylogo.pages.dev/cellfin.png' },
-];
+const PAYMENT_COST = '500 BDT';
 
-const PAYMENT_NUMBER = '01964638683';
+const PaymentMethodSkeleton = () => (
+    <div className="flex flex-col items-center justify-center gap-2 p-3 border rounded-lg">
+        <Skeleton className="h-10 w-16" />
+        <Skeleton className="h-4 w-20" />
+    </div>
+);
+
 
 interface JoinVipFormProps {
     onSuccessfulSubmit: () => void;
@@ -34,20 +35,30 @@ export default function JoinVipForm({ onSuccessfulSubmit }: JoinVipFormProps) {
     const { user } = useAuth();
     const [transactionId, setTransactionId] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
+    const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null);
+    const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+    const [isLoadingMethods, setIsLoadingMethods] = useState(true);
     const { toast } = useToast();
 
-    const handleCopyToClipboard = () => {
-        navigator.clipboard.writeText(PAYMENT_NUMBER);
+    useEffect(() => {
+        const unsubscribe = getPaymentMethods((methods) => {
+            setPaymentMethods(methods);
+            setIsLoadingMethods(false);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    const handleCopyToClipboard = (textToCopy: string) => {
+        navigator.clipboard.writeText(textToCopy);
         toast({
-            title: 'Number Copied!',
-            description: `${PAYMENT_NUMBER} has been copied to your clipboard.`,
+            title: 'Copied!',
+            description: `${textToCopy} has been copied to your clipboard.`,
         });
     };
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!user || !transactionId) return;
+        if (!user || !transactionId || !selectedMethod) return;
 
         setIsSubmitting(true);
         try {
@@ -80,13 +91,11 @@ export default function JoinVipForm({ onSuccessfulSubmit }: JoinVipFormProps) {
         }
     };
 
-    const currentMethod = paymentMethods.find(m => m.name === selectedMethod);
-
     return (
         <div className="space-y-6">
             <Alert>
                 <Wallet className="h-4 w-4" />
-                <AlertTitle>Become a VIP Member for 500 BDT!</AlertTitle>
+                <AlertTitle>Become a VIP Member for {PAYMENT_COST}!</AlertTitle>
                 <AlertDescription>
                     <p>Unlock premium tools, get a verified profile badge, and enjoy an ad-free experience. Follow the steps below to join.</p>
                 </AlertDescription>
@@ -94,20 +103,24 @@ export default function JoinVipForm({ onSuccessfulSubmit }: JoinVipFormProps) {
             
             <Card>
                 <CardContent className="p-6">
-                    <h3 className="font-semibold text-lg mb-4">Choose Payment Method</h3>
-                     <RadioGroup onValueChange={setSelectedMethod} value={selectedMethod || ''}>
+                    <h3 className="font-semibold text-lg mb-4">Step 1: Choose Payment Method</h3>
+                     <RadioGroup onValueChange={(id) => setSelectedMethod(paymentMethods.find(m => m.id === id) || null)} value={selectedMethod?.id || ''}>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                            {paymentMethods.map(method => (
-                                <Label 
-                                    key={method.name}
-                                    htmlFor={method.name}
-                                    className="flex flex-col items-center justify-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-accent transition-colors data-[state=checked]:border-primary data-[state=checked]:ring-2 data-[state=checked]:ring-primary"
-                                >
-                                    <RadioGroupItem value={method.name} id={method.name} className="sr-only" />
-                                    <Image src={method.icon} alt={method.name} width={64} height={64} className="h-10 w-auto object-contain" />
-                                    <span className="text-sm font-medium">{method.name}</span>
-                                </Label>
-                            ))}
+                            {isLoadingMethods ? (
+                                Array.from({ length: 6 }).map((_, i) => <PaymentMethodSkeleton key={i} />)
+                            ) : (
+                                paymentMethods.map(method => (
+                                    <Label 
+                                        key={method.id}
+                                        htmlFor={method.id}
+                                        className="flex flex-col items-center justify-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-accent transition-colors data-[state=checked]:border-primary data-[state=checked]:ring-2 data-[state=checked]:ring-primary"
+                                    >
+                                        <RadioGroupItem value={method.id} id={method.id} className="sr-only" />
+                                        <Image src={method.icon} alt={method.name} width={64} height={64} className="h-10 w-auto object-contain" />
+                                        <span className="text-sm font-medium">{method.name}</span>
+                                    </Label>
+                                ))
+                            )}
                         </div>
                     </RadioGroup>
                 </CardContent>
@@ -116,22 +129,22 @@ export default function JoinVipForm({ onSuccessfulSubmit }: JoinVipFormProps) {
             {selectedMethod && (
                  <Card>
                     <CardContent className="p-6 space-y-4">
-                        <h3 className="font-semibold text-lg">Send Payment via {selectedMethod}</h3>
-                        {currentMethod?.isLink ? (
+                        <h3 className="font-semibold text-lg">Step 2: Send Payment via {selectedMethod.name}</h3>
+                        {selectedMethod.isLink ? (
                             <>
-                                <p className="text-sm text-muted-foreground">Click the button below to pay <strong>500 BDT</strong> using PathaoPay.</p>
+                                <p className="text-sm text-muted-foreground">Click the button below to pay <strong>{PAYMENT_COST}</strong> using {selectedMethod.name}.</p>
                                 <Button asChild className="w-full">
-                                    <a href={currentMethod.link} target="_blank" rel="noopener noreferrer">
-                                        Pay with PathaoPay <ArrowRight className="ml-2 h-4 w-4" />
+                                    <a href={selectedMethod.paymentLink} target="_blank" rel="noopener noreferrer">
+                                        Pay with {selectedMethod.name} <ArrowRight className="ml-2 h-4 w-4" />
                                     </a>
                                 </Button>
                             </>
                         ) : (
                             <>
-                                <p className="text-sm text-muted-foreground">Please send <strong>500 BDT</strong> to the number below using the "{selectedMethod}" app.</p>
+                                <p className="text-sm text-muted-foreground">Please send <strong>{PAYMENT_COST}</strong> to the number below using the "{selectedMethod.name}" app.</p>
                                 <div className="flex items-center gap-2 p-3 rounded-lg bg-muted">
-                                   <span className="text-lg font-mono font-bold text-primary flex-grow">{PAYMENT_NUMBER}</span>
-                                   <Button variant="ghost" size="icon" onClick={handleCopyToClipboard}>
+                                   <span className="text-lg font-mono font-bold text-primary flex-grow">{selectedMethod.accountNumber}</span>
+                                   <Button variant="ghost" size="icon" onClick={() => handleCopyToClipboard(selectedMethod.accountNumber || '')}>
                                         <Copy className="h-4 w-4" />
                                    </Button>
                                 </div>
@@ -150,7 +163,7 @@ export default function JoinVipForm({ onSuccessfulSubmit }: JoinVipFormProps) {
            
             <Card>
                 <CardContent className="p-6">
-                    <h3 className="font-semibold text-lg mb-4">Submit for Verification</h3>
+                    <h3 className="font-semibold text-lg mb-4">Step 3: Submit for Verification</h3>
                      <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="transactionId">Transaction ID</Label>
@@ -170,7 +183,6 @@ export default function JoinVipForm({ onSuccessfulSubmit }: JoinVipFormProps) {
                     </form>
                 </CardContent>
             </Card>
-
         </div>
     );
 }

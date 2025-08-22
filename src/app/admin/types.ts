@@ -1,4 +1,5 @@
 
+
 export interface UserData {
     uid: string;
     name: string;
@@ -34,4 +35,14 @@ export interface VipRequest {
   transactionId: string;
   timestamp: any;
   status: 'pending' | 'approved' | 'rejected';
+}
+
+export interface PaymentMethod {
+  id: string;
+  name: string;
+  icon: string;
+  accountNumber?: string;
+  paymentLink?: string;
+  isLink: boolean;
+  order: number;
 }
