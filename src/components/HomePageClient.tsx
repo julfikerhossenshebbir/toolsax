@@ -24,6 +24,9 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
 
   const filteredTools = useMemo(() => {
     return tools.filter(tool => {
+        if (!tool.name || !tool.description) {
+            return false; // Skip tools with missing name or description
+        }
         const matchesCategory = selectedCategory === 'All' || tool.category === selectedCategory;
         const matchesSearch =
             tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
