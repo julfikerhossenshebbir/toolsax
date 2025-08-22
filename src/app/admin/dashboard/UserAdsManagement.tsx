@@ -38,6 +38,7 @@ export default function UserAdsManagement({ ads }: UserAdsManagementProps) {
       toast({ variant: 'destructive', title: 'Action Failed', description: result.error });
     }
     setIsActionLoading(null);
+    setSelectedAd(null); // Close dialog on action
   };
   
   const getStatusBadge = (status: 'pending' | 'approved' | 'rejected') => {
@@ -128,9 +129,11 @@ export default function UserAdsManagement({ ads }: UserAdsManagementProps) {
           </DialogHeader>
           {selectedAd && (
             <div className="space-y-4">
-                <div className="rounded-md overflow-hidden border">
-                    <Image src={selectedAd.imageUrl} alt="Ad creative" width={400} height={200} className="w-full h-auto object-cover"/>
-                </div>
+                {selectedAd.imageUrl && (
+                  <div className="rounded-md overflow-hidden border">
+                      <Image src={selectedAd.imageUrl} alt="Ad creative" width={400} height={200} className="w-full h-auto object-cover"/>
+                  </div>
+                )}
                 <div><strong>Link:</strong> <a href={selectedAd.linkUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline flex items-center gap-1">{selectedAd.linkUrl} <ExternalLink className="h-3 w-3" /></a></div>
                 <div><strong>Phone:</strong> {selectedAd.phone}</div>
                 <div><strong>Payment Method:</strong> {selectedAd.paymentMethod}</div>
