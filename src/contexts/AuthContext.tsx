@@ -2,7 +2,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { onAuthStateChanged, isConfigured, getUserData } from '@/lib/firebase';
+import { onAuthStateChanged, isConfigured, getUserData, getAuthInstance } from '@/lib/firebase';
 import type { User } from 'firebase/auth';
 
 interface AuthContextType {
@@ -24,7 +24,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
     
-    const unsubscribe = onAuthStateChanged(async (user) => {
+    const auth = getAuthInstance();
+    if (!auth) {
+        setLoading(false);
+        return;
+    }
+    
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if(user) {
         const data = await getUserData(user.uid);

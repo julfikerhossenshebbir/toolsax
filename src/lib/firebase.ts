@@ -101,6 +101,7 @@ export const logout = () => {
     return signOut(auth);
 };
 
+export const getAuthInstance = () => auth;
 export { onAuthStateChanged };
 
 export const updateUserProfile = (user: User, profile: { displayName?: string, photoURL?: string }) => {
