@@ -11,6 +11,7 @@ import { AppStateProvider } from '@/contexts/AppStateContext';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { cn } from '@/lib/utils';
+import AppFooter from '@/components/AppFooter';
 
 
 export const metadata: Metadata = {
@@ -43,6 +44,7 @@ export default function RootLayout({
                   <main className="flex-grow pb-16 md:pb-0">
                       {children}
                   </main>
+                   <AppFooter />
                   <MobileBottomNav />
               </div>
               <Toaster />

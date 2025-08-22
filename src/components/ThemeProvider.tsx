@@ -9,7 +9,7 @@ import { getUserThemeSettings, saveUserThemeSettings } from '@/lib/firebase';
 
 const DEFAULT_COLOR = 'violet';
 const DEFAULT_RADIUS = 0.5;
-const DEFAULT_FONT_SIZE = 16;
+const DEFAULT_FONT_SIZE = 15;
 
 
 interface CustomThemeContextType {
