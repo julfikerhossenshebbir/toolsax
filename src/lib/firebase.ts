@@ -21,7 +21,7 @@ import {
 } from "firebase/auth";
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
-import type { Comment, Reply, Tool } from "@/app/admin/types";
+import type { Comment, Reply, Tool, VipRequest } from "@/app/admin/types";
 import { ALL_TOOLS as STATIC_TOOLS } from "./tools";
 import { subMonths, format, startOfMonth } from 'date-fns';
 
@@ -101,10 +101,7 @@ export const logout = () => {
     return signOut(auth);
 };
 
-export const onAuthStateChange = (callback: (user: User | null) => void) => {
-    if (!auth) return () => {};
-    return onAuthStateChanged(auth, callback);
-};
+export { onAuthStateChanged };
 
 export const updateUserProfile = (user: User, profile: { displayName?: string, photoURL?: string }) => {
     return updateProfile(user, profile);
@@ -165,6 +162,7 @@ export const getUserPublicProfile = async (username: string) => {
         favorites: data.favorites || [],
         bio: data.bio,
         social: data.social,
+        role: data.role
     };
 };
 
@@ -688,6 +686,72 @@ export const updateToolsOrder = (tools: Tool[]) => {
     });
     return update(ref(db), updates);
 };
+
+// --- VIP System ---
+export const submitVipRequest = async (requestData: Omit<VipRequest, 'status' | 'timestamp'>) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const requestRef = ref(db, `vip_requests/${requestData.uid}`);
+    const snapshot = await get(requestRef);
+    if (snapshot.exists() && snapshot.val().status === 'pending') {
+        throw new Error('You already have a pending request.');
+    }
+    
+    const dataToSave: Omit<VipRequest, 'uid'> = {
+        name: requestData.name,
+        email: requestData.email,
+        photoURL: requestData.photoURL,
+        transactionId: requestData.transactionId,
+        status: 'pending',
+        timestamp: serverTimestamp(),
+    };
+
+    return set(requestRef, dataToSave);
+};
+
+export const getVipRequestStatus = async (uid: string): Promise<VipRequest['status'] | null> => {
+    if (!db) return null;
+    const requestRef = ref(db, `vip_requests/${uid}`);
+    const snapshot = await get(requestRef);
+    return snapshot.exists() ? snapshot.val().status : null;
+};
+
+export const getVipRequests = (callback: (requests: VipRequest[]) => void) => {
+    if (!db) {
+        callback([]);
+        return () => {};
+    }
+    const requestsRef = ref(db, 'vip_requests');
+    const unsubscribe = onValue(requestsRef, (snapshot) => {
+        if (snapshot.exists()) {
+            const requestsData = snapshot.val();
+            const requestsList = Object.keys(requestsData).map(uid => ({
+                uid,
+                ...requestsData[uid]
+            }));
+            callback(requestsList);
+        } else {
+            callback([]);
+        }
+    });
+    return unsubscribe;
+};
+
+export const approveVipRequest = async (uid: string) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const userRef = ref(db, `users/${uid}`);
+    const requestRef = ref(db, `vip_requests/${uid}`);
+    const updates: { [key: string]: any } = {};
+    updates[`/users/${uid}/role`] = 'vip';
+    updates[`/vip_requests/${uid}/status`] = 'approved';
+    return update(ref(db), updates);
+};
+
+export const rejectVipRequest = async (uid: string) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const requestRef = ref(db, `vip_requests/${uid}`);
+    return update(requestRef, { status: 'rejected' });
+};
+
 
 // --- File Upload ---
 export async function uploadFile(file: File, path: string): Promise<string> {

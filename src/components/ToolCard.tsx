@@ -7,7 +7,7 @@ import type { Tool } from '@/lib/types';
 import Icon from './Icon';
 import { Card, CardContent } from './ui/card';
 import { incrementClicks, getToolStats, isConfigured } from '@/lib/firebase';
-import { MousePointerClick, Lock } from 'lucide-react';
+import { MousePointerClick, Lock, Crown } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 import { getColorByIndex } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,7 +21,7 @@ interface ToolCardProps {
 const ToolCard = ({ tool, index }: ToolCardProps) => {
   const [clicks, setClicks] = useState<number | null>(null);
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
   
   const iconColor = getColorByIndex(index);
 
@@ -38,6 +38,8 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
       setClicks(0);
     }
   }, [tool.id]);
+  
+  const isVip = userData?.role === 'vip' || userData?.role === 'admin';
 
   const handleCardClick = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -46,11 +48,22 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
         router.push('/login');
         return;
     }
+    
+    if (tool.isPremium && !isVip) {
+      router.push('/join-vip');
+      return;
+    }
       
     incrementClicks(tool.id);
     
     router.push(`/${tool.id}`);
   };
+  
+  const getLockIcon = () => {
+    if(tool.isPremium) return <Crown className="w-3 h-3 text-yellow-500" />;
+    if(tool.authRequired) return <Lock className="w-3 h-3 text-muted-foreground" />;
+    return null;
+  }
 
   return (
     <>
@@ -74,7 +87,7 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-base truncate flex items-center gap-2">
                 {tool.name}
-                {tool.authRequired && <Lock className="w-3 h-3 text-muted-foreground" />}
+                {getLockIcon()}
               </h3>
               <p className="text-xs text-muted-foreground truncate">{tool.description}</p>
             </div>

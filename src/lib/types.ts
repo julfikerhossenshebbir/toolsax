@@ -1,5 +1,4 @@
 
-
 export interface Tool {
   id: string;
   name: string;
@@ -8,8 +7,9 @@ export interface Tool {
   category: 'Design' | 'Development' | 'Productivity' | 'Marketing' | 'Utilities' | 'Security' | 'Content' | 'Image' | 'PDF' | 'Social Media' | 'SEO';
   icon: string;
   authRequired?: boolean;
-  isEnabled: boolean; // New field for toggling visibility
-  order: number;      // New field for ordering
+  isEnabled: boolean;
+  order: number;
+  isPremium?: boolean; // New field for VIP tools
 }
 
 export interface ToolStat {

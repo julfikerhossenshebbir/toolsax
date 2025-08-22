@@ -3,7 +3,7 @@ export interface UserData {
     uid: string;
     name: string;
     email: string;
-    role?: 'admin' | 'user';
+    role?: 'admin' | 'user' | 'vip';
     lastLogin: string;
     createdAt: string;
 }
@@ -23,4 +23,15 @@ export interface Tool {
   authRequired?: boolean;
   isEnabled: boolean;
   order: number;
+  isPremium?: boolean;
+}
+
+export interface VipRequest {
+  uid: string;
+  name: string;
+  email: string;
+  photoURL?: string;
+  transactionId: string;
+  timestamp: any;
+  status: 'pending' | 'approved' | 'rejected';
 }

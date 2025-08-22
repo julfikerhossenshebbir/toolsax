@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getUserData } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Loader2, LayoutDashboard, Wrench, Megaphone, Users, Settings, Bell, PanelLeft, BotMessageSquare } from 'lucide-react';
+import { Loader2, LayoutDashboard, Wrench, Megaphone, Users, Settings, Bell, PanelLeft, BotMessageSquare, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -18,6 +18,7 @@ const navLinks = [
     { href: '/admin/tools', label: 'Tools', icon: Wrench },
     { href: '/admin/users', label: 'Users', icon: Users },
     { href: '/admin/notifications', label: 'Notifications', icon: Bell },
+    { href: '/admin/vip-requests', label: 'VIP Requests', icon: Crown },
 ]
 
 const NavLink = ({ href, label, icon: Icon, isMobile }: { href: string; label: string; icon: React.ElementType, isMobile?: boolean }) => {

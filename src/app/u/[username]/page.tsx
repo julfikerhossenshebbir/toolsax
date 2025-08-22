@@ -8,7 +8,7 @@ import { formatDistanceToNow } from 'date-fns';
 import type { Tool } from '@/lib/types';
 import ToolCard from '@/components/ToolCard';
 import SectionDivider from '@/components/SectionDivider';
-import { Twitter, Github, Globe } from 'lucide-react';
+import { Twitter, Github, Globe, BadgeCheck } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -101,6 +101,8 @@ export default async function UserProfilePage({ params }: Props) {
     }
     return url;
   };
+  
+  const isVip = publicProfile.role === 'vip' || publicProfile.role === 'admin';
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -113,7 +115,10 @@ export default async function UserProfilePage({ params }: Props) {
                 {getInitials(publicProfile.name || publicProfile.username)}
               </AvatarFallback>
             </Avatar>
-            <CardTitle className="text-2xl">{publicProfile.name || 'User'}</CardTitle>
+            <CardTitle className="text-2xl flex items-center justify-center gap-2">
+                {publicProfile.name || 'User'}
+                {isVip && <BadgeCheck className="h-6 w-6 text-blue-500" />}
+            </CardTitle>
             <CardDescription>@{publicProfile.username}</CardDescription>
           </CardHeader>
           <CardContent className="text-center">

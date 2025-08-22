@@ -30,6 +30,7 @@ const emptyTool: Tool = {
     authRequired: false,
     isEnabled: true,
     order: 0,
+    isPremium: false,
 };
 
 const toolCategories = [
@@ -200,7 +201,11 @@ export default function ToolsManagement({ initialTools, isLoading }: ToolsManage
                         </div>
                         <div className="flex items-center space-x-2">
                             <Checkbox id="auth-required" checked={currentTool.authRequired} onCheckedChange={(checked) => setCurrentTool({ ...currentTool, authRequired: !!checked })} />
-                            <Label htmlFor="auth-required">Requires user to be logged in</Label>
+                            <Label htmlFor="auth-required">Requires Authentication</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <Checkbox id="is-premium" checked={currentTool.isPremium} onCheckedChange={(checked) => setCurrentTool({ ...currentTool, isPremium: !!checked })} />
+                            <Label htmlFor="is-premium">VIP Only (Premium)</Label>
                         </div>
                          <div className="flex items-center space-x-2">
                             <Switch id="is-enabled" checked={currentTool.isEnabled} onCheckedChange={(checked) => setCurrentTool({ ...currentTool, isEnabled: checked })} />

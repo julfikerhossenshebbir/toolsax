@@ -2,18 +2,20 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { onAuthStateChange, isConfigured } from '@/lib/firebase';
+import { onAuthStateChanged, isConfigured, getUserData } from '@/lib/firebase';
 import type { User } from 'firebase/auth';
 
 interface AuthContextType {
   user: User | null;
+  userData: any | null;
   loading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
+const AuthContext = createContext<AuthContextType>({ user: null, userData: null, loading: true });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [userData, setUserData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,8 +24,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
     
-    const unsubscribe = onAuthStateChange((user) => {
+    const unsubscribe = onAuthStateChanged(async (user) => {
       setUser(user);
+      if(user) {
+        const data = await getUserData(user.uid);
+        setUserData(data);
+      } else {
+        setUserData(null);
+      }
       setLoading(false);
     });
 
@@ -31,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, userData, loading }}>
       {children}
     </AuthContext.Provider>
   );

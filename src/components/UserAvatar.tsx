@@ -3,7 +3,7 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from './ui/button';
-import { logout, getUserData } from '@/lib/firebase';
+import { logout } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import {
   DropdownMenu,
@@ -14,30 +14,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { LogOut, User as UserIcon, Settings, Shield } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { LogOut, User as UserIcon, Settings, Shield, Crown } from 'lucide-react';
 import Link from 'next/link';
 
 export default function UserAvatar() {
-  const { user, loading } = useAuth();
+  const { user, userData, loading } = useAuth();
   const { toast } = useToast();
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-      const checkAdminStatus = async () => {
-          if (user) {
-              const userData = await getUserData(user.uid);
-              if (userData?.role === 'admin') {
-                  setIsAdmin(true);
-              } else {
-                  setIsAdmin(false);
-              }
-          } else {
-              setIsAdmin(false);
-          }
-      };
-      checkAdminStatus();
-  }, [user]);
 
   const handleLogout = async () => {
     try {
@@ -73,6 +55,10 @@ export default function UserAvatar() {
     const initials = names.map(n => n[0]).join('');
     return initials.slice(0, 2).toUpperCase();
   }
+  
+  const isVip = userData?.role === 'vip';
+  const isAdmin = userData?.role === 'admin';
+
 
   return (
     <DropdownMenu>
@@ -110,6 +96,14 @@ export default function UserAvatar() {
             <span>Profile</span>
           </Link>
         </DropdownMenuItem>
+        {!isVip && !isAdmin && (
+             <DropdownMenuItem asChild>
+              <Link href="/join-vip">
+                <Crown className="mr-2 h-4 w-4 text-yellow-500" />
+                <span>Join VIP</span>
+              </Link>
+            </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
