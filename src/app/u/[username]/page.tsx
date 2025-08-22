@@ -1,11 +1,11 @@
 
-import { getUserPublicProfile } from '@/lib/firebase';
+import { getUserPublicProfile, getTools } from '@/lib/firebase';
 import { notFound } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import type { Metadata } from 'next';
 import { formatDistanceToNow } from 'date-fns';
-import { ALL_TOOLS } from '@/lib/tools';
+import type { Tool } from '@/lib/types';
 import ToolCard from '@/components/ToolCard';
 import SectionDivider from '@/components/SectionDivider';
 import { Twitter, Github, Globe } from 'lucide-react';
@@ -15,6 +15,25 @@ import { Button } from '@/components/ui/button';
 type Props = {
   params: { username: string };
 };
+
+async function getAllToolsServerSide(): Promise<Tool[]> {
+    return new Promise((resolve) => {
+        let resolved = false;
+        const mockCallback = (loadedTools: Tool[]) => {
+            if (!resolved) {
+                resolve(loadedTools);
+                resolved = true;
+            }
+        };
+        const unsubscribe = getTools(mockCallback);
+        setTimeout(() => {
+            if (!resolved) {
+                resolve([]);
+                resolved = true;
+            }
+        }, 3000);
+    });
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = params;
@@ -51,6 +70,8 @@ export default async function UserProfilePage({ params }: Props) {
   if (!publicProfile) {
     notFound();
   }
+  
+  const allTools = await getAllToolsServerSide();
 
   const getInitials = (name?: string | null) => {
     if (!name) return '?';
@@ -64,11 +85,11 @@ export default async function UserProfilePage({ params }: Props) {
     : 'Never';
 
   const favoriteTools = publicProfile.favorites 
-    ? ALL_TOOLS.filter(tool => publicProfile.favorites.includes(tool.id))
+    ? allTools.filter(tool => publicProfile.favorites.includes(tool.id) && tool.isEnabled)
     : [];
 
   const originalIndexMap = new Map<string, number>();
-    ALL_TOOLS.forEach((tool, index) => {
+    allTools.forEach((tool, index) => {
         originalIndexMap.set(tool.id, index);
     });
 

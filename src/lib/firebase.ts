@@ -1,11 +1,12 @@
 
 
+
 // This is a placeholder for Firebase configuration.
 // To enable Firebase features, you need to set up a Firebase project and
 // add your configuration here.
 
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
-import { getDatabase, ref, runTransaction, onValue, get, set, type Database, serverTimestamp, push, child, update, remove, query, orderByChild, equalTo, limitToLast } from "firebase/database";
+import { getDatabase, ref, runTransaction, onValue, get, set, type Database, serverTimestamp, push, child, update, remove, query, orderByChild, equalTo, limitToLast, orderByValue } from "firebase/database";
 import { 
     getAuth, 
     onAuthStateChanged,
@@ -21,8 +22,8 @@ import {
     type User
 } from "firebase/auth";
 import { v4 as uuidv4 } from 'uuid';
-import type { AdSettings, Advertisement, Comment, Reply } from "@/app/admin/types";
-import { ALL_TOOLS } from "./tools";
+import type { AdSettings, Advertisement, Comment, Reply, Tool } from "@/app/admin/types";
+import { ALL_TOOLS as STATIC_TOOLS } from "./tools";
 import { subMonths, format, startOfMonth } from 'date-fns';
 
 
@@ -321,7 +322,7 @@ export const incrementViews = () => {
 export const incrementClicks = (toolId: string) => {
   if (!db) return;
   incrementCounter('stats/tool_clicks');
-  incrementCounter(`tools/${toolId}/clicks`);
+  incrementCounter(`tool_stats/${toolId}/clicks`);
 };
 
 export const toggleFavoriteInDb = async (userId: string, toolId: string): Promise<boolean> => {
@@ -378,7 +379,7 @@ export const getToolStats = (toolId: string, callback: (stats: { clicks: number 
     return () => {};
   }
 
-  const toolStatsRef = ref(db, `tools/${toolId}`);
+  const toolStatsRef = ref(db, `tool_stats/${toolId}`);
   const unsubscribe = onValue(toolStatsRef, (snapshot) => {
     const data = snapshot.val() || { clicks: 0 };
     callback(data);
@@ -611,19 +612,21 @@ export const getMonthlyUserGrowth = async (): Promise<{ name: string; total: num
 
 export const getTopToolsByClicks = async (limit: number = 7): Promise<{ name: string; clicks: number }[]> => {
     if (!db) return [];
-    
+
     const toolsRef = ref(db, 'tools');
+    const toolsStatsRef = ref(db, 'tool_stats');
 
     try {
-        const snapshot = await get(toolsRef);
-        if (snapshot.exists()) {
-            const allToolsData: {id: string, clicks: number}[] = [];
-            snapshot.forEach((childSnapshot) => {
-                allToolsData.push({
-                    id: childSnapshot.key!,
-                    clicks: childSnapshot.val().clicks || 0,
-                });
-            });
+        const [toolsSnapshot, statsSnapshot] = await Promise.all([get(toolsRef), get(toolsStatsRef)]);
+        
+        if (statsSnapshot.exists()) {
+            const allTools = toolsSnapshot.val() || {};
+            const statsData = statsSnapshot.val();
+
+            const allToolsData = Object.keys(statsData).map(toolId => ({
+                id: toolId,
+                clicks: statsData[toolId].clicks || 0,
+            }));
 
             // Sort by clicks descending and take the limit
             const sortedTools = allToolsData.sort((a, b) => b.clicks - a.clicks);
@@ -631,18 +634,19 @@ export const getTopToolsByClicks = async (limit: number = 7): Promise<{ name: st
 
             // Map to the final format with tool names
             return topTools.map(toolData => {
-                const toolInfo = ALL_TOOLS.find(t => t.id === toolData.id);
+                const toolInfo = allTools[toolData.id];
                 return {
                     name: toolInfo ? toolInfo.name : 'Unknown Tool',
                     clicks: toolData.clicks,
                 };
             });
         }
-    } catch(e) {
-         console.error("Error fetching tool popularity data: ", e);
+    } catch (e) {
+        console.error("Error fetching tool popularity data: ", e);
     }
     return [];
 };
+
 
 // --- Comments System ---
 
@@ -743,14 +747,72 @@ export const getComments = (toolId: string, callback: (comments: Comment[]) => v
     });
 };
 
+// --- Tools Management ---
+export const getTools = (callback: (tools: Tool[]) => void) => {
+    if (!db) {
+        console.warn("Firebase not configured. Falling back to static tools.");
+        callback(STATIC_TOOLS);
+        return () => {};
+    }
+
+    const toolsRef = query(ref(db, 'tools'), orderByChild('order'));
+    
+    const unsubscribe = onValue(toolsRef, (snapshot) => {
+        if (snapshot.exists()) {
+            const toolsData = snapshot.val();
+            const toolsList: Tool[] = Object.keys(toolsData).map(key => ({
+                ...toolsData[key],
+                id: key,
+            })).sort((a, b) => a.order - b.order);
+            callback(toolsList);
+        } else {
+            // If no tools in DB, populate with static tools
+            console.log("No tools found in Firebase, populating with static tools.");
+            const initialTools = STATIC_TOOLS.reduce((acc, tool, index) => {
+                const newTool: Omit<Tool, 'id'> & { id?: string } = { ...tool, isEnabled: true, order: index };
+                delete newTool.id;
+                acc[tool.id] = newTool;
+                return acc;
+            }, {} as { [key: string]: Omit<Tool, 'id'> });
+
+            set(ref(db, 'tools'), initialTools).then(() => {
+                 // The onValue listener will be triggered again after this set,
+                 // so we don't need to call callback() here.
+            });
+        }
+    });
+
+    return unsubscribe;
+};
+
+
+export const saveTool = (tool: Omit<Tool, 'id'> & { id?: string }) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const id = tool.id || uuidv4();
+    const toolRef = ref(db, `tools/${id}`);
+    
+    // Ensure data is clean before saving
+    const dataToSave = { ...tool };
+    delete dataToSave.id;
+
+    return set(toolRef, dataToSave);
+};
+
+
+export const deleteTool = (toolId: string) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const toolRef = ref(db, `tools/${toolId}`);
+    return remove(toolRef);
+};
+
+export const updateToolsOrder = (tools: Tool[]) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const updates: { [key: string]: any } = {};
+    tools.forEach((tool, index) => {
+        updates[`/tools/${tool.id}/order`] = index;
+    });
+    return update(ref(db), updates);
+};
+
 
 export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;
-
-    
-
-    
-
-
-
-
-

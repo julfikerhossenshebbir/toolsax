@@ -1,14 +1,13 @@
 
 'use client';
 
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect } from 'react';
 import type { Tool } from '@/lib/types';
 import ToolCard from './ToolCard';
 import Header from './Header';
 import { incrementViews } from '@/lib/firebase';
 import FeaturesSection from './FeaturesSection';
 import SectionDivider from './SectionDivider';
-import { useAuth } from '@/contexts/AuthContext';
 import FirebaseStats from './FirebaseStats';
 import { useAppState } from '@/contexts/AppStateContext';
 
@@ -17,7 +16,6 @@ interface HomePageClientProps {
 }
 
 export default function HomePageClient({ tools }: HomePageClientProps) {
-  const { user } = useAuth();
   const { searchQuery, selectedCategory } = useAppState();
   
   useEffect(() => {

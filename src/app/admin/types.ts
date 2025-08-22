@@ -1,3 +1,4 @@
+
 export interface UserData {
     uid: string;
     name: string;
@@ -28,4 +29,16 @@ export interface Advertisement {
     currentViews: number;
     currentClicks: number;
     isActive: boolean;
+}
+
+export interface Tool {
+  id: string;
+  name: string;
+  description: string;
+  link: string;
+  category: 'Design' | 'Development' | 'Productivity' | 'Marketing' | 'Utilities' | 'Security' | 'Content' | 'Image' | 'PDF' | 'Social Media' | 'SEO';
+  icon: string;
+  authRequired?: boolean;
+  isEnabled: boolean;
+  order: number;
 }

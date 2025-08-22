@@ -8,7 +8,8 @@ import { SettingsPanel } from './SettingsPanel';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { useEffect, useState, useMemo } from 'react';
-import { getNotificationMessage, Notification, isConfigured as isFirebaseConfigured } from '@/lib/firebase';
+import { getNotificationMessage, Notification, isConfigured as isFirebaseConfigured, getTools } from '@/lib/firebase';
+import type { Tool } from '@/lib/types';
 import Icon from './Icon';
 import AppSidebar from './AppSidebar';
 import FavoriteTools from './FavoriteTools';
@@ -18,8 +19,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useDebounce } from 'use-debounce';
 import { cn } from '@/lib/utils';
 import { useAppState } from '@/contexts/AppStateContext';
-import { ALL_TOOLS } from '@/lib/tools';
-
 
 const Logo = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -129,14 +128,22 @@ const HeaderSearch = () => {
     const pathname = usePathname();
 
     const [isSearchVisible, setIsSearchVisible] = useState(false);
+    const [allTools, setAllTools] = useState<Tool[]>([]);
     
     const [inputValue, setInputValue] = useState(searchQuery);
     const [debouncedQuery] = useDebounce(inputValue, 300);
 
-    const categories = useMemo(() => {
-        const uniqueCategories = new Set(ALL_TOOLS.map(tool => tool.category));
-        return ['All', ...Array.from(uniqueCategories).sort()];
+    useEffect(() => {
+        const unsubscribe = getTools((loadedTools) => {
+            setAllTools(loadedTools);
+        });
+        return () => unsubscribe();
     }, []);
+
+    const categories = useMemo(() => {
+        const uniqueCategories = new Set(allTools.map(tool => tool.category));
+        return ['All', ...Array.from(uniqueCategories).sort()];
+    }, [allTools]);
 
     useEffect(() => {
         setSearchQuery(debouncedQuery);

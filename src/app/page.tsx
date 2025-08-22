@@ -2,17 +2,55 @@
 'use client';
 
 import HomePageClient from '@/components/HomePageClient';
-import { Tool } from '@/lib/types';
-import { ALL_TOOLS } from '@/lib/tools';
+import { useEffect, useState } from 'react';
+import type { Tool } from '@/lib/types';
+import { getTools } from '@/lib/firebase';
+import { Skeleton } from '@/components/ui/skeleton';
+import Header from '@/components/Header';
+import SectionDivider from '@/components/SectionDivider';
 
-function getTools(): Tool[] {
-  return ALL_TOOLS;
-}
+const ToolGridSkeleton = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Array.from({ length: 9 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-4 p-4 border rounded-lg">
+                <Skeleton className="w-10 h-10 rounded-lg" />
+                <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-full" />
+                </div>
+                <Skeleton className="h-5 w-10" />
+            </div>
+        ))}
+    </div>
+);
+
 
 export default function Home() {
-  const tools = getTools();
+    const [tools, setTools] = useState<Tool[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-  return (
-    <HomePageClient tools={tools} />
-  );
+    useEffect(() => {
+        const unsubscribe = getTools((loadedTools) => {
+            // Only show enabled tools to the public
+            const enabledTools = loadedTools.filter(tool => tool.isEnabled);
+            setTools(enabledTools);
+            setIsLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    if (isLoading) {
+      return (
+        <div className="container mx-auto px-4">
+          <Header />
+          <SectionDivider />
+          <ToolGridSkeleton />
+        </div>
+      );
+    }
+
+    return (
+        <HomePageClient tools={tools} />
+    );
 }

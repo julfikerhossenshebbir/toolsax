@@ -2,18 +2,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getStats, subscribeToAllUsers, getNotificationMessage, getAdSettings, getAllAdvertisements } from '@/lib/firebase';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { getStats, subscribeToAllUsers, getNotificationMessage, getAdSettings, getAllAdvertisements, getTools } from '@/lib/firebase';
 import { StatCard, UsersTable, columns, NotificationForm, UserOverviewChart, ToolPopularityChart, AdSettingsForm } from './components';
 import { Users, BarChart, AreaChart } from 'lucide-react';
-import type { UserData, Notification as NotifType, AdSettings, Advertisement } from '../types';
+import type { UserData, Notification as NotifType, AdSettings, Advertisement, Tool } from '../types';
 import AdManagementForm from './AdManagementForm';
+import ToolsManagement from './ToolsManagement';
 
 const defaultAdSettings: AdSettings = {
     adsEnabled: true,
     viewLimit: 3,
     cooldownMinutes: 30,
-    enabledTools: [],
 };
 
 export default function AdminDashboardPage() {
@@ -23,31 +23,38 @@ export default function AdminDashboardPage() {
     const [notifications, setNotifications] = useState<NotifType[]>([]);
     const [adSettings, setAdSettings] = useState<AdSettings>(defaultAdSettings);
     const [advertisements, setAdvertisements] = useState<Advertisement[]>([]);
+    const [tools, setTools] = useState<Tool[]>([]);
+    const [loading, setLoading] = useState(true);
 
 
     useEffect(() => {
+        const unsubscribers: (() => void)[] = [];
+
         // Fetch initial static data
         getStats(false).then(s => setStats(s));
         getNotificationMessage(false).then(n => setNotifications(n as NotifType[]));
 
         // Subscribe to real-time updates
-        const unsubscribeUsers = subscribeToAllUsers((updatedUsers) => {
+        unsubscribers.push(subscribeToAllUsers((updatedUsers) => {
             setUsers(updatedUsers as UserData[]);
-        });
+        }));
 
-        const unsubscribeAdSettings = getAdSettings(true, (settings) => {
+        unsubscribers.push(getAdSettings(true, (settings) => {
             setAdSettings(settings || defaultAdSettings);
-        });
+        }));
         
-        const unsubscribeAds = getAllAdvertisements(true, (ads) => {
+        unsubscribers.push(getAllAdvertisements(true, (ads) => {
             setAdvertisements(ads);
-        });
+        }));
+
+        unsubscribers.push(getTools((loadedTools) => {
+            setTools(loadedTools);
+            setLoading(false);
+        }));
 
         // Cleanup subscription on component unmount
         return () => {
-            unsubscribeUsers();
-            unsubscribeAdSettings();
-            unsubscribeAds();
+            unsubscribers.forEach(unsub => unsub());
         };
     }, []);
 
@@ -68,12 +75,15 @@ export default function AdminDashboardPage() {
                 </StatCard>
             </div>
             <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-                <UserOverviewChart />
-                <ToolPopularityChart />
-
                 <div className="lg:col-span-full">
+                    <ToolsManagement initialTools={tools} isLoading={loading} />
+                </div>
+                 <div className="lg:col-span-full">
                     <AdManagementForm currentAds={advertisements} />
                 </div>
+
+                <UserOverviewChart />
+                <ToolPopularityChart />
 
                 <div className="lg:col-span-full">
                      <AdSettingsForm currentAdSettings={adSettings} />
@@ -83,6 +93,7 @@ export default function AdminDashboardPage() {
                      <Card>
                         <CardHeader>
                             <CardTitle>User Management</CardTitle>
+                             <CardDescription>View and manage all registered users.</CardDescription>
                         </CardHeader>
                         <CardContent>
                            <UsersTable columns={columns} data={users} />
@@ -96,3 +107,4 @@ export default function AdminDashboardPage() {
         </div>
     );
 }
+

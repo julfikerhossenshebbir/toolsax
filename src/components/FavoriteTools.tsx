@@ -6,30 +6,24 @@ import Link from 'next/link';
 import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Heart } from 'lucide-react';
-import { Tool } from '@/lib/types';
-import { ALL_TOOLS } from '@/lib/tools';
+import type { Tool } from '@/lib/types';
 import Icon from './Icon';
 import { getColorByIndex } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
-import { getUserFavorites } from '@/lib/firebase';
+import { getUserFavorites, getTools } from '@/lib/firebase';
+import { Skeleton } from './ui/skeleton';
 
 export default function FavoriteTools() {
     const { user } = useAuth();
     const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
-    const [isMounted, setIsMounted] = useState(false);
+    const [allTools, setAllTools] = useState<Tool[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        setIsMounted(true);
-        if (user) {
-            const unsubscribe = getUserFavorites(user.uid, (favorites) => {
-                setFavoriteIds(favorites || []);
-            });
-            return () => unsubscribe();
-        } else {
-            // Read from local storage if user is not logged in
-            const favorites = JSON.parse(localStorage.getItem('favorite_tools') || '[]');
-            setFavoriteIds(favorites);
-        }
+        const unsubscribeTools = getTools((loadedTools) => {
+            setAllTools(loadedTools);
+            setIsLoading(false);
+        });
 
         const handleStorageChange = () => {
              if (!user) {
@@ -37,24 +31,38 @@ export default function FavoriteTools() {
                 setFavoriteIds(favorites);
              }
         };
+        
+        let unsubscribeFavorites: (() => void) | undefined;
+        if (user) {
+            unsubscribeFavorites = getUserFavorites(user.uid, (favorites) => {
+                setFavoriteIds(favorites || []);
+            });
+        } else {
+            handleStorageChange();
+        }
+
 
         window.addEventListener('storage', handleStorageChange);
         window.addEventListener('favoritesChanged', handleStorageChange);
 
         return () => {
+            unsubscribeTools();
+            if (unsubscribeFavorites) unsubscribeFavorites();
             window.removeEventListener('storage', handleStorageChange);
             window.removeEventListener('favoritesChanged', handleStorageChange);
         };
     }, [user]);
 
-    const favoriteTools = ALL_TOOLS.filter(tool => favoriteIds.includes(tool.id));
+    const favoriteTools = allTools
+      .filter(tool => favoriteIds.includes(tool.id) && tool.isEnabled)
+      .sort((a,b) => a.order - b.order);
     
     const originalIndexMap = new Map<string, number>();
-    ALL_TOOLS.forEach((tool, index) => {
+    allTools.forEach((tool, index) => {
         originalIndexMap.set(tool.id, index);
     });
 
-    if (!isMounted) {
+    if (isLoading) {
         return (
             <Button variant="ghost" size="icon" aria-label="Favorite Tools" disabled>
                 <Heart className="w-5 h-5" />
