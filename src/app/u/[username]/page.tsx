@@ -3,7 +3,7 @@ import { getUserPublicProfile, getTools } from '@/lib/firebase';
 import { notFound } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import type { Metadata } from 'next';
+import type { Metadata, ResolvingMetadata } from 'next';
 import { formatDistanceToNow } from 'date-fns';
 import type { Tool } from '@/lib/types';
 import ToolCard from '@/components/ToolCard';
@@ -35,9 +35,10 @@ async function getAllToolsServerSide(): Promise<Tool[]> {
     });
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
   const { username } = params;
   const publicProfile = await getUserPublicProfile(username);
+  const previousImages = (await parent).openGraph?.images || []
 
   if (!publicProfile) {
     return {
@@ -45,19 +46,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const profileName = publicProfile.name || publicProfile.username;
+  const title = `${profileName}'s Profile`;
+  const description = publicProfile.bio || `View the profile of ${profileName} on Toolsax.`;
+  const imageUrl = publicProfile.photoURL || `https://placehold.co/1200x630.png?text=${encodeURIComponent(profileName)}`;
+
   return {
-    title: `${publicProfile.name || publicProfile.username} | Toolsax`,
-    description: publicProfile.bio || `View the profile of ${publicProfile.name || publicProfile.username} on Toolsax.`,
+    title,
+    description,
     openGraph: {
-        title: `${publicProfile.name || publicProfile.username} | Toolsax`,
-        description: publicProfile.bio || `View the profile of ${publicProfile.name || publicProfile.username} on Toolsax.`,
-        images: [{ url: publicProfile.photoURL || '' }],
+        title,
+        description,
+        images: [imageUrl, ...previousImages],
     },
     twitter: {
-        card: 'summary',
-        title: `${publicProfile.name || publicProfile.username} | Toolsax`,
-        description: publicProfile.bio || `View the profile of ${publicProfile.name || publicProfile.username} on Toolsax.`,
-        images: [publicProfile.photoURL || ''],
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [imageUrl],
     },
   };
 }

@@ -16,7 +16,10 @@ import AppFooter from '@/components/AppFooter';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://toolsax.com'),
-  title: 'Toolsax - Free Online Tools for Developers & Designers',
+  title: {
+    default: 'Toolsax - Free Online Tools for Developers & Designers',
+    template: '%s | Toolsax'
+  },
   description: 'An expanding collection of free online tools including case converters, password generators, QR code creators, and more. Fast, secure, and easy to use.',
   keywords: ['online tools', 'developer tools', 'designer tools', 'free tools', 'case converter', 'password generator', 'qr code generator', 'json formatter'],
   openGraph: {
@@ -24,6 +27,10 @@ export const metadata: Metadata = {
     description: 'An expanding collection of free online tools for professionals.',
     type: 'website',
     url: 'https://toolsax.com',
+    siteName: 'Toolsax',
+  },
+  twitter: {
+    card: 'summary_large_image',
   },
 };
 

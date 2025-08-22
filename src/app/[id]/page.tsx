@@ -3,6 +3,13 @@ import { notFound } from 'next/navigation';
 import type { Tool } from '@/lib/types';
 import { getTools } from '@/lib/firebase'; // Assuming this can be used server-side
 import ToolPageClient from '@/components/ToolPageClient';
+import type { Metadata, ResolvingMetadata } from 'next';
+
+type Props = {
+  params: { id: string }
+  searchParams: { [key: string]: string | string[] | undefined }
+}
+
 
 // This is a temporary solution for fetching tools on the server.
 // In a real app, you might want a dedicated server-side fetcher for Firebase.
@@ -10,7 +17,6 @@ async function getAllToolsServerSide(): Promise<Tool[]> {
     return new Promise((resolve) => {
         // Since getTools uses onValue, we need to adapt it for a one-time fetch.
         // This is a simplified approach. A proper implementation would use get() from Firebase RTDB.
-        const tools: Tool[] = [];
         let resolved = false;
         
         // This is a hack. In a real app, use the Firebase Admin SDK or a proper one-time get() call.
@@ -18,6 +24,8 @@ async function getAllToolsServerSide(): Promise<Tool[]> {
             if (!resolved) {
                 resolve(loadedTools);
                 resolved = true;
+                // @ts-ignore
+                if (unsubscribe) unsubscribe();
             }
         };
         // This will hang if Firebase connection doesn't resolve quickly.
@@ -29,9 +37,11 @@ async function getAllToolsServerSide(): Promise<Tool[]> {
                 console.warn("Tool fetch timed out. Build might be incomplete.");
                 resolve([]);
                 resolved = true;
+                // @ts-ignore
+                if (unsubscribe) unsubscribe();
             }
-            // We can't unsubscribe properly here without returning it, but this is a build-time script.
-        }, 3000);
+            
+        }, 5000);
     });
 }
 
@@ -50,16 +60,26 @@ async function getTool(id: string): Promise<{ tool: Tool | undefined, allTools: 
 }
 
 // Generate metadata for the page
-export async function generateMetadata({ params }: { params: { id: string }}) {
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
     const { tool } = await getTool(params.id);
+    const previousImages = (await parent).openGraph?.images || []
+    
     if (!tool) {
         return {
             title: 'Tool Not Found'
         }
     }
     return {
-        title: `${tool.name} | Toolsax`,
+        title: tool.name,
         description: tool.description,
+        openGraph: {
+          title: `${tool.name} | Toolsax`,
+          description: tool.description,
+          images: [`https://placehold.co/1200x630.png?text=${encodeURIComponent(tool.name)}`, ...previousImages],
+        },
     }
 }
 
