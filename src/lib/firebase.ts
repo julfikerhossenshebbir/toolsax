@@ -2,6 +2,7 @@
 
 
 
+
 // This is a placeholder for Firebase configuration.
 // To enable Firebase features, you need to set up a Firebase project and
 // add your configuration here.
@@ -235,17 +236,24 @@ export const saveUserToDatabase = async (user: User) => {
     const userRef = ref(db, `users/${user.uid}`);
     const snapshot = await get(userRef);
     if (!snapshot.exists()) {
-        // The detailed profile will be created during the multi-step sign-up.
-        // This function will now only update last login.
+        // New user is signing in (likely via social) but hasn't completed multi-step signup.
+        // Create a basic profile.
         incrementCounter('stats/users');
+        await set(userRef, {
+            name: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+            uid: user.uid,
+            createdAt: serverTimestamp(),
+            lastLogin: serverTimestamp(),
+            role: 'user'
+        });
+    } else {
+        // Existing user, just update last login.
+        await update(userRef, {
+            lastLogin: serverTimestamp()
+        });
     }
-    // Always update last login and basic info on any sign-in.
-    return update(userRef, {
-        lastLogin: serverTimestamp(),
-        name: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL
-    });
 };
 
 export const getUserData = async (uid: string) => {

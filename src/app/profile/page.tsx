@@ -118,27 +118,30 @@ export default function ProfilePage() {
   
   
   useEffect(() => {
-    if (!loading && !user) {
+    if (loading) return;
+    if (!user) {
       router.push('/');
       return;
     }
-    if (user) {
-      setDisplayName(user.displayName || '');
-      
-      getUserData(user.uid).then(data => {
-        if(data) {
-          setUsername(data.username || '');
-          setContactNumber(data.contactNumber || '');
-          setPhotoURL(data.photoURL || user.photoURL || '');
-          setBio(data.bio || '');
-          setTwitter(data.social?.twitter || '');
-          setGithub(data.social?.github || '');
-          setWebsite(data.social?.website || '');
-        } else {
-          setPhotoURL(user.photoURL || '');
+    
+    // Always fetch fresh data when user object is available or changes
+    const fetchUserData = async () => {
+        setDisplayName(user.displayName || '');
+        setPhotoURL(user.photoURL || ''); // Set initial basic info
+
+        const data = await getUserData(user.uid);
+        if (data) {
+            setUsername(data.username || '');
+            setContactNumber(data.contactNumber || '');
+            setPhotoURL(data.photoURL || user.photoURL || '');
+            setBio(data.bio || '');
+            setTwitter(data.social?.twitter || '');
+            setGithub(data.social?.github || '');
+            setWebsite(data.social?.website || '');
         }
-      });
-    }
+    };
+
+    fetchUserData();
   }, [user, loading, router]);
 
   const handleAvatarClick = () => {
