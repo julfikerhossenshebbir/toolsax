@@ -24,8 +24,6 @@ export default function AdminToolsPage() {
 
     return (
         <div className="space-y-4">
-            <h2 className="text-3xl font-bold tracking-tight">Tools Management</h2>
-            <p className="text-muted-foreground">Add, edit, disable, or reorder the tools available on your site. Mark tools as VIP-only.</p>
             <ToolsManagement initialTools={tools} isLoading={loading} />
         </div>
     );

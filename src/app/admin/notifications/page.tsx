@@ -15,8 +15,6 @@ export default function AdminNotificationsPage() {
 
     return (
         <div className="space-y-4">
-            <h2 className="text-3xl font-bold tracking-tight">Global Notifications</h2>
-            <p className="text-muted-foreground">Send site-wide notifications that appear in the header for all users.</p>
             <NotificationForm currentNotifications={notifications} />
         </div>
     );

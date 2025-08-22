@@ -23,10 +23,9 @@ export default function AdminUsersPage() {
 
     return (
         <div className="space-y-4">
-            <h2 className="text-3xl font-bold tracking-tight">User Management</h2>
             <Card>
                 <CardHeader>
-                    <CardTitle>All Users</CardTitle>
+                    <CardTitle>User Management</CardTitle>
                     <CardDescription>View and manage all registered users on your platform.</CardDescription>
                 </CardHeader>
                 <CardContent>
