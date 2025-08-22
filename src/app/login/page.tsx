@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -33,9 +34,11 @@ export default function LoginPage() {
   const router = useRouter();
   const { user } = useAuth();
   
-  if (user) {
-    router.replace('/profile');
-  }
+  useEffect(() => {
+    if (user) {
+      router.replace('/profile');
+    }
+  }, [user, router]);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
