@@ -39,11 +39,11 @@ const NavLink = ({ href, label, icon: Icon, isMobile }: { href: string; label: s
 
 const AdminSidebar = ({ isMobile = false }: { isMobile?: boolean }) => {
     return (
-        <aside className={cn("flex flex-col space-y-2 h-full", isMobile ? "w-full" : "w-64 p-4 border-r")}>
+        <aside className={cn("flex flex-col h-full bg-background", isMobile ? "w-full" : "w-64 border-r")}>
              <div className="p-4 border-b">
                 <h2 className="text-xl font-bold">Admin Panel</h2>
             </div>
-            <nav className="flex-grow p-4">
+            <nav className="flex-grow p-2">
                 <ul className="space-y-1">
                     {navLinks.map(link => (
                         <li key={link.href}>
