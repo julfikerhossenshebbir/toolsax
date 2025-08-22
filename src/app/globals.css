@@ -4,7 +4,6 @@
 @tailwind utilities;
 
 body {
-  font-family: var(--font-body), sans-serif;
   font-size: var(--font-size, 16px);
 }
 
@@ -31,7 +30,6 @@ body {
     --ring: 240 10% 3.9%;
     --radius: 0.5rem;
     --font-size: 16px;
-    --font-body: 'Lexend';
     --sidebar: 240 6% 97%;
     --sidebar-foreground: 240 10% 3.9%;
     --sidebar-border: 240 5.9% 90%;
