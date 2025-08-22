@@ -19,6 +19,7 @@ import {
     type Auth,
     type User
 } from "firebase/auth";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
 import type { AdSettings, Advertisement, Comment, Reply, Tool, SubmittedAd } from "@/app/admin/types";
 import { ALL_TOOLS as STATIC_TOOLS } from "./tools";
@@ -561,6 +562,18 @@ export const deleteAdvertisement = (adId: string) => {
 }
 
 // --- Submitted Ads ---
+export const saveSubmittedAd = async (data: Omit<SubmittedAd, 'id' | 'status' | 'submissionDate'>) => {
+    if (!db) throw new Error("Firebase not configured.");
+    const adsRef = ref(db, 'submittedAds');
+    const newAdRef = push(adsRef);
+    const adData = {
+        ...data,
+        status: 'pending' as const,
+        submissionDate: new Date().toISOString(),
+    };
+    await set(newAdRef, adData);
+};
+
 export const getSubmittedAds = (subscribe: boolean = true, callback: (ads: SubmittedAd[]) => void) => {
     if (!db) {
         callback([]);
@@ -874,6 +887,18 @@ export const updateToolsOrder = (tools: Tool[]) => {
     });
     return update(ref(db), updates);
 };
+
+// --- File Upload ---
+export async function uploadFile(file: File, path: string): Promise<string> {
+    if (!app) throw new Error("Firebase not configured.");
+    const storage = getStorage(app);
+    const fileName = `${path}/${uuidv4()}-${file.name}`;
+    const fileRef = storageRef(storage, fileName);
+
+    await uploadBytes(fileRef, file);
+    const downloadURL = await getDownloadURL(fileRef);
+    return downloadURL;
+}
 
 
 export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;

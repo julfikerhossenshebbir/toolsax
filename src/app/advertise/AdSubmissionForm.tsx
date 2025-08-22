@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,6 +14,7 @@ import { useRouter } from 'next/navigation';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { submitAdAction } from './actions';
 import Image from 'next/image';
+import { uploadFile } from '@/lib/firebase';
 
 const formSchema = z.object({
   advertiserName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -63,32 +63,43 @@ export default function AdSubmissionForm() {
     }
 
     setIsSubmitting(true);
-    const formData = new FormData();
-    formData.append('image', values.image);
-    formData.append('advertiserName', values.advertiserName);
-    formData.append('phone', values.phone);
-    formData.append('linkUrl', values.linkUrl);
-    formData.append('paymentMethod', values.paymentMethod);
-    formData.append('transactionId', values.transactionId);
     
-    const result = await submitAdAction(formData);
+    try {
+        const imageUrl = await uploadFile(values.image, `submitted-ads/${user.uid}`);
+        
+        const adData = {
+            userId: user.uid,
+            advertiserName: values.advertiserName,
+            phone: values.phone,
+            linkUrl: values.linkUrl,
+            imageUrl: imageUrl,
+            paymentMethod: values.paymentMethod,
+            transactionId: values.transactionId,
+        };
 
-    if (result.success) {
-      toast({
-        title: 'Ad Submitted!',
-        description: "Thank you for your submission. We will review your ad shortly.",
-      });
-      form.reset();
-      setPreview(null);
-      if(fileInputRef.current) fileInputRef.current.value = '';
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Submission Failed',
-        description: result.error || 'An unknown error occurred. Please try again.',
-      });
+        const result = await submitAdAction(adData);
+
+        if (result.success) {
+          toast({
+            title: 'Ad Submitted!',
+            description: "Thank you for your submission. We will review your ad shortly.",
+          });
+          form.reset();
+          setPreview(null);
+          if(fileInputRef.current) fileInputRef.current.value = '';
+        } else {
+           throw new Error(result.error || 'An unknown error occurred.');
+        }
+
+    } catch (error: any) {
+        toast({
+            variant: 'destructive',
+            title: 'Submission Failed',
+            description: error.message || 'Please try again.',
+        });
+    } finally {
+        setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   }
 
   return (
