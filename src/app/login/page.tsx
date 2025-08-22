@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Loader2, Eye, EyeOff, Github, Facebook } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Github, Facebook, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 
@@ -78,6 +78,20 @@ export default function LoginPage() {
       }
   };
 
+  const generateAndSetPassword = () => {
+    const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lower = 'abcdefghijklmnopqrstuvwxyz';
+    const numbers = '0123456789';
+    const symbols = '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+    const charset = upper + lower + numbers + symbols;
+    let newPassword = '';
+    for (let i = 0; i < 16; i++) {
+      newPassword += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    form.setValue('password', newPassword, { shouldValidate: true });
+    toast({ title: 'New password generated!' });
+  };
+
   return (
     <div className="container mx-auto flex min-h-full flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
       <Card className="mx-auto w-full max-w-md">
@@ -111,16 +125,28 @@ export default function LoginPage() {
                         <FormControl>
                             <Input type={showPassword ? 'text' : 'password'} placeholder="Your password" {...field} />
                         </FormControl>
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="absolute top-1/2 right-2 -translate-y-1/2 h-7 w-7"
-                            onClick={() => setShowPassword(!showPassword)}
-                        >
-                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            <span className="sr-only">Toggle password visibility</span>
-                        </Button>
+                        <div className="absolute top-1/2 right-2 -translate-y-1/2 flex items-center gap-1">
+                          <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7"
+                              onClick={generateAndSetPassword}
+                          >
+                              <RefreshCw className="h-4 w-4" />
+                              <span className="sr-only">Generate password</span>
+                          </Button>
+                          <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7"
+                              onClick={() => setShowPassword(!showPassword)}
+                          >
+                              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                              <span className="sr-only">Toggle password visibility</span>
+                          </Button>
+                        </div>
                     </div>
                     <FormMessage />
                   </FormItem>

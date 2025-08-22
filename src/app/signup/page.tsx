@@ -23,7 +23,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Progress } from '@/components/ui/progress';
 import { CountrySelect } from '@/components/country-select';
-import { Loader2, Eye, EyeOff, Check, X, ArrowLeft, PartyPopper, Calendar as CalendarIcon, Upload, Scissors, User as UserIcon, Github, Facebook } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Check, X, ArrowLeft, PartyPopper, Calendar as CalendarIcon, Upload, Scissors, User as UserIcon, Github, Facebook, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { debounce } from 'lodash';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -220,6 +220,23 @@ function StepOne({ onNext, onSocialLogin }: { onNext: (data: any) => void, onSoc
     defaultValues: { email: '', password: '', confirmPassword: '' },
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { toast } = useToast();
+
+  const generateAndSetPassword = () => {
+    const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lower = 'abcdefghijklmnopqrstuvwxyz';
+    const numbers = '0123456789';
+    const symbols = '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+    const charset = upper + lower + numbers + symbols;
+    let newPassword = '';
+    for (let i = 0; i < 16; i++) {
+      newPassword += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    form.setValue('password', newPassword, { shouldValidate: true });
+    form.setValue('confirmPassword', newPassword, { shouldValidate: true });
+    toast({ title: 'New password generated and filled!' });
+  };
 
   return (
     <>
@@ -243,14 +260,26 @@ function StepOne({ onNext, onSocialLogin }: { onNext: (data: any) => void, onSoc
             <FormItem><Label>Password</Label>
               <div className="relative">
                 <Input type={showPassword ? "text" : "password"} {...field} />
-                <Button type="button" variant="ghost" size="icon" className="absolute top-1/2 right-2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
+                <div className="absolute top-1/2 right-2 -translate-y-1/2 flex items-center gap-1">
+                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={generateAndSetPassword}>
+                        <RefreshCw className="h-4 w-4" />
+                    </Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                </div>
               </div>
             <FormMessage /></FormItem>
           )} />
           <FormField control={form.control} name="confirmPassword" render={({ field }) => (
-            <FormItem><Label>Confirm Password</Label><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
+            <FormItem><Label>Confirm Password</Label>
+              <div className="relative">
+                <Input type={showConfirmPassword ? "text" : "password"} {...field} />
+                <Button type="button" variant="ghost" size="icon" className="absolute top-1/2 right-2 -translate-y-1/2 h-7 w-7" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+            <FormMessage /></FormItem>
           )} />
           <Button type="submit" className="w-full">Continue</Button>
         </form>
