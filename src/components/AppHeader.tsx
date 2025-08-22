@@ -238,7 +238,7 @@ const HeaderSearch = () => {
 
 export default function AppHeader() {
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
       <div className="container relative flex h-14 items-center px-4 justify-between">
         <HeaderSearch />
       </div>

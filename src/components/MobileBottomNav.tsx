@@ -38,7 +38,7 @@ export default function MobileBottomNav() {
 
   return (
     <>
-    <div className="md:hidden fixed bottom-0 left-0 right-0 h-14 bg-background border-t z-50">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 h-14 bg-background/80 border-t z-50 backdrop-blur-sm">
       <nav className="flex justify-around items-center h-full">
         {navItems.map((item) => (
             <TooltipProvider key={item.label} delayDuration={0}>
