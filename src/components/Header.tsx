@@ -6,7 +6,7 @@ const SvgOne = () => (
 
 const Header = () => {
   return (
-    <header className="py-16 sm:pt-24 sm:pb-4 text-center relative">
+    <header className="py-16 sm:pt-24 text-center relative">
         <div className="absolute top-8 left-1/4 opacity-30 text-muted-foreground -z-10">
             <SvgOne />
         </div>
