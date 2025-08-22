@@ -29,6 +29,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'paylogo.pages.dev',
+        port: '',
+        pathname: '/**',
+      }
     ],
   },
   // This is required to allow the Next.js dev server to accept requests from the Firebase Studio environment.
