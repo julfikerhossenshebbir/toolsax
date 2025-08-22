@@ -1,3 +1,4 @@
+
 import { Tool } from './types';
 
 export const ALL_TOOLS: Tool[] = [
@@ -7,7 +8,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Convert text to uppercase, lowercase, etc.",
     "link": "/case-converter",
     "category": "Utilities",
-    "icon": "CaseUpper"
+    "icon": "CaseUpper",
+    "isEnabled": true,
+    "order": 0,
+    "authRequired": false
   },
   {
     "id": "password-generator",
@@ -15,7 +19,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Create secure, random passwords.",
     "link": "/password-generator",
     "category": "Security",
-    "icon": "Lock"
+    "icon": "Lock",
+    "isEnabled": true,
+    "order": 1,
+    "authRequired": false
   },
   {
     "id": "qr-generator",
@@ -23,7 +30,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Create custom QR codes for URLs or text.",
     "link": "/qr-generator",
     "category": "Utilities",
-    "icon": "QrCode"
+    "icon": "QrCode",
+    "isEnabled": true,
+    "order": 2,
+    "authRequired": false
   },
   {
     "id": "json-formatter",
@@ -31,7 +41,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Format, validate, and beautify JSON data.",
     "link": "/json-formatter",
     "category": "Development",
-    "icon": "Braces"
+    "icon": "Braces",
+    "isEnabled": true,
+    "order": 3,
+    "authRequired": false
   },
   {
     "id": "lorem-ipsum-generator",
@@ -39,7 +52,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Generate placeholder text for your designs.",
     "link": "/lorem-ipsum-generator",
     "category": "Content",
-    "icon": "FileText"
+    "icon": "FileText",
+    "isEnabled": true,
+    "order": 4,
+    "authRequired": false
   },
   {
     "id": "color-converter",
@@ -47,7 +63,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Convert between HEX, RGB, and HSL values.",
     "link": "/color-converter",
     "category": "Design",
-    "icon": "Palette"
+    "icon": "Palette",
+    "isEnabled": true,
+    "order": 5,
+    "authRequired": false
   },
   {
     "id": "image-compressor",
@@ -56,6 +75,8 @@ export const ALL_TOOLS: Tool[] = [
     "link": "/image-compressor",
     "category": "Image",
     "icon": "Minimize2",
+    "isEnabled": true,
+    "order": 6,
     "authRequired": true
   },
   {
@@ -64,7 +85,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Write and preview Markdown in real-time.",
     "link": "/markdown-editor",
     "category": "Content",
-    "icon": "FileSignature"
+    "icon": "FileSignature",
+    "isEnabled": true,
+    "order": 7,
+    "authRequired": false
   },
   {
     "id": "unit-converter",
@@ -72,7 +96,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Convert length, weight, temperature, etc.",
     "link": "/unit-converter",
     "category": "Utilities",
-    "icon": "Ruler"
+    "icon": "Ruler",
+    "isEnabled": true,
+    "order": 8,
+    "authRequired": false
   },
   {
     "id": "word-counter",
@@ -80,7 +107,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Count words, characters, and sentences.",
     "link": "/word-counter",
     "category": "Content",
-    "icon": "FileJson2"
+    "icon": "FileJson2",
+    "isEnabled": true,
+    "order": 9,
+    "authRequired": false
   },
   {
     "id": "url-encoder-decoder",
@@ -88,7 +118,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Encode or decode special characters in URLs.",
     "link": "/url-encoder-decoder",
     "category": "Development",
-    "icon": "Link"
+    "icon": "Link",
+    "isEnabled": true,
+    "order": 10,
+    "authRequired": false
   },
   {
     "id": "image-resizer",
@@ -97,7 +130,9 @@ export const ALL_TOOLS: Tool[] = [
     "link": "/image-resizer",
     "category": "Image",
     "icon": "Crop",
-     "authRequired": true
+    "isEnabled": true,
+    "order": 11,
+    "authRequired": true
   },
   {
     "id": "base64-encoder",
@@ -105,7 +140,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Encode or decode text to Base64 format.",
     "link": "/base64-encoder",
     "category": "Development",
-    "icon": "Binary"
+    "icon": "Binary",
+    "isEnabled": true,
+    "order": 12,
+    "authRequired": false
   },
   {
     "id": "hash-generator",
@@ -113,7 +151,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Generate MD5, SHA-1, SHA-256 hashes.",
     "link": "/hash-generator",
     "category": "Security",
-    "icon": "Fingerprint"
+    "icon": "Fingerprint",
+    "isEnabled": true,
+    "order": 13,
+    "authRequired": false
   },
   {
     "id": "favicon-generator",
@@ -122,7 +163,9 @@ export const ALL_TOOLS: Tool[] = [
     "link": "/favicon-generator",
     "category": "Image",
     "icon": "Heart",
-     "authRequired": true
+    "isEnabled": true,
+    "order": 14,
+    "authRequired": true
   },
   {
     "id": "html-minifier",
@@ -130,7 +173,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Minify and compress HTML code.",
     "link": "/html-minifier",
     "category": "Development",
-    "icon": "FileCode"
+    "icon": "FileCode",
+    "isEnabled": true,
+    "order": 15,
+    "authRequired": false
   },
   {
     "id": "css-minifier",
@@ -138,7 +184,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Minify and optimize CSS stylesheets.",
     "link": "/css-minifier",
     "category": "Development",
-    "icon": "FileCode2"
+    "icon": "FileCode2",
+    "isEnabled": true,
+    "order": 16,
+    "authRequired": false
   },
   {
     "id": "javascript-minifier",
@@ -146,7 +195,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Compress and minify JavaScript files.",
     "link": "/javascript-minifier",
     "category": "Development",
-    "icon": "FileCode2"
+    "icon": "FileCode2",
+    "isEnabled": true,
+    "order": 17,
+    "authRequired": false
   },
   {
     "id": "meta-tag-generator",
@@ -154,7 +206,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Create SEO-friendly meta tags for websites.",
     "link": "/meta-tag-generator",
     "category": "SEO",
-    "icon": "Code"
+    "icon": "Code",
+    "isEnabled": true,
+    "order": 18,
+    "authRequired": false
   },
   {
     "id": "open-graph-generator",
@@ -162,7 +217,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Generate Open Graph tags for social sharing.",
     "link": "/open-graph-generator",
     "category": "SEO",
-    "icon": "Share2"
+    "icon": "Share2",
+    "isEnabled": true,
+    "order": 19,
+    "authRequired": false
   },
   {
     "id": "slug-generator",
@@ -170,7 +228,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Convert text into SEO-friendly slugs.",
     "link": "/slug-generator",
     "category": "SEO",
-    "icon": "Globe"
+    "icon": "Globe",
+    "isEnabled": true,
+    "order": 20,
+    "authRequired": false
   },
   {
     "id": "emoji-picker",
@@ -178,7 +239,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Search and copy emojis instantly.",
     "link": "/emoji-picker",
     "category": "Content",
-    "icon": "Smile"
+    "icon": "Smile",
+    "isEnabled": true,
+    "order": 21,
+    "authRequired": false
   },
   {
     "id": "gradient-generator",
@@ -186,7 +250,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Create custom CSS gradients.",
     "link": "/gradient-generator",
     "category": "Design",
-    "icon": "Paintbrush"
+    "icon": "Paintbrush",
+    "isEnabled": true,
+    "order": 22,
+    "authRequired": false
   },
   {
     "id": "box-shadow-generator",
@@ -194,7 +261,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Generate CSS box shadows visually.",
     "link": "/box-shadow-generator",
     "category": "Design",
-    "icon": "BoxSelect"
+    "icon": "BoxSelect",
+    "isEnabled": true,
+    "order": 23,
+    "authRequired": false
   },
   {
     "id": "border-radius-generator",
@@ -202,7 +272,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Visualize and generate CSS border-radius.",
     "link": "/border-radius-generator",
     "category": "Design",
-    "icon": "Square"
+    "icon": "Square",
+    "isEnabled": true,
+    "order": 24,
+    "authRequired": false
   },
   {
     "id": "regex-tester",
@@ -210,7 +283,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Test and debug regular expressions.",
     "link": "/regex-tester",
     "category": "Development",
-    "icon": "Scan"
+    "icon": "Scan",
+    "isEnabled": true,
+    "order": 25,
+    "authRequired": false
   },
   {
     "id": "html-entity-converter",
@@ -218,7 +294,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Convert text to HTML entities and vice versa.",
     "link": "/html-entity-converter",
     "category": "Development",
-    "icon": "Code2"
+    "icon": "Code2",
+    "isEnabled": true,
+    "order": 26,
+    "authRequired": false
   },
   {
     "id": "icon-finder",
@@ -226,7 +305,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Search and download icons.",
     "link": "/icon-finder",
     "category": "Design",
-    "icon": "Search"
+    "icon": "Search",
+    "isEnabled": true,
+    "order": 27,
+    "authRequired": false
   },
   {
     "id": "text-diff-checker",
@@ -234,7 +316,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Compare two texts and highlight differences.",
     "link": "/text-diff-checker",
     "category": "Content",
-    "icon": "GitCompareArrows"
+    "icon": "GitCompareArrows",
+    "isEnabled": true,
+    "order": 28,
+    "authRequired": false
   },
   {
     "id": "pdf-merger",
@@ -243,6 +328,8 @@ export const ALL_TOOLS: Tool[] = [
     "link": "/pdf-merger",
     "category": "PDF",
     "icon": "FilePlus",
+    "isEnabled": true,
+    "order": 29,
     "authRequired": true
   },
   {
@@ -251,7 +338,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Split PDF files into separate pages.",
     "link": "/pdf-splitter",
     "category": "PDF",
-    "icon": "FileMinus"
+    "icon": "FileMinus",
+    "isEnabled": true,
+    "order": 30,
+    "authRequired": false
   },
   {
     "id": "image-to-pdf",
@@ -259,7 +349,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Convert images to PDF format.",
     "link": "/image-to-pdf",
     "category": "PDF",
-    "icon": "FileImage"
+    "icon": "FileImage",
+    "isEnabled": true,
+    "order": 31,
+    "authRequired": false
   },
   {
     "id": "speech-to-text",
@@ -267,7 +360,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Convert speech to written text.",
     "link": "/speech-to-text",
     "category": "Utilities",
-    "icon": "Mic"
+    "icon": "Mic",
+    "isEnabled": true,
+    "order": 32,
+    "authRequired": false
   },
   {
     "id": "text-to-speech",
@@ -275,7 +371,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Convert text into natural-sounding speech.",
     "link": "/text-to-speech",
     "category": "Utilities",
-    "icon": "Volume2"
+    "icon": "Volume2",
+    "isEnabled": true,
+    "order": 33,
+    "authRequired": false
   },
   {
     "id": "audio-converter",
@@ -283,7 +382,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Convert audio files to different formats.",
     "link": "/audio-converter",
     "category": "Utilities",
-    "icon": "FileAudio"
+    "icon": "FileAudio",
+    "isEnabled": true,
+    "order": 34,
+    "authRequired": false
   },
   {
     "id": "github-to-jsdelivr-converter",
@@ -291,7 +393,10 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Migrating from GitHub to jsDelivr.",
     "link": "/github-to-jsdelivr-converter",
     "category": "Development",
-    "icon": "Github"
+    "icon": "Github",
+    "isEnabled": true,
+    "order": 35,
+    "authRequired": false
   },
   {
     "id": "whatsapp-message-generator",
@@ -299,6 +404,9 @@ export const ALL_TOOLS: Tool[] = [
     "description": "Create custom WhatsApp messages for quick sharing.",
     "link": "/whatsapp-message-generator",
     "category": "Social Media",
-    "icon": "MessageSquare"
+    "icon": "MessageSquare",
+    "isEnabled": true,
+    "order": 36,
+    "authRequired": false
   }
 ];

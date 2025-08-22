@@ -1,6 +1,7 @@
 
 
 
+
 // This is a placeholder for Firebase configuration.
 // To enable Firebase features, you need to set up a Firebase project and
 // add your configuration here.
