@@ -35,7 +35,7 @@ export default function AppFooter() {
     return (
         <footer className="bg-background mt-auto">
             <SectionDivider />
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                     {/* Tools */}
                     <div className="space-y-4">

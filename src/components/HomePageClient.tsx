@@ -69,7 +69,9 @@ export default function HomePageClient({ tools }: HomePageClientProps) {
       <SectionDivider />
       <FeaturesSection />
 
-      <SectionDivider />
+      <div className="md:block hidden">
+        <SectionDivider />
+      </div>
       <FirebaseStats />
 
     </div>
