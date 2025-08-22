@@ -359,6 +359,7 @@ function StepThree({ onNext, defaultValues }: { onNext: (data: any) => void; def
     const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
     const imgRef = useRef<HTMLImageElement>(null);
     const [isSaving, setIsSaving] = useState(false);
+    const { toast } = useToast();
     
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -376,26 +377,28 @@ function StepThree({ onNext, defaultValues }: { onNext: (data: any) => void; def
     
     const handleCropAndContinue = async () => {
         setIsSaving(true);
-        let photoURL = defaultValues.photoURL;
+        let finalPhotoURL = defaultValues.photoURL;
+
         if (completedCrop && imgRef.current) {
             try {
                 const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop);
                 if (!croppedImageBlob) throw new Error("Could not crop image.");
                 
                 const uploadedUrl = await uploadToImgBB(croppedImageBlob);
-
                 if (uploadedUrl) {
-                    photoURL = uploadedUrl;
+                    finalPhotoURL = uploadedUrl;
                 } else {
-                    throw new Error("Image upload failed.");
+                    throw new Error("Image upload failed. Please try again or skip.");
                 }
             } catch (error: any) {
-                // handle error, maybe show a toast
-                console.error(error);
+                toast({ variant: 'destructive', title: 'Upload Failed', description: error.message });
+                setIsSaving(false);
+                return; // Stop execution on failure
             }
         }
+        
+        onNext({ photoURL: finalPhotoURL });
         setIsSaving(false);
-        onNext({ photoURL });
     };
 
     return (
