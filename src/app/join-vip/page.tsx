@@ -2,7 +2,6 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import type { Metadata } from 'next';
 import JoinVipForm from './JoinVipForm';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState, useEffect } from 'react';
@@ -14,14 +13,12 @@ export default function JoinVipPage() {
     const { user } = useAuth();
     const [status, setStatus] = useState<'loading' | 'form' | 'pending' | 'vip'>('loading');
 
-    useEffect(() => {
+    const fetchStatus = () => {
         if (user) {
-            // First check user role
             getUserData(user.uid).then(userData => {
                 if (userData?.role === 'vip' || userData?.role === 'admin') {
                     setStatus('vip');
                 } else {
-                    // If not VIP, check for pending requests
                     getVipRequestStatus(user.uid).then(requestStatus => {
                         if (requestStatus === 'pending') {
                             setStatus('pending');
@@ -32,12 +29,16 @@ export default function JoinVipPage() {
                 }
             });
         }
+    };
+    
+    useEffect(() => {
+        fetchStatus();
     }, [user]);
 
     const renderContent = () => {
         switch (status) {
             case 'loading':
-                return <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />;
+                return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
             case 'vip':
                 return (
                     <Alert variant="default" className="bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800">
@@ -54,13 +55,13 @@ export default function JoinVipPage() {
                         <Clock className="h-4 w-4 text-yellow-600" />
                         <AlertTitle className="text-yellow-800 dark:text-yellow-300">Your Request is Pending</AlertTitle>
                         <AlertDescription className="text-yellow-700 dark:text-yellow-400">
-                            Your VIP request is currently under review. We will process it shortly. Thank you for your patience.
+                           Thank you for your submission! Your VIP request is currently under review. We will process it shortly. Please wait for verification.
                         </AlertDescription>
                     </Alert>
                 );
             case 'form':
             default:
-                return <JoinVipForm />;
+                return <JoinVipForm onSuccessfulSubmit={() => setStatus('pending')} />;
         }
     };
 
