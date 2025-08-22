@@ -71,7 +71,7 @@ export default function LoginPage() {
         toast({ title: 'Login Successful', description: `Welcome!` });
         router.push('/profile');
         
-      } catch (error: any) {
+      } catch (error: any) => {
          toast({ variant: 'destructive', title: 'Login Failed', description: error.message });
       } finally {
         setIsSubmitting(false);
@@ -79,8 +79,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 flex-grow flex items-center justify-center">
-      <Card className="max-w-md w-full">
+    <div className="container mx-auto flex min-h-full flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
+      <Card className="mx-auto w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle>Welcome Back!</CardTitle>
           <CardDescription>Log in to your Toolsax account.</CardDescription>

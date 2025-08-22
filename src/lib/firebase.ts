@@ -172,7 +172,9 @@ export const checkAndCreateUser = async (data: {
     name: string, 
     username: string, 
     email: string, 
-    password:  string, 
+    password?: string, // Password is optional for social sign-up
+    uid?: string, // UID is present for social sign-up
+    isSocial?: boolean, // Flag for social sign up
     photoURL?: string,
     phone?: string,
     dob?: Date, 
@@ -185,8 +187,21 @@ export const checkAndCreateUser = async (data: {
         throw new Error(`Username '${data.username}' is already taken. Please choose another one.`);
     }
 
-    const userCredential = await signUpWithEmail(data.email, data.password);
-    const user = userCredential.user;
+    let user: User;
+    if (data.isSocial && data.uid) {
+        // This is a social sign-up, user already exists in auth
+        const existingUser = auth.currentUser;
+        if (!existingUser || existingUser.uid !== data.uid) {
+            throw new Error("Mismatched user session. Please try signing in again.");
+        }
+        user = existingUser;
+    } else if (data.password) {
+        // This is an email sign-up
+        const userCredential = await signUpWithEmail(data.email, data.password);
+        user = userCredential.user;
+    } else {
+        throw new Error("Invalid sign-up data. Password or social provider info is missing.");
+    }
 
     await updateProfile(user, { displayName: data.name, photoURL: data.photoURL });
 
@@ -218,30 +233,17 @@ export const saveUserToDatabase = async (user: User) => {
     const userRef = ref(db, `users/${user.uid}`);
     const snapshot = await get(userRef);
     if (!snapshot.exists()) {
-        const username = user.email?.split('@')[0] || `user_${user.uid.substring(0, 5)}`;
-        // This is for Google sign-in, create a basic profile
-        await set(userRef, {
-            name: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL,
-            username: username.toLowerCase(),
-            createdAt: serverTimestamp(),
-            lastLogin: serverTimestamp(),
-            role: 'user', // Default role for social Sign-in
-        });
-        const usernameRef = ref(db, `usernames/${username.toLowerCase()}`);
-        await set(usernameRef, user.uid);
+        // The detailed profile will be created during the multi-step sign-up.
+        // This function will now only update last login.
         incrementCounter('stats/users');
-    } else {
-        // Update last login for existing users
-         return runTransaction(userRef, (userData) => {
-            if (userData) {
-                userData.lastLogin = serverTimestamp();
-                userData.photoURL = user.photoURL; // Also update photoURL on social login
-            }
-            return userData;
-        });
     }
+    // Always update last login and basic info on any sign-in.
+    return update(userRef, {
+        lastLogin: serverTimestamp(),
+        name: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL
+    });
 };
 
 export const getUserData = async (uid: string) => {
@@ -747,6 +749,7 @@ export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;
     
 
     
+
 
 
 

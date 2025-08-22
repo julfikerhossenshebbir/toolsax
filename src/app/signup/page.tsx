@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
@@ -29,6 +30,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import ReactCrop, { type Crop, type PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import Link from 'next/link';
+import type { User } from 'firebase/auth';
 
 // --- Helper Functions & Schemas ---
 
@@ -85,6 +87,35 @@ function getCroppedImg(image: HTMLImageElement, crop: PixelCrop): Promise<Blob |
   });
 }
 
+async function uploadToImgBB(imageFile: File | Blob): Promise<string | null> {
+    const apiKey = "81b8c0708e71005a41112b81b0c0375b";
+    if (!apiKey) {
+        console.error("imgbb API key is not set.");
+        return null;
+    }
+
+    const formData = new FormData();
+    formData.append("image", imageFile);
+
+    try {
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+            method: "POST",
+            body: formData,
+        });
+        const result = await response.json();
+        if (result.success) {
+            return result.data.url;
+        } else {
+            console.error("imgbb upload failed:", result.error.message);
+            return null;
+        }
+    } catch (error) {
+        console.error("Error uploading to imgbb:", error);
+        return null;
+    }
+}
+
+
 // --- Main Component ---
 
 export default function SignupPage() {
@@ -119,10 +150,20 @@ export default function SignupPage() {
         if(provider === 'github') authPromise = signInWithGithub();
         if(provider === 'facebook') authPromise = signInWithFacebook();
         
-        await authPromise;
+        const result = await authPromise;
+        const user = result.user;
+
+        // Pre-fill form data from social provider
+        const initialData = {
+          email: user.email,
+          name: user.displayName,
+          photoURL: user.photoURL,
+          uid: user.uid, // Pass UID for linking
+          isSocial: true, // Flag for social sign up
+        };
         
-        toast({ title: 'Sign Up Successful!', description: 'Your account has been created.' });
-        router.push('/profile');
+        setFormData(initialData);
+        setStep(2); // Skip email/password step
         
       } catch (error: any) {
          toast({ variant: 'destructive', title: 'Sign Up Failed', description: error.message });
@@ -133,8 +174,8 @@ export default function SignupPage() {
     const progress = (step / totalSteps) * 100;
 
     return (
-        <div className="container mx-auto px-4 py-12 flex-grow flex items-center justify-center">
-            <Card className="max-w-lg w-full">
+        <div className="container mx-auto flex min-h-full flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
+            <Card className="mx-auto w-full max-w-lg">
                 <CardHeader>
                     {step < totalSteps && (
                         <Progress value={progress} className="w-full h-2 mb-4" />
@@ -312,21 +353,10 @@ function StepThree({ onNext, defaultValues }: { onNext: (data: any) => void; def
                 const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop);
                 if (!croppedImageBlob) throw new Error("Could not crop image.");
                 
-                // Here you would upload the blob to a service like Firebase Storage or ImgBB
-                // For this example, we'll just simulate an upload and use the local blob URL.
-                // In a real app, replace this with your upload function that returns a URL.
-                
-                const apiKey = "81b8c0708e71005a41112b81b0c0375b"; // Use a safer way to store this
-                const formData = new FormData();
-                formData.append("image", croppedImageBlob);
+                const uploadedUrl = await uploadToImgBB(croppedImageBlob);
 
-                const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-                    method: "POST",
-                    body: formData,
-                });
-                const result = await response.json();
-                if (result.success) {
-                    photoURL = result.data.url;
+                if (uploadedUrl) {
+                    photoURL = uploadedUrl;
                 } else {
                     throw new Error("Image upload failed.");
                 }
