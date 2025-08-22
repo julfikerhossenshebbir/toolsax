@@ -16,7 +16,6 @@ import UserAvatar from '@/components/UserAvatar';
 const navLinks = [
     { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/tools', label: 'Tools', icon: Wrench },
-    { href: '/admin/advertisements', label: 'Advertisements', icon: Megaphone },
     { href: '/admin/users', label: 'Users', icon: Users },
     { href: '/admin/notifications', label: 'Notifications', icon: Bell },
 ]

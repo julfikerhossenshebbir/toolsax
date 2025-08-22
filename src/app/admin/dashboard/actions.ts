@@ -2,7 +2,7 @@
 'use server';
 
 import { updateGlobalNotifications, updateAdSettings, saveAdvertisement, deleteAdvertisement, saveTool, deleteTool, updateToolsOrder, approveSubmittedAd, rejectSubmittedAd } from '@/lib/firebase';
-import type { Notification, AdSettings, Advertisement, Tool, SubmittedAd } from '../types';
+import type { Notification, Tool } from '../types';
 
 export async function sendNotification(notifications: Notification[]): Promise<{ success: boolean; error?: string }> {
   try {
@@ -13,38 +13,6 @@ export async function sendNotification(notifications: Notification[]): Promise<{
   } catch (error: any) {
     console.error('Error sending notification:', error);
     return { success: false, error: 'Failed to update notifications in the database.' };
-  }
-}
-
-
-export async function saveAdSettingsAction(settings: AdSettings): Promise<{ success: boolean; error?: string }> {
-  try {
-    await updateAdSettings(settings);
-    return { success: true };
-  } catch (error: any) {
-    console.error('Error saving ad settings:', error);
-    return { success: false, error: 'Failed to update ad settings.' };
-  }
-}
-
-
-export async function saveAdvertisementAction(ad: Advertisement): Promise<{ success: boolean; error?: string }> {
-  try {
-    await saveAdvertisement(ad);
-    return { success: true };
-  } catch (error: any) {
-    console.error('Error saving advertisement:', error);
-    return { success: false, error: 'Failed to save advertisement.' };
-  }
-}
-
-export async function deleteAdvertisementAction(adId: string): Promise<{ success: boolean; error?: string }> {
-  try {
-    await deleteAdvertisement(adId);
-    return { success: true };
-  } catch (error: any) {
-    console.error('Error deleting advertisement:', error);
-    return { success: false, error: 'Failed to delete advertisement.' };
   }
 }
 
@@ -75,24 +43,5 @@ export async function updateToolsOrderAction(tools: Tool[]): Promise<{ success: 
     } catch (error: any) {
         console.error('Error updating tools order:', error);
         return { success: false, error: 'Failed to update tools order.' };
-    }
-}
-
-
-export async function approveSubmittedAdAction(ad: SubmittedAd): Promise<{ success: boolean, error?: string }> {
-    try {
-        await approveSubmittedAd(ad);
-        return { success: true };
-    } catch (e: any) {
-        return { success: false, error: e.message };
-    }
-}
-
-export async function rejectSubmittedAdAction(adId: string): Promise<{ success: boolean, error?: string }> {
-    try {
-        await rejectSubmittedAd(adId);
-        return { success: true };
-    } catch (e: any) {
-        return { success: false, error: e.message };
     }
 }

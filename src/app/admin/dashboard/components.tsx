@@ -12,18 +12,14 @@ import {
 } from "@tanstack/react-table"
 import { format, formatDistanceToNow } from 'date-fns';
 import { Trash2 as Trash2Icon } from 'lucide-react';
-import type { UserData, Notification, AdSettings } from '../types';
+import type { UserData, Notification } from '../types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { sendNotification, saveAdSettingsAction } from './actions';
+import { sendNotification } from './actions';
 import { Loader2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Checkbox } from '@/components/ui/checkbox';
-import { ALL_TOOLS } from '@/lib/tools';
 import { getMonthlyUserGrowth, getTopToolsByClicks } from '@/lib/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -247,85 +243,6 @@ export function NotificationForm({ currentNotifications }: { currentNotification
                         Save Notifications
                     </Button>
                 </div>
-            </CardContent>
-        </Card>
-    )
-}
-
-// --- Ad Settings Form ---
-export function AdSettingsForm({ currentAdSettings }: { currentAdSettings: AdSettings }) {
-    const [settings, setSettings] = useState<AdSettings>(currentAdSettings);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const { toast } = useToast();
-
-    useEffect(() => {
-        setSettings(currentAdSettings);
-    }, [currentAdSettings]);
-
-    const handleSubmit = async () => {
-        setIsSubmitting(true);
-        const result = await saveAdSettingsAction(settings);
-
-        if (result.success) {
-            toast({
-                title: 'Ad Settings Saved!',
-                description: 'Your new ad settings are now live.',
-            });
-        } else {
-            toast({
-                variant: 'destructive',
-                title: 'Save Failed',
-                description: result.error || 'An unknown error occurred.',
-            });
-        }
-        setIsSubmitting(false);
-    };
-
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>User Advertisement Settings</CardTitle>
-                <CardDescription>
-                    Control how and when ads are shown to users. These settings apply on a per-user basis.
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="flex items-center space-x-2">
-                    <Switch
-                        id="ads-enabled"
-                        checked={settings.adsEnabled}
-                        onCheckedChange={(checked) => setSettings({ ...settings, adsEnabled: checked })}
-                    />
-                    <Label htmlFor="ads-enabled" className="text-base font-medium">Enable Ads Globally</Label>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="view-limit">Ad View Limit (Per User)</Label>
-                        <Input
-                            id="view-limit"
-                            type="number"
-                            value={settings.viewLimit}
-                            onChange={(e) => setSettings({ ...settings, viewLimit: parseInt(e.target.value, 10) || 0 })}
-                        />
-                        <p className="text-xs text-muted-foreground">Number of times a user sees an ad before cooldown.</p>
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="cooldown-minutes">Cooldown (Minutes)</Label>
-                        <Input
-                            id="cooldown-minutes"
-                            type="number"
-                            value={settings.cooldownMinutes}
-                            onChange={(e) => setSettings({ ...settings, cooldownMinutes: parseInt(e.target.value, 10) || 0 })}
-                        />
-                         <p className="text-xs text-muted-foreground">Time until the ad view count resets for a user.</p>
-                    </div>
-                </div>
-
-                <Button onClick={handleSubmit} disabled={isSubmitting}>
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Save User Ad Settings
-                </Button>
             </CardContent>
         </Card>
     )

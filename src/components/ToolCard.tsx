@@ -6,13 +6,11 @@ import { useEffect, useState } from 'react';
 import type { Tool } from '@/lib/types';
 import Icon from './Icon';
 import { Card, CardContent } from './ui/card';
-import { incrementClicks, getToolStats, isConfigured, getAdSettings, getActiveAdvertisement, incrementAdViews, incrementAdClicks, markAdAsSeen, getSeenAds } from '@/lib/firebase';
+import { incrementClicks, getToolStats, isConfigured } from '@/lib/firebase';
 import { MousePointerClick, Lock } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
-import { AdModal } from './AdModal';
 import { getColorByIndex } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
-import type { AdSettings, Advertisement } from '@/app/admin/types';
 
 
 interface ToolCardProps {
@@ -22,9 +20,6 @@ interface ToolCardProps {
 
 const ToolCard = ({ tool, index }: ToolCardProps) => {
   const [clicks, setClicks] = useState<number | null>(null);
-  const [showAd, setShowAd] = useState(false);
-  const [adSettings, setAdSettings] = useState<AdSettings | null>(null);
-  const [activeAd, setActiveAd] = useState<Advertisement | null>(null);
   const router = useRouter();
   const { user } = useAuth();
   
@@ -35,11 +30,9 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
       const unsubscribeStats = getToolStats(tool.id, (stats) => {
         setClicks(stats.clicks);
       });
-      const unsubscribeAdSettings = getAdSettings(true, setAdSettings);
       
       return () => {
         unsubscribeStats();
-        unsubscribeAdSettings();
       };
     } else {
       setClicks(0);
@@ -56,55 +49,11 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
       
     incrementClicks(tool.id);
     
-    // Ad logic starts here
-    if (!adSettings || !adSettings.adsEnabled) {
-        router.push(`/${tool.id}`);
-        return;
-    }
-
-    const seenAds = await getSeenAds(user?.uid);
-    const adToShow = await getActiveAdvertisement(seenAds);
-
-    if (adToShow) {
-        setActiveAd(adToShow);
-        setShowAd(true);
-        incrementAdViews(adToShow.id);
-        markAdAsSeen(user?.uid, adToShow.id);
-        return;
-    }
-    
-    // No ad to show, proceed to tool
-    router.push(`/${tool.id}`);
-  };
-
-  const handleContinueToTool = (ad: Advertisement) => {
-    if (ad.linkUrl) {
-      // This click is only tracked when the user *continues* after seeing the ad.
-      // Clicks on the ad image itself are handled in the AdModal.
-    }
-    setShowAd(false);
-    router.push(`/${tool.id}`);
-  };
-
-  const handleAdClicked = (ad: Advertisement) => {
-    if (ad.linkUrl) {
-        incrementAdClicks(ad.id);
-        window.open(ad.linkUrl, '_blank');
-    }
-    setShowAd(false);
     router.push(`/${tool.id}`);
   };
 
   return (
     <>
-      <AdModal
-        isOpen={showAd}
-        onClose={() => setShowAd(false)}
-        onContinue={handleContinueToTool}
-        onAdClick={handleAdClicked}
-        advertisement={activeAd}
-      />
-
       <div
         onClick={handleCardClick}
         className="h-full cursor-pointer"
