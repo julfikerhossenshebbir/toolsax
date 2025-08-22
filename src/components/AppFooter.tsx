@@ -1,18 +1,7 @@
 
 import Link from 'next/link';
 import { Github, Twitter, Linkedin, Youtube, ExternalLink } from 'lucide-react';
-import { ThemeToggle } from './ThemeToggle';
 import { Separator } from './ui/separator';
-
-const Logo = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" fill="currentColor" />
-        <path d="M12 2L22 7V17L12 22L2 17V7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M2 7L12 12L22 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M12 22V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-);
-
 
 const footerLinks = {
     tools: [
@@ -101,19 +90,6 @@ export default function AppFooter() {
                                 </li>
                             ))}
                         </ul>
-                    </div>
-                </div>
-
-                <Separator className="my-8" />
-
-                <div className="flex flex-col sm:flex-row justify-between items-center">
-                    <div className="flex items-center gap-2">
-                       <Logo />
-                       <span className="font-bold">Toolsax</span>
-                    </div>
-                    <div className="flex items-center gap-4 mt-4 sm:mt-0">
-                        <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Toolsax. All Rights Reserved.</p>
-                        <ThemeToggle />
                     </div>
                 </div>
             </div>
