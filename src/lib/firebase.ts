@@ -492,7 +492,7 @@ export const getTopToolsByClicks = async (limit: number = 7): Promise<{ name: st
     const toolsStatsRef = ref(db, 'tool_stats');
 
     try {
-        const [toolsSnapshot, statsSnapshot] = await Promise.all([get(toolsRef), get(statsStatsRef)]);
+        const [toolsSnapshot, statsSnapshot] = await Promise.all([get(toolsRef), get(toolsStatsRef)]);
         
         if (statsSnapshot.exists()) {
             const allTools = toolsSnapshot.val() || {};
