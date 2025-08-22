@@ -6,16 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { saveToolAction, deleteToolAction, updateToolsOrderAction } from './actions';
-import { Loader2, PlusCircle, Trash2, Edit, GripVertical } from 'lucide-react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { saveToolAction, deleteToolAction } from './actions';
+import { Loader2, PlusCircle, Trash2, Edit } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import type { Tool } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/Icon';
@@ -97,22 +96,6 @@ export default function ToolsManagement({ initialTools, isLoading }: ToolsManage
             toast({ variant: 'destructive', title: 'Update Failed', description: result.error });
         }
     }
-    
-    const onDragEnd = async (result: DropResult) => {
-        if (!result.destination) return;
-        const items = Array.from(sortedTools);
-        const [reorderedItem] = items.splice(result.source.index, 1);
-        items.splice(result.destination.index, 0, reorderedItem);
-        
-        const updatedTools = items.map((item, index) => ({ ...item, order: index }));
-        setTools(updatedTools); // Optimistic update
-        
-        const res = await updateToolsOrderAction(updatedTools);
-        if(!res.success) {
-            toast({ variant: 'destructive', title: 'Order update failed', description: 'Could not save the new tool order.' });
-            setTools(sortedTools); // Revert on failure
-        }
-    };
 
     if (isLoading) {
         return (
@@ -136,7 +119,7 @@ export default function ToolsManagement({ initialTools, isLoading }: ToolsManage
                  <div className="flex justify-between items-center">
                     <div>
                         <CardTitle>Tools Management</CardTitle>
-                        <CardDescription>Add, edit, reorder, and manage all available tools.</CardDescription>
+                        <CardDescription>Add, edit, and manage all available tools.</CardDescription>
                     </div>
                     <Button onClick={() => handleOpenSheet()}>
                         <PlusCircle className="mr-2 h-4 w-4" /> Add Tool
@@ -145,48 +128,33 @@ export default function ToolsManagement({ initialTools, isLoading }: ToolsManage
             </CardHeader>
             <CardContent>
                 <div className="rounded-md border">
-                     <DragDropContext onDragEnd={onDragEnd}>
-                        <Droppable droppableId="tools-list" isDropDisabled={false}>
-                            {(provided) => (
-                                <div {...provided.droppableProps} ref={provided.innerRef}>
-                                    {sortedTools.length > 0 ? sortedTools.map((tool, index) => (
-                                       <Draggable key={tool.id} draggableId={tool.id} index={index}>
-                                            {(provided, snapshot) => (
-                                                <div
-                                                    ref={provided.innerRef}
-                                                    {...provided.draggableProps}
-                                                    className={`flex items-center justify-between p-3 border-b transition-shadow ${snapshot.isDragging ? 'shadow-lg bg-accent' : 'bg-card'}`}
-                                                >
-                                                     <div className="flex items-center gap-3 flex-grow">
-                                                        <span {...provided.dragHandleProps} className="cursor-grab p-1">
-                                                          <GripVertical className="h-5 w-5 text-muted-foreground" />
-                                                        </span>
-                                                        <Icon name={tool.icon} className="h-5 w-5 text-muted-foreground" />
-                                                        <span className="font-medium truncate max-w-xs">{tool.name}</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-4">
-                                                        <Switch
-                                                            checked={tool.isEnabled}
-                                                            onCheckedChange={(checked) => handleToggle(tool, checked)}
-                                                        />
-                                                        <Button variant="ghost" size="icon" onClick={() => handleOpenSheet(tool)}>
-                                                            <Edit className="h-4 w-4" />
-                                                        </Button>
-                                                        <Button variant="destructive" size="icon" onClick={() => handleDelete(tool.id)}>
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </Draggable>
-                                    )) : (
-                                         <div className="p-12 text-center text-muted-foreground">No tools found.</div>
-                                    )}
-                                    {provided.placeholder}
+                    <div>
+                        {sortedTools.length > 0 ? sortedTools.map((tool) => (
+                            <div
+                                key={tool.id}
+                                className='flex items-center justify-between p-3 border-b bg-card'
+                            >
+                                <div className="flex items-center gap-3 flex-grow">
+                                    <Icon name={tool.icon} className="h-5 w-5 text-muted-foreground" />
+                                    <span className="font-medium truncate max-w-xs">{tool.name}</span>
                                 </div>
-                            )}
-                        </Droppable>
-                    </DragDropContext>
+                                <div className="flex items-center gap-4">
+                                    <Switch
+                                        checked={tool.isEnabled}
+                                        onCheckedChange={(checked) => handleToggle(tool, checked)}
+                                    />
+                                    <Button variant="ghost" size="icon" onClick={() => handleOpenSheet(tool)}>
+                                        <Edit className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="destructive" size="icon" onClick={() => handleDelete(tool.id)}>
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        )) : (
+                                <div className="p-12 text-center text-muted-foreground">No tools found.</div>
+                        )}
+                    </div>
                 </div>
             </CardContent>
 
