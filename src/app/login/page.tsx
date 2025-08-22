@@ -71,7 +71,7 @@ export default function LoginPage() {
         toast({ title: 'Login Successful', description: `Welcome!` });
         router.push('/profile');
         
-      } catch (error: any) => {
+      } catch (error: any) {
          toast({ variant: 'destructive', title: 'Login Failed', description: error.message });
       } finally {
         setIsSubmitting(false);
