@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 interface CommentSystemProps {
   toolId: string;
+  toolName: string;
 }
 
 function CommentSkeleton() {
@@ -25,7 +26,7 @@ function CommentSkeleton() {
     );
 }
 
-export default function CommentSystem({ toolId }: CommentSystemProps) {
+export default function CommentSystem({ toolId, toolName }: CommentSystemProps) {
   const [comments, setComments] = useState<CommentType[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,7 +51,7 @@ export default function CommentSystem({ toolId }: CommentSystemProps) {
 
   return (
     <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-4">
-      <h2 className="text-xl font-bold">Comments ({comments.length})</h2>
+      <h2 className="text-xl font-bold">Comments on {toolName} ({comments.length})</h2>
       <CommentForm toolId={toolId} />
       
       <div className="space-y-6">
