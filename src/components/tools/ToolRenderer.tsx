@@ -47,6 +47,7 @@ const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'open-graph-generator': dynamic(() => import('@/components/tools/OpenGraphGenerator'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
   'slug-generator': dynamic(() => import('@/components/tools/SlugGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
   'emoji-picker': dynamic(() => import('@/components/tools/EmojiPicker'), { loading: () => <ToolLoadingSkeleton /> }),
+  'gradient-generator': dynamic(() => import('@/components/tools/GradientGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
 };
 
 
