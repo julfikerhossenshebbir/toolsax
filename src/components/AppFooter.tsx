@@ -24,10 +24,10 @@ const footerLinks = {
         { name: 'DMCA Policy', href: '/dmca' },
     ],
     social: [
-        { name: 'GitHub', href: '#', icon: <Github className="h-4 w-4" /> },
-        { name: 'Twitter', href: '#', icon: <Twitter className="h-4 w-4" /> },
-        { name: 'LinkedIn', href: '#', icon: <Linkedin className="h-4 w-4" /> },
-        { name: 'YouTube', href: '#', icon: <Youtube className="h-4 w-4" /> },
+        { name: 'GitHub', href: 'https://helloanaroul.pages.dev/github', icon: <Github className="h-4 w-4" /> },
+        { name: 'Twitter', href: 'https://helloanaroul.pages.dev/twitter', icon: <Twitter className="h-4 w-4" /> },
+        { name: 'LinkedIn', href: 'https://helloanaroul.pages.dev/linkedIn', icon: <Linkedin className="h-4 w-4" /> },
+        { name: 'YouTube', href: 'https://helloanaroul.pages.dev/youtube', icon: <Youtube className="h-4 w-4" /> },
     ]
 };
 
