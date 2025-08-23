@@ -49,6 +49,7 @@ const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'emoji-picker': dynamic(() => import('@/components/tools/EmojiPicker'), { loading: () => <ToolLoadingSkeleton /> }),
   'gradient-generator': dynamic(() => import('@/components/tools/GradientGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
   'box-shadow-generator': dynamic(() => import('@/components/tools/BoxShadowGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
+  'border-radius-generator': dynamic(() => import('@/components/tools/BorderRadiusGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
 };
 
 
