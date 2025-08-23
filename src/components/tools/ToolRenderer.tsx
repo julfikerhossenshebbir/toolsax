@@ -51,6 +51,7 @@ const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'box-shadow-generator': dynamic(() => import('@/components/tools/BoxShadowGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
   'border-radius-generator': dynamic(() => import('@/components/tools/BorderRadiusGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
   'regex-tester': dynamic(() => import('@/components/tools/RegexTester'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
+  'html-entity-converter': dynamic(() => import('@/components/tools/HtmlEntityConverter'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
 };
 
 
