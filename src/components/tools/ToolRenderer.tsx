@@ -48,6 +48,7 @@ const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'slug-generator': dynamic(() => import('@/components/tools/SlugGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
   'emoji-picker': dynamic(() => import('@/components/tools/EmojiPicker'), { loading: () => <ToolLoadingSkeleton /> }),
   'gradient-generator': dynamic(() => import('@/components/tools/GradientGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
+  'box-shadow-generator': dynamic(() => import('@/components/tools/BoxShadowGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
 };
 
 
