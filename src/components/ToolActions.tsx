@@ -7,7 +7,7 @@ import { Button } from './ui/button';
 import { Home, MessageSquareWarning, Heart, MessageCircle, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { ResponsiveModal, ResponsiveModalContent, ResponsiveModalHeader, ResponsiveModalTitle, ResponsiveModalTrigger } from '@/components/ResponsiveModal';
 import { Tool } from '@/lib/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { toggleFavoriteInDb, getUserFavorites } from '@/lib/firebase';
@@ -121,28 +121,28 @@ export default function ToolActions({ tool }: ToolActionsProps) {
         </TooltipContent>
       </Tooltip>
 
-      <Dialog>
+      <ResponsiveModal>
         <Tooltip>
             <TooltipTrigger asChild>
-                <DialogTrigger asChild>
+                <ResponsiveModalTrigger asChild>
                     <Button variant="outline" size="icon">
                         <MessageCircle className="h-4 w-4" />
                     </Button>
-                </DialogTrigger>
+                </ResponsiveModalTrigger>
             </TooltipTrigger>
             <TooltipContent>
                 <p>Comments</p>
             </TooltipContent>
         </Tooltip>
-        <DialogContent className="max-w-2xl p-0">
-          <DialogHeader>
-            <DialogTitle className="sr-only">Comments on {tool.name}</DialogTitle>
-          </DialogHeader>
+        <ResponsiveModalContent className="max-w-2xl p-0">
+          <ResponsiveModalHeader>
+            <ResponsiveModalTitle className="sr-only">Comments on {tool.name}</ResponsiveModalTitle>
+          </ResponsiveModalHeader>
           <div className="p-6">
               <CommentSystem toolId={tool.id} />
           </div>
-        </DialogContent>
-      </Dialog>
+        </ResponsiveModalContent>
+      </ResponsiveModal>
       
       <Tooltip>
         <TooltipTrigger asChild>

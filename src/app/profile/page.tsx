@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { updateUserProfile, getUserData, updateUserData } from '@/lib/firebase';
 import { Loader2, Upload, User, Scissors, Eye as EyeIcon, Twitter, Github, Globe } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { ResponsiveModal, ResponsiveModalContent, ResponsiveModalHeader, ResponsiveModalTitle, ResponsiveModalFooter, ResponsiveModalTrigger } from '@/components/ResponsiveModal';
 import ReactCrop, { type Crop, type PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import Link from 'next/link';
@@ -374,12 +374,12 @@ export default function ProfilePage() {
       </Card>
     </div>
     
-    <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle>Crop your new profile picture</DialogTitle>
-            </DialogHeader>
-            <div className="flex justify-center">
+    <ResponsiveModal open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
+        <ResponsiveModalContent>
+            <ResponsiveModalHeader>
+                <ResponsiveModalTitle>Crop your new profile picture</ResponsiveModalTitle>
+            </ResponsiveModalHeader>
+            <div className="flex justify-center p-4">
             {imgSrc && (
                 <ReactCrop
                     crop={crop}
@@ -387,16 +387,16 @@ export default function ProfilePage() {
                     onComplete={(c) => setCompletedCrop(c)}
                     aspect={1}
                 >
-                    <img ref={imgRef} alt="Crop me" src={imgSrc} onLoad={onImageLoad} />
+                    <img ref={imgRef} alt="Crop me" src={imgSrc} onLoad={onImageLoad} style={{ maxHeight: "70vh" }}/>
                 </ReactCrop>
             )}
             </div>
-            <DialogFooter>
+            <ResponsiveModalFooter>
                 <Button variant="outline" onClick={() => setIsCropModalOpen(false)}>Cancel</Button>
                 <Button onClick={handleCropAndUpload}><Scissors className="mr-2 h-4 w-4" /> Crop & Save</Button>
-            </DialogFooter>
-        </DialogContent>
-    </Dialog>
+            </ResponsiveModalFooter>
+        </ResponsiveModalContent>
+    </ResponsiveModal>
     </>
   );
 }
