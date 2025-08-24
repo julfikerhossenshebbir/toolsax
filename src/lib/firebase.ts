@@ -1,5 +1,4 @@
 
-
 // This is a placeholder for Firebase configuration.
 // To enable Firebase features, you need to set up a Firebase project and
 // add your configuration here.
@@ -23,8 +22,23 @@ import {
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
 import type { Comment, Reply, Tool, VipRequest, PaymentMethod } from "@/app/admin/types";
-import { ALL_TOOLS as STATIC_TOOLS } from "./tools";
+import { ALL_TOOLS as STATIC_TOOLS_FROM_FILE } from "./tools";
 import { subMonths, format, startOfMonth } from 'date-fns';
+
+const STATIC_TOOLS = [
+  ...STATIC_TOOLS_FROM_FILE,
+  {
+    "id": "color-palette-generator",
+    "name": "Color Palette Generator",
+    "description": "Generate color palettes from a single color.",
+    "link": "/color-palette-generator",
+    "category": "Design",
+    "icon": "Palette",
+    "isEnabled": true,
+    "order": 37,
+    "authRequired": false
+  }
+];
 
 
 export interface Notification {
@@ -830,3 +844,5 @@ export async function uploadFile(file: File, path: string): Promise<string> {
 
 
 export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;
+
+    
