@@ -388,17 +388,6 @@ export const ALL_TOOLS: Tool[] = [
     "authRequired": false
   },
   {
-    "id": "audio-converter",
-    "name": "Audio Converter",
-    "description": "Convert audio files to different formats.",
-    "link": "/audio-converter",
-    "category": "Utilities",
-    "icon": "FileAudio",
-    "isEnabled": true,
-    "order": 35,
-    "authRequired": false
-  },
-  {
     "id": "thumbnail-generator",
     "name": "Thumbnail Generator",
     "description": "Generate thumbnails for blog posts.",

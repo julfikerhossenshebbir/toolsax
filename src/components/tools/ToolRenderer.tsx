@@ -58,7 +58,6 @@ const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'speech-to-text': dynamic(() => import('@/components/tools/SpeechToText'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
   'text-to-speech': dynamic(() => import('@/components/tools/TextToSpeech'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
   'github-to-jsdelivr-converter': dynamic(() => import('@/components/tools/GithubToJsdelivr'), { loading: () => <ToolLoadingSkeleton /> }),
-  'audio-converter': dynamic(() => import('@/components/tools/AudioConverter'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
   'thumbnail-generator': dynamic(() => import('@/components/tools/ThumbnailGenerator'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
 };
 
