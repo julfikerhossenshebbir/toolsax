@@ -364,5 +364,16 @@ export const ALL_TOOLS: Tool[] = [
     "isEnabled": true,
     "order": 32,
     "authRequired": false
+  },
+  {
+    "id": "text-to-speech",
+    "name": "Text to Speech",
+    "description": "Convert text to life-like speech.",
+    "link": "/text-to-speech",
+    "category": "Utilities",
+    "icon": "Volume2",
+    "isEnabled": true,
+    "order": 33,
+    "authRequired": false
   }
 ];
