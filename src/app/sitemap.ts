@@ -37,7 +37,7 @@ async function getAllToolsServerSide(): Promise<Tool[]> {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://toolsax.com';
+  const baseUrl = 'https://toolsax.pages.dev';
 
   const tools = await getAllToolsServerSide();
   const toolUrls = tools
@@ -62,7 +62,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ].map((route) => ({
     url: `${baseUrl}${route.url}`,
     lastModified: new Date(),
-    changeFrequency: route.changeFrequency,
+    changeFrequency: route.changeFrequency as "yearly" | "always" | "hourly" | "daily" | "weekly" | "monthly" | "never" | undefined,
     priority: route.priority,
   }));
 

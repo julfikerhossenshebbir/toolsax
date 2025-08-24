@@ -15,7 +15,7 @@ import AppFooter from '@/components/AppFooter';
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://toolsax.com'),
+  metadataBase: new URL('https://toolsax.pages.dev'),
   title: {
     default: 'Toolsax - Free Online Tools for Developers & Designers',
     template: '%s | Toolsax'
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     title: 'Toolsax - Free Online Tools for Developers & Designers',
     description: 'An expanding collection of free online tools for professionals.',
     type: 'website',
-    url: 'https://toolsax.com',
+    url: 'https://toolsax.pages.dev',
     siteName: 'Toolsax',
   },
   twitter: {

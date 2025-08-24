@@ -81,7 +81,7 @@ export default function ToolActions({ tool }: ToolActionsProps) {
     }
   };
   
-  const embedCode = `<iframe src="https://toolsax.com/embed/${tool.id}" width="100%" height="90" style="border:none;overflow:hidden;" scrolling="no" frameborder="0" allowTransparency="true" allow="encrypted-media"></iframe>`;
+  const embedCode = `<iframe src="https://toolsax.pages.dev/embed/${tool.id}" width="100%" height="90" style="border:none;overflow:hidden;" scrolling="no" frameborder="0" allowTransparency="true" allow="encrypted-media"></iframe>`;
 
   const copyEmbedCode = () => {
       navigator.clipboard.writeText(embedCode);
