@@ -12,14 +12,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 
 const voices = [
-  { value: 'Algenib', label: 'Female' }, // English (US, Female)
-  { value: 'Achernar', label: 'Male' },   // English (US, Male)
+  { value: 'en-US-Standard-A', label: 'Female Voice 1' },
+  { value: 'en-US-Standard-B', label: 'Male Voice 1' },
+  { value: 'en-US-Standard-C', label: 'Female Voice 2' },
+  { value: 'en-US-Standard-D', label: 'Male Voice 2' },
+  { value: 'en-US-Standard-E', label: 'Female Voice 3 (Export)' },
+  { value: 'en-US-Standard-F', label: 'Male Voice 3' },
+  { value: 'en-US-Standard-G', label: 'Female Voice 4' },
+  { value: 'en-US-Standard-H', label: 'Female Voice 5 (Export)' },
+  { value: 'en-US-Standard-I', label: 'Male Voice 4 (Export)' },
+  { value: 'en-US-Standard-J', label: 'Male Voice 5 (Export)' },
+  { value: 'Algenib', label: 'Female Voice 6' },
+  { value: 'Achernar', label: 'Male Voice 6' },
 ];
 
 
 export default function TextToSpeech() {
   const [text, setText] = useState('Hello world! This is the Text to Speech tool from Toolsax.');
-  const [voice, setVoice] = useState('Algenib');
+  const [voice, setVoice] = useState('en-US-Standard-C');
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -68,7 +78,7 @@ export default function TextToSpeech() {
             <p>Convert your text into natural-sounding speech using advanced AI. Here's how to use it:</p>
             <ol className="list-decimal list-inside space-y-1 pl-4">
               <li><strong>Enter Text:</strong> Type or paste the text you want to convert into the text area.</li>
-              <li><strong>Choose a Voice:</strong> Select your preferred voice (Male/Female) from the dropdown.</li>
+              <li><strong>Choose a Voice:</strong> Select your preferred voice from the dropdown.</li>
               <li><strong>Generate Audio:</strong> Click the "Generate Audio" button.</li>
               <li><strong>Listen & Download:</strong> Once complete, an audio player will appear. Press play to listen and use the download button to save the audio.</li>
             </ol>
