@@ -41,23 +41,30 @@ const nextConfig: NextConfig = {
 
   webpack: (config, { isServer, nextRuntime }) => {
     // Exclude Node.js modules from Edge Runtime builds
-    if (nextRuntime === 'edge' || !isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        "fs": false,
-        "tls": false,
-        "net": false,
-        "zlib": false,
-        "stream": false,
-        "dns": false,
-        "http": false,
-        "http2": false,
-        "os": false,
-        "path": false,
-        "querystring": false,
-        "crypto": false,
-      };
+    if (!isServer) {
+        config.resolve.fallback = {
+            ...config.resolve.fallback,
+            "fs": false,
+            "tls": false,
+            "net": false,
+            "zlib": false,
+            "stream": false,
+            "dns": false,
+            "http": false,
+            "http2": false,
+            "os": false,
+            "path": false,
+            "querystring": false,
+            "crypto": false,
+        };
     }
+
+    // Add a rule to handle "node:" scheme
+    config.module.rules.push({
+      test: /^node:/,
+      use: 'raw-loader',
+    });
+
     return config;
   },
 
@@ -88,3 +95,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
