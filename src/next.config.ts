@@ -38,7 +38,9 @@ const nextConfig: NextConfig = {
       }
     ],
   },
-  experimental: {},
+  experimental: {
+    esmExternals: 'loose',
+  },
   async headers() {
     return [
       {
