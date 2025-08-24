@@ -53,6 +53,7 @@ const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'regex-tester': dynamic(() => import('@/components/tools/RegexTester'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
   'html-entity-converter': dynamic(() => import('@/components/tools/HtmlEntityConverter'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
   'text-diff-checker': dynamic(() => import('@/components/tools/TextDiffChecker'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
+  'pdf-splitter': dynamic(() => import('@/components/tools/PdfSplitter'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
 };
 
 
