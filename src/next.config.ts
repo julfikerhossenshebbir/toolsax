@@ -49,8 +49,18 @@ const nextConfig: NextConfig = {
         source: '/(.*)',
         headers: [
           {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin-allow-popups',
+            key: 'Content-Security-Policy',
+            value: "frame-ancestors 'self'",
+          },
+        ],
+      },
+      {
+        // Allow embedding specifically for the /embed/ route
+        source: '/embed/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: 'frame-ancestors *',
           },
         ],
       },
@@ -59,3 +69,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
