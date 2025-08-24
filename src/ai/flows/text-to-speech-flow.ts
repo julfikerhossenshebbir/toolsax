@@ -1,7 +1,8 @@
 'use server';
 /**
  * @fileOverview A Genkit flow for converting text to speech.
- * It uses the Gemini TTS model to generate audio from a given string.
+ * It uses the Gemini TTS model to generate audio from a given string,
+ * supporting different voices.
  * The flow exports: textToSpeech, TextToSpeechInput, and TextToSpeechOutput.
  */
 
@@ -11,6 +12,7 @@ import wav from 'wav';
 
 const TextToSpeechInputSchema = z.object({
   text: z.string().describe('The text to convert to speech.'),
+  voice: z.string().optional().describe('The voice to use for the speech synthesis (e.g., Algenib, en-gb-Standard-A).'),
 });
 export type TextToSpeechInput = z.infer<typeof TextToSpeechInputSchema>;
 
@@ -52,14 +54,14 @@ const textToSpeechFlow = ai.defineFlow(
     inputSchema: TextToSpeechInputSchema,
     outputSchema: TextToSpeechOutputSchema,
   },
-  async ({ text }) => {
+  async ({ text, voice }) => {
     const { media } = await ai.generate({
       model: 'googleai/gemini-2.5-flash-preview-tts',
       config: {
         responseModalities: ['AUDIO'],
         speechConfig: {
           voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Algenib' },
+            prebuiltVoiceConfig: { voiceName: voice || 'Algenib' },
           },
         },
       },
