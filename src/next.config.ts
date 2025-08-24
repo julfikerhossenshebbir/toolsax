@@ -51,6 +51,7 @@ const nextConfig: NextConfig = {
             "stream": false,
             "dns": false,
             "http": false,
+            "https": false,
             "http2": false,
             "os": false,
             "path": false,
@@ -95,5 +96,6 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
 
 
