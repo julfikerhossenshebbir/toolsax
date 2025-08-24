@@ -52,6 +52,7 @@ const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'border-radius-generator': dynamic(() => import('@/components/tools/BorderRadiusGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
   'regex-tester': dynamic(() => import('@/components/tools/RegexTester'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
   'html-entity-converter': dynamic(() => import('@/components/tools/HtmlEntityConverter'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
+  'text-diff-checker': dynamic(() => import('@/components/tools/TextDiffChecker'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
 };
 
 
