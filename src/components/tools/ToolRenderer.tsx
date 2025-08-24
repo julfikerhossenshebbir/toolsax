@@ -55,6 +55,7 @@ const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'text-diff-checker': dynamic(() => import('@/components/tools/TextDiffChecker'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
   'pdf-splitter': dynamic(() => import('@/components/tools/PdfSplitter'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
   'image-to-pdf': dynamic(() => import('@/components/tools/ImageToPdf'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
+  'speech-to-text': dynamic(() => import('@/components/tools/SpeechToText'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
 };
 
 

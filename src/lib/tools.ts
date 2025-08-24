@@ -353,5 +353,16 @@ export const ALL_TOOLS: Tool[] = [
     "isEnabled": true,
     "order": 31,
     "authRequired": false
+  },
+  {
+    "id": "speech-to-text",
+    "name": "Speech to Text",
+    "description": "Transcribe audio to text in real-time.",
+    "link": "/speech-to-text",
+    "category": "Utilities",
+    "icon": "Mic",
+    "isEnabled": true,
+    "order": 32,
+    "authRequired": false
   }
 ];
