@@ -65,7 +65,12 @@ export default function ImageToPdf() {
       const pdfDoc = await PDFDocument.create();
       for (const file of files) {
         const arrayBuffer = await file.arrayBuffer();
-        const image = await pdfDoc.embedJpg(arrayBuffer);
+        let image;
+        if (file.type === 'image/png') {
+            image = await pdfDoc.embedPng(arrayBuffer);
+        } else {
+            image = await pdfDoc.embedJpg(arrayBuffer);
+        }
         
         const page = pdfDoc.addPage();
         const { width, height } = image.scale(1);
@@ -159,7 +164,7 @@ export default function ImageToPdf() {
           <div className="space-y-3">
               <h3 className="font-semibold text-lg">Files to Convert ({files.length})</h3>
                <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId="image-files">
+                <Droppable droppableId="image-files" isDropDisabled={false}>
                   {(provided) => (
                     <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
                       {files.map((file, index) => (
