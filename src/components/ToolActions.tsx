@@ -135,6 +135,7 @@ export default function ToolActions({ tool }: ToolActionsProps) {
             </TooltipContent>
         </Tooltip>
         <ResponsiveModalContent className="max-w-2xl p-0">
+          <ResponsiveModalTitle className="sr-only">Comments on {tool.name}</ResponsiveModalTitle>
           <div className="p-6">
               <CommentSystem toolId={tool.id} toolName={tool.name} />
           </div>
