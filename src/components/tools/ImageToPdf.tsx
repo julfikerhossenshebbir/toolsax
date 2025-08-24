@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { UploadCloud, File, X, Download, Loader2, GripVertical, Image as ImageIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import NextImage from 'next/image';
 
 export default function ImageToPdf() {
@@ -112,15 +111,6 @@ export default function ImageToPdf() {
     }
   };
   
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-    const items = Array.from(files);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-    setFiles(items);
-  };
-
-
   return (
     <Card>
       <CardHeader>
@@ -163,37 +153,24 @@ export default function ImageToPdf() {
         {files.length > 0 && (
           <div className="space-y-3">
               <h3 className="font-semibold text-lg">Files to Convert ({files.length})</h3>
-               <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId="image-files" isDropDisabled={false}>
-                  {(provided) => (
-                    <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
-                      {files.map((file, index) => (
-                        <Draggable key={file.name + index} draggableId={file.name + index} index={index}>
-                           {(provided, snapshot) => (
-                            <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className={`flex items-center justify-between p-3 rounded-lg border transition-shadow ${snapshot.isDragging ? 'shadow-lg bg-accent' : 'bg-card'}`}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <GripVertical className="h-5 w-5 text-muted-foreground" />
-                                    <NextImage src={URL.createObjectURL(file)} alt={file.name} width={40} height={40} className="rounded-md object-cover h-10 w-10" />
-                                    <span className="font-medium truncate max-w-xs">{file.name}</span>
-                                    <span className="text-sm text-muted-foreground">({(file.size / 1024).toFixed(1)} KB)</span>
-                                </div>
-                                <Button variant="ghost" size="icon" onClick={() => removeFile(index)}>
-                                    <X className="h-5 w-5" />
-                                </Button>
-                            </div>
-                           )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
+               <div className="space-y-2">
+                  {files.map((file, index) => (
+                    <div
+                        key={file.name + index}
+                        className="flex items-center justify-between p-3 rounded-lg border bg-card"
+                    >
+                        <div className="flex items-center gap-3">
+                            <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                            <NextImage src={URL.createObjectURL(file)} alt={file.name} width={40} height={40} className="rounded-md object-cover h-10 w-10" />
+                            <span className="font-medium truncate max-w-xs">{file.name}</span>
+                            <span className="text-sm text-muted-foreground">({(file.size / 1024).toFixed(1)} KB)</span>
+                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => removeFile(index)}>
+                            <X className="h-5 w-5" />
+                        </Button>
                     </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
+                  ))}
+                </div>
           </div>
         )}
 

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -6,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { UploadCloud, File, X, Download, Loader2, GripVertical } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { PDFDocument } from 'pdf-lib';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 export default function PdfMerger() {
   const [files, setFiles] = useState<File[]>([]);
@@ -88,15 +88,6 @@ export default function PdfMerger() {
       setIsMerging(false);
     }
   };
-  
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-    const items = Array.from(files);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-    setFiles(items);
-  };
-
 
   return (
     <Card>
@@ -140,37 +131,23 @@ export default function PdfMerger() {
         {files.length > 0 && (
           <div className="space-y-3">
               <h3 className="font-semibold text-lg">Files to Merge ({files.length})</h3>
-               <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId="pdf-files" isDropDisabled={false}>
-                  {(provided) => (
-                    <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
-                      {files.map((file, index) => (
-                        <Draggable key={file.name + index} draggableId={file.name + index} index={index}>
-                           {(provided, snapshot) => (
-                            <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className={`flex items-center justify-between p-3 rounded-lg border transition-shadow ${snapshot.isDragging ? 'shadow-lg bg-accent' : 'bg-card'}`}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <GripVertical className="h-5 w-5 text-muted-foreground" />
-                                    <File className="h-6 w-6 text-primary" />
-                                    <span className="font-medium truncate max-w-xs">{file.name}</span>
-                                    <span className="text-sm text-muted-foreground">({(file.size / 1024).toFixed(1)} KB)</span>
-                                </div>
-                                <Button variant="ghost" size="icon" onClick={() => removeFile(index)}>
-                                    <X className="h-5 w-5" />
-                                </Button>
-                            </div>
-                           )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
+                <div className="space-y-2">
+                  {files.map((file, index) => (
+                    <div
+                        key={file.name + index}
+                        className="flex items-center justify-between p-3 rounded-lg border bg-card"
+                    >
+                        <div className="flex items-center gap-3">
+                            <File className="h-6 w-6 text-primary" />
+                            <span className="font-medium truncate max-w-xs">{file.name}</span>
+                            <span className="text-sm text-muted-foreground">({(file.size / 1024).toFixed(1)} KB)</span>
+                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => removeFile(index)}>
+                            <X className="h-5 w-5" />
+                        </Button>
                     </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
+                  ))}
+                </div>
           </div>
         )}
 
