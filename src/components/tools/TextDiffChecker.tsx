@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -40,9 +39,9 @@ export default function TextDiffChecker() {
       <CardHeader>
         <CardTitle>Text Difference Checker</CardTitle>
         <CardDescription>
-          <div class="space-y-2">
+          <div className="space-y-2">
             <p>Paste two blocks of text in the fields below to see the differences. Added and removed lines will be highlighted.</p>
-            <ol class="list-decimal list-inside space-y-1 pl-4">
+            <ol className="list-decimal list-inside space-y-1 pl-4">
                 <li><strong>Paste Original Text:</strong> Enter the first version of your text in the left text area.</li>
                 <li><strong>Paste Modified Text:</strong> Enter the second version of your text in the right text area.</li>
                 <li><strong>View Differences:</strong> The comparison view below will automatically update, highlighting additions in green and deletions in red.</li>
