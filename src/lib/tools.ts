@@ -299,17 +299,6 @@ export const ALL_TOOLS: Tool[] = [
     "authRequired": false
   },
   {
-    "id": "icon-finder",
-    "name": "Icon Finder",
-    "description": "Search and download icons.",
-    "link": "/icon-finder",
-    "category": "Design",
-    "icon": "Search",
-    "isEnabled": true,
-    "order": 27,
-    "authRequired": false
-  },
-  {
     "id": "text-diff-checker",
     "name": "Text Diff Checker",
     "description": "Compare two texts and highlight differences.",
