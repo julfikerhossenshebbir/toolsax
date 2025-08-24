@@ -386,5 +386,27 @@ export const ALL_TOOLS: Tool[] = [
     "isEnabled": true,
     "order": 34,
     "authRequired": false
+  },
+  {
+    "id": "audio-converter",
+    "name": "Audio Converter",
+    "description": "Convert audio files to different formats.",
+    "link": "/audio-converter",
+    "category": "Utilities",
+    "icon": "FileAudio",
+    "isEnabled": true,
+    "order": 35,
+    "authRequired": false
+  },
+  {
+    "id": "thumbnail-generator",
+    "name": "Thumbnail Generator",
+    "description": "Generate thumbnails for blog posts.",
+    "link": "/thumbnail-generator",
+    "category": "Design",
+    "icon": "Image",
+    "isEnabled": true,
+    "order": 36,
+    "authRequired": false
   }
 ];
