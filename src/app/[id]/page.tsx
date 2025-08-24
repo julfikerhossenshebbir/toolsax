@@ -5,14 +5,24 @@ import { getTools } from '@/lib/firebase';
 import ToolPageClient from '@/components/ToolPageClient';
 import type { Metadata, ResolvingMetadata } from 'next';
 import { get, ref, getDatabase } from 'firebase/database';
+import { initializeApp, getApps } from 'firebase/app';
 
-type Props = {
-  params: { id: string }
-  searchParams: { [key: string]: string | string[] | undefined }
-}
+const firebaseConfig = {
+  apiKey: "AIzaSyCGyVqbVZhp9rqEQYZ_vrcUYCXXk-6p37w",
+  authDomain: "toolsaxdb.firebaseapp.com",
+  databaseURL: "https://toolsaxdb-default-rtdb.firebaseio.com",
+  projectId: "toolsaxdb",
+  storageBucket: "toolsaxdb.appspot.com",
+  messagingSenderId: "521841849034",
+  appId: "1:521841849034:web:5be88041b20b3d6435fa33",
+  measurementId: "G-J0SGP2CFQH"
+};
 
 async function getAllToolsServerSide(): Promise<Tool[]> {
     try {
+        if (!getApps().length) {
+            initializeApp(firebaseConfig);
+        }
         const db = getDatabase();
         const toolsRef = ref(db, 'tools');
         const snapshot = await get(toolsRef);
