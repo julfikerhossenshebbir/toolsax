@@ -38,10 +38,29 @@ const nextConfig: NextConfig = {
       }
     ],
   },
-  // This is required to allow the Next.js dev server to accept requests from the Firebase Studio environment.
-  allowedDevOrigins: [
-    '6000-firebase-studio-1755373857148.cluster-ejd22kqny5htuv5dfowoyipt52.cloudworkstations.dev',
-  ],
+
+  webpack: (config, { isServer, nextRuntime }) => {
+    // Exclude Node.js modules from Edge Runtime builds
+    if (nextRuntime === 'edge' || !isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        "fs": false,
+        "tls": false,
+        "net": false,
+        "zlib": false,
+        "stream": false,
+        "dns": false,
+        "http": false,
+        "http2": false,
+        "os": false,
+        "path": false,
+        "querystring": false,
+        "crypto": false,
+      };
+    }
+    return config;
+  },
+
   experimental: {},
   async headers() {
     return [
@@ -69,4 +88,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-

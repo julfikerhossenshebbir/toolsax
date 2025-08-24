@@ -1,4 +1,6 @@
 
+export const runtime = 'edge';
+
 import { getUserPublicProfile, getTools } from '@/lib/firebase';
 import { notFound } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

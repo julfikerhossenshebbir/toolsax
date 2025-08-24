@@ -1,4 +1,6 @@
 
+export const runtime = 'edge';
+
 import { notFound } from 'next/navigation';
 import type { Tool } from '@/lib/types';
 import { get, ref, getDatabase } from 'firebase/database';
