@@ -54,6 +54,7 @@ const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'html-entity-converter': dynamic(() => import('@/components/tools/HtmlEntityConverter'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
   'text-diff-checker': dynamic(() => import('@/components/tools/TextDiffChecker'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
   'pdf-splitter': dynamic(() => import('@/components/tools/PdfSplitter'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
+  'image-to-pdf': dynamic(() => import('@/components/tools/ImageToPdf'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
 };
 
 

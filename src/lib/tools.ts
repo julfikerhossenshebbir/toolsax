@@ -342,5 +342,16 @@ export const ALL_TOOLS: Tool[] = [
     "isEnabled": true,
     "order": 30,
     "authRequired": false
+  },
+  {
+    "id": "image-to-pdf",
+    "name": "Image to PDF",
+    "description": "Convert JPG, PNG, and other images to PDF.",
+    "link": "/image-to-pdf",
+    "category": "PDF",
+    "icon": "FileImage",
+    "isEnabled": true,
+    "order": 31,
+    "authRequired": false
   }
 ];
