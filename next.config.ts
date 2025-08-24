@@ -42,6 +42,29 @@ const nextConfig: NextConfig = {
     '6000-firebase-studio-1755373857148.cluster-ejd22kqny5htuv5dfowoyipt52.cloudworkstations.dev',
   ],
   experimental: {},
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+        ],
+      },
+      {
+        // Allow embedding specifically for the /embed/ route
+        source: '/embed/:path*',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'ALLOW-FROM *',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

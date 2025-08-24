@@ -4,15 +4,18 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { Home, MessageSquareWarning, Heart, MessageCircle, Share2 } from 'lucide-react';
+import { Home, MessageSquareWarning, Heart, MessageCircle, Share2, Code } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
-import { ResponsiveModal, ResponsiveModalContent, ResponsiveModalHeader, ResponsiveModalTitle, ResponsiveModalTrigger } from '@/components/ResponsiveModal';
+import { ResponsiveModal, ResponsiveModalContent, ResponsiveModalHeader, ResponsiveModalTitle, ResponsiveModalTrigger, ResponsiveModalDescription, ResponsiveModalFooter } from '@/components/ResponsiveModal';
 import { Tool } from '@/lib/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { toggleFavoriteInDb, getUserFavorites } from '@/lib/firebase';
 import CommentSystem from '@/components/comments/CommentSystem';
 import { useRouter } from 'next/navigation';
+import { Label } from './ui/label';
+import { Input } from './ui/input';
+import { Copy } from 'lucide-react';
 
 
 interface ToolActionsProps {
@@ -77,6 +80,16 @@ export default function ToolActions({ tool }: ToolActionsProps) {
         });
     }
   };
+  
+  const embedCode = `<iframe src="https://toolsax.com/embed/${tool.id}" width="100%" height="90" style="border:none;overflow:hidden;" scrolling="no" frameborder="0" allowTransparency="true" allow="encrypted-media"></iframe>`;
+
+  const copyEmbedCode = () => {
+      navigator.clipboard.writeText(embedCode);
+      toast({
+          title: 'Embed code copied!',
+          description: 'You can now paste the code into your website.',
+      });
+  };
 
 
   if (!isClient) {
@@ -120,6 +133,38 @@ export default function ToolActions({ tool }: ToolActionsProps) {
             <p>Share Tool</p>
         </TooltipContent>
       </Tooltip>
+      
+      <ResponsiveModal>
+          <Tooltip>
+              <TooltipTrigger asChild>
+                  <ResponsiveModalTrigger asChild>
+                      <Button variant="outline" size="icon">
+                          <Code className="h-4 w-4" />
+                      </Button>
+                  </ResponsiveModalTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                  <p>Embed Tool</p>
+              </TooltipContent>
+          </Tooltip>
+          <ResponsiveModalContent>
+              <ResponsiveModalHeader>
+                  <ResponsiveModalTitle>Embed this Tool</ResponsiveModalTitle>
+                  <ResponsiveModalDescription>
+                      Copy and paste this code into your website to embed this tool card.
+                  </ResponsiveModalDescription>
+              </ResponsiveModalHeader>
+              <div className="py-4">
+                 <Label htmlFor="embed-code" className="sr-only">Embed Code</Label>
+                 <div className="relative">
+                    <Input id="embed-code" readOnly value={embedCode} className="pr-10 font-mono text-sm" />
+                    <Button variant="ghost" size="icon" className="absolute top-1/2 right-1 -translate-y-1/2 h-8 w-8" onClick={copyEmbedCode}>
+                        <Copy className="h-4 w-4" />
+                    </Button>
+                 </div>
+              </div>
+          </ResponsiveModalContent>
+      </ResponsiveModal>
 
       <ResponsiveModal>
         <Tooltip>
