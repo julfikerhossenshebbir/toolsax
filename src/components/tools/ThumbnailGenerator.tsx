@@ -7,20 +7,36 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { RefreshCw, Download, Image as ImageIcon } from 'lucide-react';
+import { RefreshCw, Download, Image as ImageIcon, Palette, Text, Brush, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import html2canvas from 'html2canvas';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+
+// Helper to convert hex to rgba
+const hexToRgba = (hex: string, alpha: number) => {
+    let r = 0, g = 0, b = 0;
+    if (hex.length === 4) {
+        r = parseInt(hex[1] + hex[1], 16);
+        g = parseInt(hex[2] + hex[2], 16);
+        b = parseInt(hex[3] + hex[3], 16);
+    } else if (hex.length === 7) {
+        r = parseInt(hex.substring(1, 3), 16);
+        g = parseInt(hex.substring(3, 5), 16);
+        b = parseInt(hex.substring(5, 7), 16);
+    }
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 
 const initialSettings = {
-    layout: 'layout-0',
-    alignment: 'left',
     title: '10 Things I Learned While Doing Nothing',
-    description: 'A fun list of lessons from doing absolutely nothing.',
     organization: 'My Company',
     logo: 'https://i.ibb.co/3sW2bMh/logo.png',
-    theme: '#db2777', // Rose-600
-    fontFamily: 'DM Sans',
+    theme: '#8b5cf6', // Indigo-500
+    fontFamily: 'Poppins',
     ratio: '16:9',
+    background: 'pattern1',
+    foreground: '#111827', // Gray-900
+    subtext: '#4b5563', // Gray-600
 };
 
 export default function ThumbnailGenerator() {
@@ -50,7 +66,7 @@ export default function ThumbnailGenerator() {
                 allowTaint: true,
                 useCORS: true,
                 backgroundColor: null, 
-                scale: 2 // Higher scale for better quality
+                scale: 2
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'thumbnail.png';
@@ -58,7 +74,7 @@ export default function ThumbnailGenerator() {
                 link.click();
                 toast({ title: 'Exported!', description: 'Your thumbnail has been downloaded.' });
             }).catch(err => {
-                console.error("oops, something went wrong!", err);
+                console.error("Oops, something went wrong!", err);
                 toast({ variant: "destructive", title: 'Export Failed', description: 'Could not generate the image.' });
             });
         }
@@ -70,141 +86,123 @@ export default function ThumbnailGenerator() {
         toast({ title: 'Reset!', description: 'All settings have been reset to their default values.' });
     };
 
-    const aspectRatio = settings.ratio === '16:9' ? 16 / 9 : settings.ratio === '1:1' ? 1 : 4 / 5;
+    const aspectRatio = settings.ratio === '16:9' ? 16 / 9 : 1;
+
+    const backgroundStyles = {
+        pattern1: { background: `linear-gradient(135deg, ${hexToRgba(settings.theme, 0.1)} 25%, transparent 25%), linear-gradient(225deg, ${hexToRgba(settings.theme, 0.1)} 25%, transparent 25%), linear-gradient(45deg, ${hexToRgba(settings.theme, 0.1)} 25%, transparent 25%), linear-gradient(315deg, ${hexToRgba(settings.theme, 0.1)} 25%, #ffffff 25%)`, backgroundSize: '40px 40px' },
+        pattern2: { background: `radial-gradient(circle, ${hexToRgba(settings.theme, 0.15)} 20%, transparent 20%), radial-gradient(circle, ${hexToRgba(settings.theme, 0.15)} 20%, transparent 20%) 20px 20px, radial-gradient(circle, #ffffff 10%, transparent 15%) 20px 0, radial-gradient(circle, #ffffff 10%, transparent 15%) 0 20px`, backgroundSize: '40px 40px', backgroundColor: '#ffffff' },
+        gradient: { background: `linear-gradient(45deg, ${settings.theme}, ${hexToRgba(settings.theme, 0.5)})` },
+        solid: { backgroundColor: '#f9fafb' }
+    };
+    
+    const fontStyles = {
+        Poppins: "'Poppins', sans-serif",
+        Montserrat: "'Montserrat', sans-serif",
+        Oswald: "'Oswald', sans-serif",
+        Lato: "'Lato', sans-serif",
+        'Playfair Display': "'Playfair Display', serif",
+        'DM Sans': "'DM Sans', sans-serif",
+    }
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Thumbnail Generator</CardTitle>
-                <CardDescription>
-                    Generate your blog post thumbnails with ease (more features to be added).
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Controls */}
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label>Layout</Label>
-                                <Select value={settings.layout} onValueChange={(value) => handleInputChange('layout', value)}>
-                                    <SelectTrigger><SelectValue /></SelectTrigger>
-                                    <SelectContent><SelectItem value="layout-0">Layout 0</SelectItem></SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Alignment</Label>
-                                <Select value={settings.alignment} onValueChange={(value) => handleInputChange('alignment', value)}>
-                                    <SelectTrigger><SelectValue /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="left">Left</SelectItem>
-                                        <SelectItem value="center">Center</SelectItem>
-                                        <SelectItem value="right">Right</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
+        <>
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+            <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Montserrat:wght@700&family=Oswald:wght@700&family=Lato:wght@700&family=Playfair+Display:wght@700&family=DM+Sans:wght@700&display=swap" rel="stylesheet" />
 
-                        <div className="space-y-2">
-                            <Label htmlFor="title">Title</Label>
-                            <Input id="title" value={settings.title} onChange={(e) => handleInputChange('title', e.target.value)} />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="description">Description</Label>
-                            <Input id="description" value={settings.description} onChange={(e) => handleInputChange('description', e.target.value)} />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="organization">Organization</Label>
-                                <Input id="organization" value={settings.organization} onChange={(e) => handleInputChange('organization', e.target.value)} />
-                            </div>
-                             <div className="space-y-2">
-                                <Label htmlFor="logo">Logo</Label>
-                                <div className="flex gap-2">
-                                    <Button variant="outline" className="flex-grow" onClick={() => fileInputRef.current?.click()}>Browse...</Button>
-                                    <input ref={fileInputRef} type="file" accept="image/*" onChange={handleLogoChange} className="hidden" />
-                                    {settings.logo && (
-                                        <Button variant="ghost" size="icon" onClick={() => handleInputChange('logo', '')}>
-                                            <ImageIcon className="h-4 w-4 text-muted-foreground" />
+            <Card>
+                <CardHeader>
+                    <CardTitle>Thumbnail Generator</CardTitle>
+                    <CardDescription>
+                        Generate beautiful and professional thumbnails for your blog posts and videos.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Controls */}
+                        <div className="lg:col-span-1">
+                            <Tabs defaultValue="content" className="w-full">
+                                <TabsList className="grid w-full grid-cols-2">
+                                    <TabsTrigger value="content"><Text className="mr-2 h-4 w-4" /> Content</TabsTrigger>
+                                    <TabsTrigger value="style"><Brush className="mr-2 h-4 w-4" /> Style</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="content" className="space-y-4 pt-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="title">Title</Label>
+                                        <Input id="title" value={settings.title} onChange={(e) => handleInputChange('title', e.target.value)} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="organization">Organization</Label>
+                                        <Input id="organization" value={settings.organization} onChange={(e) => handleInputChange('organization', e.target.value)} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="logo">Logo</Label>
+                                        <Button variant="outline" className="w-full" onClick={() => fileInputRef.current?.click()}>
+                                            <Upload className="mr-2 h-4 w-4"/> Upload Logo
                                         </Button>
-                                    )}
-                                </div>
+                                        <input ref={fileInputRef} type="file" accept="image/*" onChange={handleLogoChange} className="hidden" />
+                                    </div>
+                                </TabsContent>
+                                <TabsContent value="style" className="space-y-4 pt-4">
+                                    <div className="space-y-2">
+                                        <Label>Background Style</Label>
+                                        <Select value={settings.background} onValueChange={(value) => handleInputChange('background', value)}>
+                                            <SelectTrigger><SelectValue /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="pattern1">Subtle Pattern</SelectItem>
+                                                <SelectItem value="pattern2">Dotted Pattern</SelectItem>
+                                                <SelectItem value="gradient">Gradient</SelectItem>
+                                                <SelectItem value="solid">Solid</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="theme">Theme Color</Label>
+                                        <Input id="theme" type="color" value={settings.theme} onChange={(e) => handleInputChange('theme', e.target.value)} className="w-full h-10 p-1" />
+                                    </div>
+                                     <div className="space-y-2">
+                                        <Label>Font Family</Label>
+                                        <Select value={settings.fontFamily} onValueChange={(value) => handleInputChange('fontFamily', value)}>
+                                            <SelectTrigger><SelectValue /></SelectTrigger>
+                                            <SelectContent>
+                                                {Object.keys(fontStyles).map(font => (
+                                                    <SelectItem key={font} value={font}>{font}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </TabsContent>
+                            </Tabs>
+                             <div className="pt-6 flex gap-2">
+                                <Button onClick={handleReset} variant="outline" className="w-full"><RefreshCw className="mr-2 h-4 w-4" /> Reset</Button>
+                                <Button onClick={handleExport} className="w-full"><Download className="mr-2 h-4 w-4" /> Export</Button>
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="theme">Theme</Label>
-                            <Input id="theme" type="color" value={settings.theme} onChange={(e) => handleInputChange('theme', e.target.value)} className="w-full h-12 p-1" />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label>Font family</Label>
-                                <Select value={settings.fontFamily} onValueChange={(value) => handleInputChange('fontFamily', value)}>
-                                    <SelectTrigger><SelectValue /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="DM Sans">DM Sans</SelectItem>
-                                        <SelectItem value="Inter">Inter</SelectItem>
-                                        <SelectItem value="Roboto">Roboto</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Ratio</Label>
-                                <Select value={settings.ratio} onValueChange={(value) => handleInputChange('ratio', value)}>
-                                    <SelectTrigger><SelectValue /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="16:9">16:9</SelectItem>
-                                        <SelectItem value="1:1">1:1 (Square)</SelectItem>
-                                        <SelectItem value="4:5">4:5 (Portrait)</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Preview */}
-                    <div className="flex flex-col items-center gap-4">
-                        <div
-                            ref={previewRef}
-                            style={{ 
-                                fontFamily: settings.fontFamily,
-                                textAlign: settings.alignment as 'left' | 'center' | 'right',
-                                aspectRatio: aspectRatio,
-                            }}
-                            className="w-full p-8 rounded-lg overflow-hidden relative flex flex-col justify-center"
-                        >
-                            {/* Background elements */}
-                            <div className="absolute inset-0 bg-rose-50 -z-10"></div>
-                            <div 
-                                className="absolute top-0 right-0 w-48 h-48 -z-10 opacity-20" 
+                        {/* Preview */}
+                        <div className="lg:col-span-2 flex items-center justify-center bg-muted/50 rounded-lg p-4">
+                            <div
+                                ref={previewRef}
                                 style={{
-                                    backgroundImage: `radial-gradient(${settings.theme} 1px, transparent 1px)`,
-                                    backgroundSize: '10px 10px'
+                                    fontFamily: fontStyles[settings.fontFamily as keyof typeof fontStyles],
+                                    aspectRatio: aspectRatio,
+                                    // @ts-ignore
+                                    ...backgroundStyles[settings.background as keyof typeof backgroundStyles]
                                 }}
-                            ></div>
-                            <div className="absolute top-0 right-0 w-32 h-32 rounded-bl-full" style={{ backgroundColor: `${settings.theme}1A` }}></div>
-
-                            {/* Content */}
-                            <div className="flex items-center gap-2 mb-4" style={{ justifyContent: settings.alignment === 'center' ? 'center' : settings.alignment === 'right' ? 'flex-end' : 'flex-start' }}>
-                                {settings.logo && <img src={settings.logo} alt="logo" className="h-6 w-auto object-contain" />}
-                                <span className="font-semibold text-gray-700">{settings.organization}</span>
+                                className="w-full p-12 shadow-lg flex flex-col justify-center border bg-white"
+                            >
+                                <div className="flex items-center gap-3 mb-6">
+                                    {settings.logo && <img src={settings.logo} alt="logo" className="h-8 w-auto object-contain" />}
+                                    <span className="font-semibold text-lg" style={{ color: settings.subtext }}>{settings.organization}</span>
+                                </div>
+                                <h1 className="text-4xl md:text-5xl font-bold leading-tight" style={{ color: settings.foreground }}>
+                                    {settings.title}
+                                </h1>
                             </div>
-                            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
-                                {settings.title}
-                            </h1>
-                            <p className="mt-2 text-lg text-gray-600">
-                                {settings.description}
-                            </p>
-                        </div>
-                        <div className="flex gap-2">
-                             <Button onClick={handleReset} variant="outline"><RefreshCw className="mr-2 h-4 w-4" /> Reset</Button>
-                             <Button onClick={handleExport} className="bg-gray-900 text-white hover:bg-gray-800"><Download className="mr-2 h-4 w-4" /> Export</Button>
                         </div>
                     </div>
-                </div>
-            </CardContent>
-        </Card>
+                </CardContent>
+            </Card>
+        </>
     );
 }
