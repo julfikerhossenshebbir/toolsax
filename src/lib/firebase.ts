@@ -25,19 +25,8 @@ import type { Comment, Reply, Tool, VipRequest, PaymentMethod } from "@/app/admi
 import { ALL_TOOLS as STATIC_TOOLS_FROM_FILE } from "./tools";
 import { subMonths, format, startOfMonth } from 'date-fns';
 
-const STATIC_TOOLS = [
+const STATIC_TOOLS: Tool[] = [
   ...STATIC_TOOLS_FROM_FILE,
-  {
-    "id": "color-palette-generator",
-    "name": "Color Palette Generator",
-    "description": "Generate color palettes from a single color.",
-    "link": "/color-palette-generator",
-    "category": "Design",
-    "icon": "Palette",
-    "isEnabled": true,
-    "order": 37,
-    "authRequired": false
-  }
 ];
 
 
@@ -844,5 +833,7 @@ export async function uploadFile(file: File, path: string): Promise<string> {
 
 
 export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;
+
+    
 
     
