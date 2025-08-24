@@ -377,10 +377,10 @@ export const ALL_TOOLS: Tool[] = [
     "authRequired": false
   },
   {
-    "id": "github-to-jsdelivr",
+    "id": "github-to-jsdelivr-converter",
     "name": "GitHub to jsDelivr Converter",
     "description": "Convert GitHub file URLs to jsDelivr CDN links.",
-    "link": "/github-to-jsdelivr",
+    "link": "/github-to-jsdelivr-converter",
     "category": "Development",
     "icon": "GitCompareArrows",
     "isEnabled": true,
