@@ -1,4 +1,3 @@
-
 import { Tool } from './types';
 
 export const ALL_TOOLS: Tool[] = [
@@ -396,6 +395,17 @@ export const ALL_TOOLS: Tool[] = [
     "icon": "Image",
     "isEnabled": true,
     "order": 36,
+    "authRequired": false
+  },
+  {
+    "id": "color-palette-generator",
+    "name": "Color Palette Generator",
+    "description": "Generate color palettes from a single color.",
+    "link": "/color-palette-generator",
+    "category": "Design",
+    "icon": "Palette",
+    "isEnabled": true,
+    "order": 37,
     "authRequired": false
   }
 ];

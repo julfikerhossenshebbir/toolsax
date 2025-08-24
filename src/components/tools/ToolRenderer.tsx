@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { Tool } from '@/lib/types';
@@ -59,6 +58,7 @@ const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'text-to-speech': dynamic(() => import('@/components/tools/TextToSpeech'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
   'github-to-jsdelivr-converter': dynamic(() => import('@/components/tools/GithubToJsdelivr'), { loading: () => <ToolLoadingSkeleton /> }),
   'thumbnail-generator': dynamic(() => import('@/components/tools/ThumbnailGenerator'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
+  'color-palette-generator': dynamic(() => import('@/components/tools/ColorPaletteGenerator'), { loading: () => <ToolLoadingSkeleton /> }),
 };
 
 
