@@ -12,18 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 
 const voices = [
-  { value: 'Achernar', label: 'English (US, Male)' },
-  { value: 'Algenib', label: 'English (US, Female)' },
-  { value: 'en-gb-Standard-A', label: 'English (UK, Female)' },
-  { value: 'en-gb-Standard-B', label: 'English (UK, Male)' },
-  { value: 'bn-in-Standard-A', label: 'Bengali (India, Female)' },
-  { value: 'bn-in-Standard-B', label: 'Bengali (India, Male)' },
-  { value: 'hi-in-Standard-A', label: 'Hindi (India, Female)' },
-  { value: 'hi-in-Standard-B', label: 'Hindi (India, Male)' },
-  { value: 'ar-xa-Standard-A', label: 'Arabic (Female)' },
-  { value: 'ar-xa-Standard-B', label: 'Arabic (Male)' },
-  { value: 'cmn-cn-Standard-A', label: 'Chinese (Mandarin, Female)' },
-  { value: 'cmn-cn-Standard-B', label: 'Chinese (Mandarin, Male)' },
+  { value: 'Algenib', label: 'Female' }, // English (US, Female)
+  { value: 'Achernar', label: 'Male' },   // English (US, Male)
 ];
 
 
@@ -78,7 +68,7 @@ export default function TextToSpeech() {
             <p>Convert your text into natural-sounding speech using advanced AI. Here's how to use it:</p>
             <ol className="list-decimal list-inside space-y-1 pl-4">
               <li><strong>Enter Text:</strong> Type or paste the text you want to convert into the text area.</li>
-              <li><strong>Choose Language & Voice:</strong> Select your preferred language and voice from the dropdown.</li>
+              <li><strong>Choose a Voice:</strong> Select your preferred voice (Male/Female) from the dropdown.</li>
               <li><strong>Generate Audio:</strong> Click the "Generate Audio" button.</li>
               <li><strong>Listen & Download:</strong> Once complete, an audio player will appear. Press play to listen and use the download button to save the audio.</li>
             </ol>
@@ -88,9 +78,9 @@ export default function TextToSpeech() {
       <CardContent className="space-y-6">
         <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="voice-select">Language & Voice</Label>
+              <Label htmlFor="voice-select">Voice</Label>
                <Select value={voice} onValueChange={setVoice}>
-                <SelectTrigger id="voice-select">
+                <SelectTrigger id="voice-select" className="w-full sm:w-[250px]">
                     <SelectValue placeholder="Select a voice" />
                 </SelectTrigger>
                 <SelectContent>
