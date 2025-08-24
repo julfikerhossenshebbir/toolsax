@@ -1,84 +1,97 @@
-'use server';
-/**
- * @fileOverview A Genkit flow for converting text to speech using various voices.
- * Exports: textToSpeech, TextToSpeechInput, TextToSpeechOutput.
- */
-
-import { ai } from '@/ai/genkit';
-import { z } from 'zod';
-import wav from 'wav';
-
-const TextToSpeechInputSchema = z.object({
-  text: z.string().describe('The text to convert to speech.'),
-  voice: z.string().describe('The name of the voice to use (e.g., "Alloy", "Echo").'),
-});
-export type TextToSpeechInput = z.infer<typeof TextToSpeechInputSchema>;
-
-const TextToSpeechOutputSchema = z.object({
-  audioDataUri: z.string().describe("The generated audio as a WAV data URI."),
-});
-export type TextToSpeechOutput = z.infer<typeof TextToSpeechOutputSchema>;
-
-export async function textToSpeech(input: TextToSpeechInput): Promise<TextToSpeechOutput> {
-  return textToSpeechFlow(input);
-}
-
-async function toWav(
-  pcmData: Buffer,
-  channels = 1,
-  rate = 24000,
-  sampleWidth = 2
-): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const writer = new wav.Writer({
-      channels,
-      sampleRate: rate,
-      bitDepth: sampleWidth * 8,
-    });
-
-    const bufs: any[] = [];
-    writer.on('error', reject);
-    writer.on('data', function (d) {
-      bufs.push(d);
-    });
-    writer.on('end', function () {
-      resolve(Buffer.concat(bufs).toString('base64'));
-    });
-
-    writer.write(pcmData);
-    writer.end();
-  });
-}
-
-const textToSpeechFlow = ai.defineFlow(
-  {
-    name: 'textToSpeechFlow',
-    inputSchema: TextToSpeechInputSchema,
-    outputSchema: TextToSpeechOutputSchema,
+{
+  "name": "nextn",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack --port 9002 --hostname 0.0.0.0",
+    "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
+    "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
   },
-  async (input) => {
-    const { media } = await ai.generate({
-      model: 'googleai/gemini-2.5-flash-preview-tts',
-      config: {
-        responseModalities: ['AUDIO'],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: input.voice },
-          },
-        },
-      },
-      prompt: input.text,
-    });
-
-    if (!media) {
-      throw new Error('No audio media was returned from the AI service.');
-    }
-
-    const audioBuffer = Buffer.from(media.url.substring(media.url.indexOf(',') + 1), 'base64');
-    const wavBase64 = await toWav(audioBuffer);
-    
-    return {
-      audioDataUri: 'data:audio/wav;base64,' + wavBase64,
-    };
+  "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.10",
+    "@ffmpeg/util": "^0.12.1",
+    "@genkit-ai/googleai": "^1.14.1",
+    "@genkit-ai/next": "^1.14.1",
+    "@hookform/resolvers": "^4.1.3",
+    "@radix-ui/react-accordion": "^1.2.3",
+    "@radix-ui/react-alert-dialog": "^1.1.6",
+    "@radix-ui/react-avatar": "^1.1.3",
+    "@radix-ui/react-checkbox": "^1.1.4",
+    "@radix-ui/react-collapsible": "^1.1.11",
+    "@radix-ui/react-dialog": "^1.1.6",
+    "@radix-ui/react-dropdown-menu": "^2.1.6",
+    "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-menubar": "^1.1.6",
+    "@radix-ui/react-popover": "^1.1.6",
+    "@radix-ui/react-progress": "^1.1.2",
+    "@radix-ui/react-radio-group": "^1.2.3",
+    "@radix-ui/react-scroll-area": "^1.2.3",
+    "@radix-ui/react-select": "^2.1.6",
+    "@radix-ui/react-separator": "^1.1.2",
+    "@radix-ui/react-slider": "^1.2.3",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.1.3",
+    "@radix-ui/react-tabs": "^1.1.3",
+    "@radix-ui/react-toast": "^1.2.6",
+    "@radix-ui/react-tooltip": "^1.1.8",
+    "@tailwindcss/typography": "^0.5.13",
+    "@tanstack/react-table": "^8.19.3",
+    "browser-image-compression": "^2.0.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.0.0",
+    "country-list": "^2.3.0",
+    "crypto-js": "^4.2.0",
+    "date-fns": "^3.6.0",
+    "disqus-react": "^1.1.5",
+    "dotenv": "^16.5.0",
+    "embla-carousel-react": "^8.6.0",
+    "firebase": "^11.9.1",
+    "firebase-admin": "^12.1.1",
+    "geist": "^1.3.1",
+    "genkit": "^1.14.1",
+    "html2canvas": "^1.4.1",
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.475.0",
+    "next": "15.3.3",
+    "next-themes": "^0.3.0",
+    "patch-package": "^8.0.0",
+    "pdf-lib": "^1.17.1",
+    "qrcode": "^1.5.3",
+    "react": "^18.3.1",
+    "react-country-flag": "^3.1.0",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.54.2",
+    "react-image-crop": "^11.0.6",
+    "react-markdown": "^9.0.1",
+    "react-syntax-highlighter": "^15.5.0",
+    "recharts": "^2.15.1",
+    "remark-gfm": "^4.0.0",
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss-animate": "^1.0.7",
+    "use-debounce": "^10.0.1",
+    "uuid": "^9.0.1",
+    "vaul": "^0.9.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/country-list": "^2.1.4",
+    "@types/crypto-js": "^4.2.2",
+    "@types/lodash": "^4.17.0",
+    "@types/node": "^20",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "@types/uuid": "^9.0.8",
+    "genkit-cli": "^1.14.1",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
   }
-);
+}
