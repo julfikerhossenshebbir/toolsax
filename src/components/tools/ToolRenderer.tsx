@@ -57,6 +57,7 @@ const ToolComponents: { [key: string]: React.ComponentType<any> } = {
   'image-to-pdf': dynamic(() => import('@/components/tools/ImageToPdf'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
   'speech-to-text': dynamic(() => import('@/components/tools/SpeechToText'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
   'text-to-speech': dynamic(() => import('@/components/tools/TextToSpeech'), { ssr: false, loading: () => <ToolLoadingSkeleton /> }),
+  'github-to-jsdelivr': dynamic(() => import('@/components/tools/GithubToJsdelivr'), { loading: () => <ToolLoadingSkeleton /> }),
 };
 
 
