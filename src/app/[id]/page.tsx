@@ -1,49 +1,35 @@
 
 import { notFound } from 'next/navigation';
 import type { Tool } from '@/lib/types';
-import { getTools } from '@/lib/firebase'; // Assuming this can be used server-side
+import { getTools } from '@/lib/firebase';
 import ToolPageClient from '@/components/ToolPageClient';
 import type { Metadata, ResolvingMetadata } from 'next';
+import { get, ref, getDatabase } from 'firebase/database';
 
 type Props = {
   params: { id: string }
   searchParams: { [key: string]: string | string[] | undefined }
 }
 
-
-// This is a temporary solution for fetching tools on the server.
-// In a real app, you might want a dedicated server-side fetcher for Firebase.
 async function getAllToolsServerSide(): Promise<Tool[]> {
-    return new Promise((resolve) => {
-        // Since getTools uses onValue, we need to adapt it for a one-time fetch.
-        // This is a simplified approach. A proper implementation would use get() from Firebase RTDB.
-        let resolved = false;
-        
-        // This is a hack. In a real app, use the Firebase Admin SDK or a proper one-time get() call.
-        const mockCallback = (loadedTools: Tool[]) => {
-            if (!resolved) {
-                resolve(loadedTools);
-                resolved = true;
-                // @ts-ignore
-                if (unsubscribe) unsubscribe();
-            }
-        };
-        // This will hang if Firebase connection doesn't resolve quickly.
-        const unsubscribe = getTools(mockCallback);
-        
-        // Timeout to prevent hanging during build
-        setTimeout(() => {
-            if (!resolved) {
-                console.warn("Tool fetch timed out. Build might be incomplete.");
-                resolve([]);
-                resolved = true;
-                // @ts-ignore
-                if (unsubscribe) unsubscribe();
-            }
-            
-        }, 5000);
-    });
+    try {
+        const db = getDatabase();
+        const toolsRef = ref(db, 'tools');
+        const snapshot = await get(toolsRef);
+        if (snapshot.exists()) {
+            const toolsData = snapshot.val();
+            return Object.keys(toolsData).map(key => ({
+                id: key,
+                ...toolsData[key]
+            }));
+        }
+        return [];
+    } catch (error) {
+        console.error("Error fetching tools server-side:", error);
+        return [];
+    }
 }
+
 
 // Fetch tool data on the server
 async function getTool(id: string): Promise<{ tool: Tool | undefined, allTools: Tool[], index: number }> {
