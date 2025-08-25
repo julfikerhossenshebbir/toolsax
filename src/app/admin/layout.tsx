@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import UserAvatar from '@/components/UserAvatar';
 
 const navLinks = [
@@ -122,6 +122,9 @@ export default function AdminLayout({
                             </Button>
                         </SheetTrigger>
                         <SheetContent side="left" className="p-0 w-[300px]">
+                           <SheetHeader>
+                             <SheetTitle className="sr-only">Admin Menu</SheetTitle>
+                           </SheetHeader>
                            <AdminSidebar onLinkClick={() => setIsMobileSheetOpen(false)} />
                         </SheetContent>
                     </Sheet>
