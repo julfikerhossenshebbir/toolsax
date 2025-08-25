@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -18,7 +17,9 @@ export default function AdminToolsPage() {
 
         // Cleanup subscription on component unmount
         return () => {
-            unsubscribe();
+             if (typeof unsubscribe === 'function') {
+                unsubscribe();
+            }
         };
     }, []);
 

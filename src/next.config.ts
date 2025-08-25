@@ -1,5 +1,4 @@
 
-
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -38,17 +37,14 @@ const nextConfig: NextConfig = {
       }
     ],
   },
-  experimental: {
-    esmExternals: 'loose',
-  },
   async headers() {
     return [
       {
         source: '/(.*)',
         headers: [
           {
-            key: 'Content-Security-Policy',
-            value: "frame-ancestors 'self'",
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
           },
         ],
       },
@@ -57,8 +53,8 @@ const nextConfig: NextConfig = {
         source: '/embed/:path*',
         headers: [
           {
-            key: 'Content-Security-Policy',
-            value: 'frame-ancestors *',
+            key: 'X-Frame-Options',
+            value: 'ALLOW-FROM *',
           },
         ],
       },

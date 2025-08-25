@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -7,10 +6,11 @@ import type { Tool } from '@/lib/types';
 import Icon from './Icon';
 import { Card, CardContent } from './ui/card';
 import { incrementClicks, getToolStats, isConfigured } from '@/lib/firebase';
-import { MousePointerClick, Lock, Crown } from 'lucide-react';
+import { Lock, Crown, MousePointerClick } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 import { getColorByIndex } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { Badge } from './ui/badge';
 
 
 interface ToolCardProps {
@@ -60,51 +60,53 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
   };
   
   const getLockIcon = () => {
-    if(tool.isPremium) return <Crown className="w-3 h-3 text-yellow-500" />;
-    if(tool.authRequired) return <Lock className="w-3 h-3 text-muted-foreground" />;
+    if(tool.isPremium) return <Badge variant="outline" className="text-yellow-500 border-yellow-500"><Crown className="w-3 h-3 mr-1" /> VIP</Badge>;
+    if(tool.authRequired) return <Badge variant="secondary"><Lock className="w-3 h-3 mr-1" /> Auth</Badge>;
     return null;
   }
 
   return (
-    <>
       <div
         onClick={handleCardClick}
-        className="h-full cursor-pointer"
+        className="h-full cursor-pointer group"
       >
-        <Card
-          className="h-full flex flex-col group transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1.5 bg-card hover:border-primary"
-        >
-          <CardContent className="p-4 flex items-center gap-4">
-            <div 
-              className="w-10 h-10 flex-shrink-0 rounded-lg flex items-center justify-center"
-              style={{ 
-                backgroundColor: iconColor.bg,
-                color: iconColor.text
-              }}
-            >
-              <Icon name={tool.icon} className="w-5 h-5" />
+        <Card className="h-full flex flex-col transition-all duration-300 ease-in-out group-hover:shadow-xl group-hover:-translate-y-1 bg-card group-hover:border-primary">
+          <CardContent className="p-4 flex-grow flex flex-col">
+            <div className="flex items-start gap-4">
+                <div 
+                  className="w-10 h-10 flex-shrink-0 rounded-lg flex items-center justify-center transition-colors duration-300"
+                  style={{ 
+                    backgroundColor: iconColor.bg,
+                    color: iconColor.text
+                  }}
+                >
+                  <Icon name={tool.icon} className="w-5 h-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-base truncate flex items-center gap-2">
+                    {tool.name}
+                  </h3>
+                  <p className="text-xs text-muted-foreground line-clamp-2">{tool.description}</p>
+                </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-base truncate flex items-center gap-2">
-                {tool.name}
-                {getLockIcon()}
-              </h3>
-              <p className="text-xs text-muted-foreground truncate">{tool.description}</p>
-            </div>
-            <div className="flex-shrink-0 flex items-center text-xs text-muted-foreground gap-1.5">
-              {clicks === null ? (
-                <Skeleton className="h-5 w-10" />
-              ) : (
-                <>
-                  <MousePointerClick className="w-3.5 h-3.5" />
-                  <span>{clicks.toLocaleString()}</span>
-                </>
-              )}
+             <div className="mt-auto pt-2 flex justify-between items-center text-xs text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  {getLockIcon()}
+                </div>
+                <div className="flex-shrink-0 flex items-center gap-1.5">
+                  {clicks === null ? (
+                    <Skeleton className="h-4 w-8" />
+                  ) : (
+                    <>
+                      <MousePointerClick className="w-3 h-3" />
+                      <span>{clicks.toLocaleString()}</span>
+                    </>
+                  )}
+                </div>
             </div>
           </CardContent>
         </Card>
       </div>
-    </>
   );
 };
 

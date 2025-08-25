@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
@@ -19,17 +18,17 @@ const navLinks = [
     { href: '/admin/users', label: 'Users', icon: Users },
     { href: '/admin/notifications', label: 'Notifications', icon: Bell },
     { href: '/admin/vip-requests', label: 'VIP Requests', icon: Crown },
-    { href: '/admin/payment-methods', label: 'Payment Methods', icon: WalletCards },
+    { href: '/admin/payment-methods', label: 'Payments', icon: WalletCards },
 ]
 
-const NavLink = ({ href, label, icon: Icon, isMobile }: { href: string; label: string; icon: React.ElementType, isMobile?: boolean }) => {
+const NavLink = ({ href, label, icon: Icon, isMobile = false }: { href: string; label: string; icon: React.ElementType, isMobile?: boolean }) => {
     const pathname = usePathname();
-    const isActive = pathname === href;
+    const isActive = pathname.startsWith(href);
     return (
         <Link href={href}>
             <Button
                 variant={isActive ? 'secondary' : 'ghost'}
-                className={cn('w-full', isMobile ? 'justify-start' : 'justify-start')}
+                className="w-full justify-start"
             >
                 <Icon className="mr-2 h-4 w-4" />
                 {label}
@@ -38,17 +37,17 @@ const NavLink = ({ href, label, icon: Icon, isMobile }: { href: string; label: s
     );
 };
 
-const AdminSidebar = ({ isMobile = false }: { isMobile?: boolean }) => {
+const AdminSidebar = ({ onLinkClick }: { onLinkClick?: () => void }) => {
     return (
-        <aside className={cn("flex flex-col h-full bg-background", isMobile ? "w-full" : "w-64 border-r")}>
+        <aside className="flex flex-col h-full bg-background w-full">
              <div className="p-4 border-b">
                 <h2 className="text-xl font-bold">Admin Panel</h2>
             </div>
             <nav className="flex-grow p-2">
                 <ul className="space-y-1">
                     {navLinks.map(link => (
-                        <li key={link.href}>
-                            <NavLink {...link} isMobile={isMobile}/>
+                        <li key={link.href} onClick={onLinkClick}>
+                            <NavLink {...link} />
                         </li>
                     ))}
                 </ul>
@@ -66,6 +65,7 @@ export default function AdminLayout({
     const router = useRouter();
     const [isAdmin, setIsAdmin] = useState(false);
     const [isChecking, setIsChecking] = useState(true);
+    const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
 
     useEffect(() => {
         const checkAdminStatus = async () => {
@@ -105,19 +105,19 @@ export default function AdminLayout({
 
     return (
         <div className="flex min-h-screen">
-            <div className="hidden md:block">
+            <div className="hidden md:block w-64 border-r">
                 <AdminSidebar />
             </div>
             <main className="flex-1 p-4 md:p-8 bg-muted/40">
                 <div className="md:hidden flex justify-between items-center mb-4">
-                     <Sheet>
+                     <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
                         <SheetTrigger asChild>
                             <Button variant="outline" size="icon">
                                 <PanelLeft className="h-5 w-5" />
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="left" className="p-0">
-                           <AdminSidebar isMobile={true} />
+                        <SheetContent side="left" className="p-0 w-[300px]">
+                           <AdminSidebar onLinkClick={() => setIsMobileSheetOpen(false)} />
                         </SheetContent>
                     </Sheet>
                     <UserAvatar />

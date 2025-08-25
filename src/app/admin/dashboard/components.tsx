@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -29,10 +28,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 interface StatCardProps {
   title: string;
   value: string;
+  isLoading: boolean;
   children: React.ReactNode;
 }
 
-export function StatCard({ title, value, children }: StatCardProps) {
+export function StatCard({ title, value, isLoading, children }: StatCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -40,7 +40,7 @@ export function StatCard({ title, value, children }: StatCardProps) {
         <div className="h-4 w-4 text-muted-foreground">{children}</div>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+        {isLoading ? <Skeleton className="h-8 w-24" /> : <div className="text-2xl font-bold">{value}</div>}
       </CardContent>
     </Card>
   );
@@ -62,7 +62,10 @@ export const columns: ColumnDef<UserData>[] = [
     header: "Role",
     cell: ({ row }) => {
       const role = row.getValue("role");
-      return <Badge variant={role === 'admin' ? 'default' : 'secondary'}>{role as string || 'user'}</Badge>;
+      let variant: "default" | "secondary" | "outline" = "secondary";
+      if (role === 'admin') variant = 'default';
+      if (role === 'vip') variant = 'outline';
+      return <Badge variant={variant}>{role as string || 'user'}</Badge>;
     },
   },
   {
@@ -328,6 +331,7 @@ export function ToolPopularityChart() {
         <Card>
             <CardHeader>
                 <CardTitle>Tool Popularity</CardTitle>
+                <CardDescription>Top 7 most clicked tools.</CardDescription>
             </CardHeader>
             <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
