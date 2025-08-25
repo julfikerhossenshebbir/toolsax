@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,10 +18,7 @@ const Header = () => {
 
   const userHeader = (
     <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tighter text-foreground">
-        Hello <span 
-            className="bg-gradient-to-r from-primary to-[hsl(var(--primary-darker))] bg-clip-text text-transparent"
-            style={{ '--primary-darker': 'hsl(from var(--primary) h s calc(l - 10%))' } as React.CSSProperties}
-        >{user?.displayName || 'User'}</span> — Find What You Need
+        Hello <span className="text-primary">{user?.displayName || 'User'}</span> — Find What You Need
     </h1>
   );
 
