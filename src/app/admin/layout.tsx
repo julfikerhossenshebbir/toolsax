@@ -116,7 +116,7 @@ export default function AdminLayout({
                 <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
                     <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
                         <SheetTrigger asChild>
-                             <Button size="icon" variant="outline" className="sm:hidden">
+                             <Button size="icon" variant="ghost" className="sm:hidden">
                                 <PanelLeft className="h-5 w-5" />
                                 <span className="sr-only">Toggle Menu</span>
                             </Button>
