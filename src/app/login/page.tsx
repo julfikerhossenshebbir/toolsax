@@ -66,20 +66,26 @@ export default function LoginPage() {
         if(provider === 'github') authPromise = signInWithGithub();
         if(provider === 'facebook') authPromise = signInWithFacebook();
         
+        if (!authPromise) {
+            setIsSubmitting(false);
+            return;
+        }
+
         const result = await authPromise;
-        const user = result.user;
+        const firebaseUser = result.user;
 
-        // Check if user exists in the database
-        const userData = await getUserData(user.uid);
+        // Check if user exists in the database to decide where to redirect
+        const userData = await getUserData(firebaseUser.uid);
 
-        if (!userData || !userData.username) {
-             // New user or incomplete profile, redirect to signup to complete profile
-            toast({ title: 'Welcome! Please complete your profile.' });
-            router.push('/signup');
-        } else {
-             // Existing user, redirect to profile
-            toast({ title: 'Login Successful', description: `Welcome back, ${user.displayName}!` });
+        if (userData?.username) {
+            // Existing user with a username, redirect to profile
+            toast({ title: 'Login Successful', description: `Welcome back, ${firebaseUser.displayName || 'User'}!` });
             router.push('/profile');
+        } else {
+            // New user or user without a username, redirect to signup flow
+            toast({ title: 'Welcome!', description: 'Please complete your profile to continue.' });
+            // The signup page will handle the rest of the flow
+            router.push('/signup');
         }
         
       } catch (error: any) {

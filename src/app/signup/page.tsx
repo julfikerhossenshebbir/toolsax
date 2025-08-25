@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -31,6 +31,8 @@ import ReactCrop, { type Crop, type PixelCrop, centerCrop, makeAspectCrop } from
 import 'react-image-crop/dist/ReactCrop.css';
 import Link from 'next/link';
 import type { User } from 'firebase/auth';
+import { useAuth } from '@/contexts/AuthContext';
+
 
 // --- Helper Functions & Schemas ---
 
@@ -123,6 +125,23 @@ export default function SignupPage() {
     const [formData, setFormData] = useState<any>({});
     const router = useRouter();
     const { toast } = useToast();
+    const { user, userData } = useAuth(); // Get user from AuthContext
+
+    useEffect(() => {
+        // If a logged-in user lands here (e.g., from social login)
+        // and doesn't have a username, start them at step 2.
+        if (user && !userData?.username) {
+            const initialData = {
+                email: user.email,
+                name: user.displayName,
+                photoURL: user.photoURL,
+                uid: user.uid,
+                isSocial: true,
+            };
+            setFormData(initialData);
+            setStep(2);
+        }
+    }, [user, userData]);
 
     const handleNext = (data: any) => {
         setFormData((prev: any) => ({ ...prev, ...data }));
@@ -150,20 +169,12 @@ export default function SignupPage() {
         if(provider === 'github') authPromise = signInWithGithub();
         if(provider === 'facebook') authPromise = signInWithFacebook();
         
-        const result = await authPromise;
-        const user = result.user;
+        if (!authPromise) return;
 
-        // Pre-fill form data from social provider
-        const initialData = {
-          email: user.email,
-          name: user.displayName,
-          photoURL: user.photoURL,
-          uid: user.uid, // Pass UID for linking
-          isSocial: true, // Flag for social sign up
-        };
-        
-        setFormData(initialData);
-        setStep(2); // Skip email/password step
+        await authPromise;
+        // After social sign-in, the useEffect will catch the user state change
+        // and redirect to the correct step (step 2).
+        router.push('/signup'); // Re-route to trigger useEffect
         
       } catch (error: any) {
          toast({ variant: 'destructive', title: 'Sign Up Failed', description: error.message });
@@ -172,6 +183,15 @@ export default function SignupPage() {
 
     const totalSteps = 5;
     const progress = (step / totalSteps) * 100;
+    
+    // Don't render anything if the user is already fully signed up
+    if (user && userData?.username) {
+        router.replace('/profile');
+        return <div className="flex h-screen w-full items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>;
+    }
+
 
     return (
         <div className="container mx-auto flex min-h-full flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
