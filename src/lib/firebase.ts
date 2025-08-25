@@ -181,12 +181,12 @@ export const checkAndCreateUser = async (data: {
     name: string, 
     username: string, 
     email: string, 
-    password?: string, // Password is optional for social sign-up
-    uid?: string, // UID is present for social sign-up
-    isSocial?: boolean, // Flag for social sign up
+    password?: string,
+    uid?: string, 
+    isSocial?: boolean,
     photoURL?: string,
     phone?: string,
-    dob?: Date, 
+    dob?: string, 
     country?: string 
 }) => {
     if (!auth || !db) throw new Error("Firebase not configured.");
@@ -197,41 +197,54 @@ export const checkAndCreateUser = async (data: {
     }
 
     let user: User;
+    let isNewUser = false;
+
     if (data.isSocial && data.uid) {
-        // This is a social sign-up, user already exists in auth
+        // Social sign-up flow for a user who needs to complete their profile
         const existingUser = auth.currentUser;
         if (!existingUser || existingUser.uid !== data.uid) {
             throw new Error("Mismatched user session. Please try signing in again.");
         }
         user = existingUser;
     } else if (data.password) {
-        // This is an email sign-up
+        // Email sign-up flow
         const userCredential = await signUpWithEmail(data.email, data.password);
         user = userCredential.user;
+        isNewUser = true;
     } else {
         throw new Error("Invalid sign-up data. Password or social provider info is missing.");
     }
 
+    // Update Firebase Auth profile
     await updateProfile(user, { displayName: data.name, photoURL: data.photoURL });
 
     const userRef = ref(db, `users/${user.uid}`);
     
+    // Construct the data to be saved to the database.
     const userData: any = {
         name: data.name,
         username: data.username.toLowerCase(),
         email: data.email,
         photoURL: data.photoURL || '',
-        createdAt: serverTimestamp(),
         lastLogin: serverTimestamp(),
-        role: 'user', // Default role
+        role: 'user',
     };
 
-    if (data.phone) userData.contactNumber = data.phone;
-    if (data.dob) userData.dob = format(data.dob, 'yyyy-MM-dd');
+    // Add optional fields if they exist
+    if (data.phone) userData.phone = data.phone;
+    if (data.dob) userData.dob = data.dob;
     if (data.country) userData.country = data.country;
-    
-    await set(userRef, userData);
 
+    // For new email users, set createdAt
+    if (isNewUser) {
+        userData.createdAt = serverTimestamp();
+        await set(userRef, userData);
+    } else {
+        // For social users completing their profile, update existing record
+        await update(userRef, userData);
+    }
+
+    // Save the username for easy lookup
     const usernameRef = ref(db, `usernames/${data.username.toLowerCase()}`);
     await set(usernameRef, user.uid);
 };
