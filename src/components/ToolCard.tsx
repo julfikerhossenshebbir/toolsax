@@ -11,8 +11,6 @@ import { Lock, Crown, MousePointerClick } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 import { getColorByIndex } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
-import { Badge } from './ui/badge';
-
 
 interface ToolCardProps {
   tool: Tool;
@@ -33,7 +31,9 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
       });
       
       return () => {
-        unsubscribeStats();
+        if (typeof unsubscribeStats === 'function') {
+          unsubscribeStats();
+        }
       };
     } else {
       setClicks(0);
@@ -67,7 +67,7 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
       >
         <Card className="h-full flex flex-col transition-all duration-300 ease-in-out group-hover:shadow-xl group-hover:-translate-y-1 bg-card group-hover:border-primary">
           <CardContent className="p-4 flex-grow flex flex-col">
-            <div className="flex items-start gap-4">
+            <div className="flex items-center gap-4 flex-grow">
                 <div 
                   className="w-10 h-10 flex-shrink-0 rounded-lg flex items-center justify-center transition-colors duration-300"
                   style={{ 
@@ -80,14 +80,12 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-base truncate flex items-center gap-2">
                     {tool.name}
-                    {tool.isPremium && <Crown className="w-3.5 h-3.5 text-yellow-500" />}
-                    {tool.authRequired && !tool.isPremium && <Lock className="w-3.5 h-3.5 text-muted-foreground" />}
+                    {tool.isPremium && <Crown className="w-3.5 h-3.5 text-yellow-500 flex-shrink-0" />}
+                    {tool.authRequired && !tool.isPremium && <Lock className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />}
                   </h3>
                   <p className="text-xs text-muted-foreground line-clamp-2">{tool.description}</p>
                 </div>
-            </div>
-             <div className="flex-grow flex items-center justify-center text-xs text-muted-foreground">
-                <div className="flex-shrink-0 flex items-center gap-1.5">
+                <div className="flex-shrink-0 flex items-center gap-1.5 text-xs text-muted-foreground">
                   {clicks === null ? (
                     <Skeleton className="h-4 w-8" />
                   ) : (
