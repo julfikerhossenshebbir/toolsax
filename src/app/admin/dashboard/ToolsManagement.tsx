@@ -133,11 +133,11 @@ export default function ToolsManagement({ initialTools, isLoading }: ToolsManage
                         {sortedTools.length > 0 ? sortedTools.map((tool) => (
                             <div
                                 key={tool.id}
-                                className='flex items-center justify-between p-3 border-b bg-card'
+                                className='flex items-center justify-between p-3 border-b bg-card last:border-b-0'
                             >
-                                <div className="flex items-center gap-3 flex-grow">
-                                    <Icon name={tool.icon} className="h-5 w-5 text-muted-foreground" />
-                                    <span className="font-medium truncate max-w-xs">{tool.name}</span>
+                                <div className="flex items-center gap-3 flex-grow min-w-0">
+                                    <Icon name={tool.icon} className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                                    <span className="font-medium truncate">{tool.name}</span>
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <Switch
@@ -160,59 +160,65 @@ export default function ToolsManagement({ initialTools, isLoading }: ToolsManage
             </CardContent>
 
              <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-                <SheetContent className="sm:max-w-lg w-full">
+                <SheetContent className="sm:max-w-lg w-full flex flex-col">
                     <SheetHeader>
                         <SheetTitle>{currentTool.id && tools.some(t => t.id === currentTool.id) ? 'Edit Tool' : 'Add New Tool'}</SheetTitle>
                     </SheetHeader>
-                    <div className="grid gap-4 py-4 max-h-[90vh] overflow-y-auto pr-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="tool-name">Tool Name</Label>
-                            <Input id="tool-name" value={currentTool.name} onChange={(e) => setCurrentTool({ ...currentTool, name: e.target.value })} />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="tool-id">Tool ID / Link</Label>
-                            <Input id="tool-id" value={currentTool.id} disabled={tools.some(t => t.id === currentTool.id)} onChange={(e) => setCurrentTool({ ...currentTool, id: e.target.value.toLowerCase().replace(/\s+/g, '-'), link: `/${e.target.value.toLowerCase().replace(/\s+/g, '-')}` })} placeholder="e.g., case-converter" />
-                             <p className="text-xs text-muted-foreground">This cannot be changed after creation. Must be unique and URL-friendly.</p>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="tool-description">Description</Label>
-                            <Textarea id="tool-description" value={currentTool.description} onChange={(e) => setCurrentTool({ ...currentTool, description: e.target.value })} />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="tool-category">Category</Label>
-                             <Select value={currentTool.category} onValueChange={(value) => setCurrentTool({ ...currentTool, category: value as Tool['category'] })}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a category" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {toolCategories.map(cat => (
-                                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="tool-icon">Icon Name</Label>
-                            <div className="flex items-center gap-2">
-                                <Input id="tool-icon" value={currentTool.icon} onChange={(e) => setCurrentTool({ ...currentTool, icon: e.target.value })} placeholder="e.g., CaseUpper"/>
-                                <Icon name={currentTool.icon} className="h-6 w-6 text-primary" />
+                    <div className="flex-grow overflow-y-auto pr-4 -mr-4 py-4">
+                        <div className="grid gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="tool-name">Tool Name</Label>
+                                <Input id="tool-name" value={currentTool.name} onChange={(e) => setCurrentTool({ ...currentTool, name: e.target.value })} />
                             </div>
-                            <p className="text-xs text-muted-foreground">Use any name from <a href="https://lucide.dev/icons/" target="_blank" rel="noopener noreferrer" className="underline">lucide.dev</a>.</p>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="auth-required" checked={currentTool.authRequired} onCheckedChange={(checked) => setCurrentTool({ ...currentTool, authRequired: !!checked })} />
-                            <Label htmlFor="auth-required">Requires Authentication</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="is-premium" checked={currentTool.isPremium} onCheckedChange={(checked) => setCurrentTool({ ...currentTool, isPremium: !!checked })} />
-                            <Label htmlFor="is-premium">VIP Only (Premium)</Label>
-                        </div>
-                         <div className="flex items-center space-x-2">
-                            <Switch id="is-enabled" checked={currentTool.isEnabled} onCheckedChange={(checked) => setCurrentTool({ ...currentTool, isEnabled: checked })} />
-                            <Label htmlFor="is-enabled">Tool is Enabled</Label>
+                            <div className="space-y-2">
+                                <Label htmlFor="tool-id">Tool ID / Link</Label>
+                                <Input id="tool-id" value={currentTool.id} disabled={tools.some(t => t.id === currentTool.id)} onChange={(e) => setCurrentTool({ ...currentTool, id: e.target.value.toLowerCase().replace(/\s+/g, '-'), link: `/${e.target.value.toLowerCase().replace(/\s+/g, '-')}` })} placeholder="e.g., case-converter" />
+                                <p className="text-xs text-muted-foreground">This cannot be changed after creation. Must be unique and URL-friendly.</p>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="tool-description">Description</Label>
+                                <Textarea id="tool-description" value={currentTool.description} onChange={(e) => setCurrentTool({ ...currentTool, description: e.target.value })} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="tool-category">Category</Label>
+                                <Select value={currentTool.category} onValueChange={(value) => setCurrentTool({ ...currentTool, category: value as Tool['category'] })}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {toolCategories.map(cat => (
+                                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="tool-icon">Icon Name</Label>
+                                <div className="flex items-center gap-2">
+                                    <Input id="tool-icon" value={currentTool.icon} onChange={(e) => setCurrentTool({ ...currentTool, icon: e.target.value })} placeholder="e.g., CaseUpper"/>
+                                    <Icon name={currentTool.icon} className="h-6 w-6 text-primary" />
+                                </div>
+                                <p className="text-xs text-muted-foreground">Use any name from <a href="https://lucide.dev/icons/" target="_blank" rel="noopener noreferrer" className="underline">lucide.dev</a>.</p>
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="tool-order">Order</Label>
+                                <Input id="tool-order" type="number" value={currentTool.order} onChange={(e) => setCurrentTool({ ...currentTool, order: parseInt(e.target.value, 10) || 0 })} />
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Checkbox id="auth-required" checked={currentTool.authRequired} onCheckedChange={(checked) => setCurrentTool({ ...currentTool, authRequired: !!checked })} />
+                                <Label htmlFor="auth-required">Requires Authentication</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Checkbox id="is-premium" checked={currentTool.isPremium} onCheckedChange={(checked) => setCurrentTool({ ...currentTool, isPremium: !!checked })} />
+                                <Label htmlFor="is-premium">VIP Only (Premium)</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Switch id="is-enabled" checked={currentTool.isEnabled} onCheckedChange={(checked) => setCurrentTool({ ...currentTool, isEnabled: checked })} />
+                                <Label htmlFor="is-enabled">Tool is Enabled</Label>
+                            </div>
                         </div>
                     </div>
-                     <div className="absolute bottom-0 left-0 right-0 p-4 bg-background border-t">
+                     <div className="flex-shrink-0 pt-4 border-t">
                         <div className="flex justify-end gap-2">
                              <SheetClose asChild><Button variant="outline">Cancel</Button></SheetClose>
                              <Button onClick={handleSave} disabled={isSaving}>

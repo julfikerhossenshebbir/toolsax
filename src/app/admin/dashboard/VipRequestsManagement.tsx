@@ -79,7 +79,7 @@ export default function VipRequestsManagement({ initialRequests, isLoading }: Vi
                         {pendingRequests.length > 0 ? pendingRequests.map((req) => (
                             <div
                                 key={req.uid}
-                                className='flex items-center justify-between p-3 border-b bg-card gap-4'
+                                className='flex items-center justify-between p-3 border-b bg-card gap-4 last:border-b-0'
                             >
                                 <div className="flex items-center gap-3 flex-grow min-w-0">
                                     <Avatar>
@@ -91,9 +91,9 @@ export default function VipRequestsManagement({ initialRequests, isLoading }: Vi
                                       <p className="text-xs text-muted-foreground truncate">{req.email}</p>
                                     </div>
                                 </div>
-                                <div className="flex-shrink-0">
+                                <div className="flex-shrink-0 text-right">
                                   <p className="font-mono text-sm bg-muted px-2 py-1 rounded-md">{req.transactionId}</p>
-                                  <p className="text-xs text-muted-foreground text-center mt-1">{format(new Date(req.timestamp), 'PPp')}</p>
+                                  <p className="text-xs text-muted-foreground mt-1">{format(new Date(req.timestamp), 'PPp')}</p>
                                 </div>
                                 <div className="flex items-center gap-2">
                                      {isProcessing[req.uid] ? (

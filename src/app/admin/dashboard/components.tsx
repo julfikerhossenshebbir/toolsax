@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -62,9 +63,9 @@ export const columns: ColumnDef<UserData>[] = [
     header: "Role",
     cell: ({ row }) => {
       const role = row.getValue("role");
-      let variant: "default" | "secondary" | "outline" = "secondary";
-      if (role === 'admin') variant = 'default';
-      if (role === 'vip') variant = 'outline';
+      let variant: "default" | "secondary" | "outline" | "destructive" = "secondary";
+      if (role === 'admin') variant = 'destructive';
+      if (role === 'vip') variant = 'default';
       return <Badge variant={variant}>{role as string || 'user'}</Badge>;
     },
   },

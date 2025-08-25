@@ -1,4 +1,5 @@
 
+
 // This is a placeholder for Firebase configuration.
 // To enable Firebase features, you need to set up a Firebase project and
 // add your configuration here.
@@ -389,9 +390,9 @@ export const getUserFavorites = (userId: string, callback: (favorites: string[])
     });
 };
 
-export const getStats = (subscribe: boolean = true, callback?: (stats: { views: number; tool_clicks: number; users: number }) => void) => {
+export const getStats = (subscribe: boolean = true, callback?: (stats: { views: number; tool_clicks: number; users: number, vip_users: number }) => void) => {
   if (!db) {
-    if(callback) callback({ views: 0, tool_clicks: 0, users: 0 });
+    if(callback) callback({ views: 0, tool_clicks: 0, users: 0, vip_users: 0 });
     return () => {};
   }
   
@@ -399,12 +400,12 @@ export const getStats = (subscribe: boolean = true, callback?: (stats: { views: 
   
   if (subscribe && callback) {
       const unsubscribe = onValue(statsRef, (snapshot) => {
-        const data = snapshot.val() || { views: 0, tool_clicks: 0, users: 0 };
+        const data = snapshot.val() || { views: 0, tool_clicks: 0, users: 0, vip_users: 0 };
         callback(data);
       });
       return unsubscribe;
   } else {
-      return get(statsRef).then(snapshot => snapshot.val() || { views: 0, tool_clicks: 0, users: 0 });
+      return get(statsRef).then(snapshot => snapshot.val() || { views: 0, tool_clicks: 0, users: 0, vip_users: 0 });
   }
 };
 
@@ -837,7 +838,9 @@ export const approveVipRequest = async (uid: string) => {
     const updates: { [key: string]: any } = {};
     updates[`/users/${uid}/role`] = 'vip';
     updates[`/vip_requests/${uid}/status`] = 'approved';
-    return update(ref(db), updates);
+    const result = await update(ref(db), updates);
+    await incrementCounter('stats/vip_users');
+    return result;
 };
 
 export const rejectVipRequest = async (uid: string) => {
