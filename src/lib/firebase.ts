@@ -520,10 +520,10 @@ export const getTopToolsByClicks = async (limit: number = 7): Promise<{ name: st
     if (!db) return [];
 
     const toolsRef = ref(db, 'tools');
-    const toolsStatsRef = ref(db, 'tool_stats');
+    const statsSnapshot = await get(ref(db, 'tool_stats'));
 
     try {
-        const [toolsSnapshot, statsSnapshot] = await Promise.all([get(toolsRef), get(statsSnapshot)]);
+        const toolsSnapshot = await get(toolsRef);
         
         if (statsSnapshot.exists()) {
             const allTools = toolsSnapshot.val() || {};
@@ -860,52 +860,3 @@ export async function uploadFile(file: File, path: string): Promise<string> {
     const downloadURL = await getDownloadURL(fileRef);
     return downloadURL;
 }
-
-// --- Bug Reporting ---
-export const submitBugReport = async (reportData: Pick<BugReport, 'tool' | 'description'> & { user: Pick<UserData, 'uid' | 'name' | 'email'> }) => {
-    if (!db) throw new Error("Firebase not configured.");
-    const reportRef = push(ref(db, 'bug_reports'));
-
-    const dataToSave = {
-        tool: reportData.tool,
-        description: reportData.description,
-        reportedBy: {
-            uid: reportData.user.uid,
-            name: reportData.user.name,
-            email: reportData.user.email,
-        },
-        status: 'new',
-        timestamp: serverTimestamp(),
-    };
-    await set(reportRef, dataToSave);
-};
-
-
-export const getBugReports = (callback: (reports: BugReport[]) => void) => {
-    if (!db) {
-        callback([]);
-        return () => {};
-    }
-    const reportsRef = query(ref(db, 'bug_reports'), orderByChild('timestamp'));
-
-    return onValue(reportsRef, (snapshot) => {
-        if (snapshot.exists()) {
-            const reportsData = snapshot.val();
-            const reportsList: BugReport[] = Object.keys(reportsData)
-                .map(key => ({
-                    ...reportsData[key],
-                    id: key,
-                }))
-                .reverse(); // Newest first
-            callback(reportsList);
-        } else {
-            callback([]);
-        }
-    });
-};
-
-export const deleteBugReport = async (reportId: string) => {
-    if (!db) throw new Error("Firebase not configured.");
-    const reportRef = ref(db, `bug_reports/${reportId}`);
-    return remove(reportRef);
-};

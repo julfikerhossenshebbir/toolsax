@@ -1,8 +1,8 @@
 
 'use server';
 
-import { updateGlobalNotifications, saveTool, deleteTool, updateToolsOrder, submitVipRequest, approveVipRequest, rejectVipRequest, savePaymentMethod, deletePaymentMethod, submitBugReport, deleteBugReport } from '@/lib/firebase';
-import type { Notification, Tool, VipRequest, PaymentMethod, BugReport } from '../types';
+import { updateGlobalNotifications, saveTool, deleteTool, updateToolsOrder, submitVipRequest, approveVipRequest, rejectVipRequest, savePaymentMethod, deletePaymentMethod } from '@/lib/firebase';
+import type { Notification, Tool, VipRequest, PaymentMethod } from '../types';
 
 export async function sendNotification(notifications: Notification[]): Promise<{ success: boolean; error?: string }> {
   try {
@@ -93,24 +93,4 @@ export async function deletePaymentMethodAction(methodId: string): Promise<{ suc
     console.error('Error deleting payment method:', error);
     return { success: false, error: 'Failed to delete payment method.' };
   }
-}
-
-export async function submitBugReportAction(reportData: Pick<BugReport, 'tool' | 'description'> & { user: Pick<UserData, 'uid' | 'name' | 'email'> }): Promise<{ success: boolean; error?: string }> {
-    try {
-        await submitBugReport(reportData);
-        return { success: true };
-    } catch (error: any) {
-        console.error('Error submitting bug report:', error);
-        return { success: false, error: 'Failed to submit bug report.' };
-    }
-}
-
-export async function deleteBugReportAction(reportId: string): Promise<{ success: boolean; error?: string }> {
-    try {
-        await deleteBugReport(reportId);
-        return { success: true };
-    } catch (error: any) {
-        console.error('Error deleting bug report:', error);
-        return { success: false, error: 'Failed to delete bug report.' };
-    }
 }

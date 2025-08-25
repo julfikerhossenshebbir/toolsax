@@ -22,35 +22,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CountrySelect } from '@/components/country-select';
 import type { UserData } from '../admin/types';
-
-
-async function uploadToImgBB(imageFile: File | Blob): Promise<string | null> {
-    const apiKey = "81b8c0708e71005a41112b81b0c0375b";
-    if (!apiKey) {
-        console.error("imgbb API key is not set.");
-        return null;
-    }
-
-    const formData = new FormData();
-    formData.append("image", imageFile);
-
-    try {
-        const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-            method: "POST",
-            body: formData,
-        });
-        const result = await response.json();
-        if (result.success) {
-            return result.data.url;
-        } else {
-            console.error("imgbb upload failed:", result.error.message);
-            return null;
-        }
-    } catch (error) {
-        console.error("Error uploading to imgbb:", error);
-        return null;
-    }
-}
+import { uploadImageAction } from './actions';
 
 
 function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: number) {
@@ -188,14 +160,18 @@ export default function ProfilePage() {
             throw new Error("Could not crop image.");
         }
 
-        const uploadedUrl = await uploadToImgBB(croppedImageBlob);
-        if (uploadedUrl) {
-            await updateUserProfile(user, { photoURL: uploadedUrl });
-            await updateUserData(user.uid, { photoURL: uploadedUrl });
-            setProfileData(prev => ({ ...prev, photoURL: uploadedUrl }));
+        const formData = new FormData();
+        formData.append('image', croppedImageBlob);
+        
+        const result = await uploadImageAction(formData);
+
+        if (result.success && result.url) {
+            await updateUserProfile(user, { photoURL: result.url });
+            await updateUserData(user.uid, { photoURL: result.url });
+            setProfileData(prev => ({ ...prev, photoURL: result.url }));
             toast({ title: "Profile picture updated!" });
         } else {
-            throw new Error("Image upload failed.");
+            throw new Error(result.error || "Image upload failed.");
         }
     } catch (err: any) {
         toast({ variant: 'destructive', title: "Update failed", description: err.message });

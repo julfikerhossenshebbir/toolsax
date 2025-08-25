@@ -49,23 +49,27 @@ Leave the **Root Directory** blank unless your project is in a subfolder.
 
 ### Step 4: Set Environment Variables
 
-This is a critical step to connect your application to Firebase.
+This is a critical step to connect your application to external services like Firebase, Gemini, and Telegram.
 
 1.  In the same setup screen, scroll down to **Environment variables (advanced)**.
-2.  Add the following variables with the exact names and your corresponding Firebase project values. You can find these in your `src/lib/firebase.ts` file or your Firebase project console.
+2.  Click **+ Add variable** for each of the following variables and enter their corresponding values.
 
-    | Variable Name              | Value                                  |
-    | -------------------------- | -------------------------------------- |
-    | `NEXT_PUBLIC_FIREBASE_API_KEY` | Your Firebase API Key                  |
-    | `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Your Firebase Auth Domain              |
-    | `NEXT_PUBLIC_FIREBASE_DATABASE_URL` | Your Firebase Database URL             |
-    | `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Your Firebase Project ID               |
-    | `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`| Your Firebase Storage Bucket           |
-    | `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`| Your Firebase Messaging Sender ID    |
-    | `NEXT_PUBLIC_FIREBASE_APP_ID` | Your Firebase App ID                   |
-    | `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID` | Your Firebase Measurement ID         |
+    | Variable Name                          | Description                                         | Example Value                          |
+    | -------------------------------------- | --------------------------------------------------- | -------------------------------------- |
+    | `NEXT_PUBLIC_FIREBASE_API_KEY`         | Your Firebase API Key                               | `AIzaSy...`                            |
+    | `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`     | Your Firebase Auth Domain                           | `your-project.firebaseapp.com`         |
+    | `NEXT_PUBLIC_FIREBASE_DATABASE_URL`    | Your Firebase Database URL                          | `https://your-project.firebaseio.com`   |
+    | `NEXT_PUBLIC_FIREBASE_PROJECT_ID`      | Your Firebase Project ID                            | `your-project-id`                      |
+    | `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`  | Your Firebase Storage Bucket                        | `your-project.appspot.com`             |
+    | `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Your Firebase Messaging Sender ID                 | `1234567890`                           |
+    | `NEXT_PUBLIC_FIREBASE_APP_ID`          | Your Firebase App ID                                | `1:12345...`                           |
+    | `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID`  | Your Firebase Measurement ID                        | `G-ABC...`                             |
+    | `GEMINI_API_KEY`                       | Google AI Gemini API Key for AI features            | `AIza...`                              |
+    | `TELEGRAM_BOT_TOKEN`                   | Your Telegram Bot Token for bug reports             | `12345:ABC...`                         |
+    | `TELEGRAM_CHAT_ID`                     | Your Telegram Chat ID for receiving reports         | `-100...`                              |
+    | `IMGBB_API_KEY`                        | Your ImgBB API key for image uploads                | `a1b2c3...`                            |
 
-3.  Click the **+ Add variable** button for each one. Make sure there are no typos.
+    **Note:** For local development, create a `.env` file in the root of your project and add these variables there.
 
 ### Step 5: Save and Deploy
 
