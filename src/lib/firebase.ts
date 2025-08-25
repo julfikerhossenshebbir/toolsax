@@ -7,7 +7,7 @@ import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { getDatabase, ref, runTransaction, onValue, get, set, type Database, serverTimestamp, push, child, update, remove, query, orderByChild, equalTo, limitToLast, orderByValue } from "firebase/database";
 import { 
     getAuth, 
-    onAuthStateChanged,
+    onAuthStateChanged as onFirebaseAuthStateChanged,
     GoogleAuthProvider,
     GithubAuthProvider,
     FacebookAuthProvider,
@@ -53,20 +53,26 @@ let auth: Auth | undefined;
 const isFirebaseEnabled = true;
 
 // Check if all necessary config values are present
-const isFirebaseConfigured =
+export const isConfigured =
   firebaseConfig.apiKey &&
   firebaseConfig.databaseURL &&
   firebaseConfig.projectId;
 
-if (isFirebaseConfigured && isFirebaseEnabled && getApps().length === 0) {
-  try {
-    app = initializeApp(firebaseConfig);
-    db = getDatabase(app);
-    auth = getAuth(app);
-  } catch (error) {
-    console.error("Firebase initialization error:", error);
-  }
+export function initializeAppOnce() {
+    if (isConfigured && isFirebaseEnabled && getApps().length === 0) {
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getDatabase(app);
+            auth = getAuth(app);
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+        }
+    }
 }
+
+// Call initialization on load
+initializeAppOnce();
+
 
 // --- Auth Functions ---
 const googleProvider = auth ? new GoogleAuthProvider() : undefined;
@@ -106,7 +112,7 @@ export const logout = () => {
 };
 
 export const getAuthInstance = () => auth;
-export { onAuthStateChanged, getApps, initializeApp };
+export const onAuthStateChanged = onFirebaseAuthStateChanged;
 
 export const updateUserProfile = (user: User, profile: { displayName?: string, photoURL?: string }) => {
     return updateProfile(user, profile);
@@ -830,10 +836,3 @@ export async function uploadFile(file: File, path: string): Promise<string> {
     const downloadURL = await getDownloadURL(fileRef);
     return downloadURL;
 }
-
-
-export const isConfigured = isFirebaseConfigured && isFirebaseEnabled;
-
-    
-
-    

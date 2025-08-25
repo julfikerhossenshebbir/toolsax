@@ -1,30 +1,19 @@
 
 import { MetadataRoute } from 'next'
 import type { Tool } from '@/lib/types';
-import { getTools, initializeApp, getApps, firebaseConfig } from '@/lib/firebase';
-import { get, ref, getDatabase } from 'firebase/database';
+import { initializeAppOnce, getTools } from '@/lib/firebase';
 
 
 async function getAllToolsServerSide(): Promise<Tool[]> {
-    try {
-        if (!getApps().length) {
-            initializeApp(firebaseConfig);
-        }
-        const db = getDatabase();
-        const toolsRef = ref(db, 'tools');
-        const snapshot = await get(toolsRef);
-        if (snapshot.exists()) {
-            const toolsData = snapshot.val();
-            return Object.keys(toolsData).map(key => ({
-                id: key,
-                ...toolsData[key]
-            }));
-        }
-        return [];
-    } catch (error) {
-        console.error("Error fetching tools server-side for sitemap:", error);
-        return [];
-    }
+    initializeAppOnce();
+    return new Promise((resolve) => {
+        const unsubscribe = getTools((loadedTools) => {
+            resolve(loadedTools);
+            if (typeof unsubscribe === 'function') {
+                unsubscribe();
+            }
+        });
+    });
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
