@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -58,12 +59,6 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
     
     router.push(`/${tool.id}`);
   };
-  
-  const getLockIcon = () => {
-    if(tool.isPremium) return <Badge variant="outline" className="text-yellow-500 border-yellow-500"><Crown className="w-3 h-3 mr-1" /> VIP</Badge>;
-    if(tool.authRequired) return <Badge variant="secondary"><Lock className="w-3 h-3 mr-1" /> Auth</Badge>;
-    return null;
-  }
 
   return (
       <div
@@ -85,14 +80,13 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-base truncate flex items-center gap-2">
                     {tool.name}
+                    {tool.isPremium && <Crown className="w-3.5 h-3.5 text-yellow-500" />}
+                    {tool.authRequired && !tool.isPremium && <Lock className="w-3.5 h-3.5 text-muted-foreground" />}
                   </h3>
                   <p className="text-xs text-muted-foreground line-clamp-2">{tool.description}</p>
                 </div>
             </div>
-             <div className="mt-auto pt-2 flex justify-between items-center text-xs text-muted-foreground">
-                <div className="flex items-center gap-1.5">
-                  {getLockIcon()}
-                </div>
+             <div className="flex-grow flex items-center justify-center text-xs text-muted-foreground">
                 <div className="flex-shrink-0 flex items-center gap-1.5">
                   {clicks === null ? (
                     <Skeleton className="h-4 w-8" />
