@@ -87,7 +87,7 @@ const ToolCard = ({ tool, index }: ToolCardProps) => {
                 </div>
                 <div className="flex-shrink-0 flex items-center gap-1.5 text-xs text-muted-foreground">
                   {clicks === null ? (
-                    <Skeleton className="h-4 w-8" />
+                    <Skeleton className="h-4 w-10" />
                   ) : (
                     <>
                       <MousePointerClick className="w-3 h-3" />
