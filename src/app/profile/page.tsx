@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { updateUserProfile, getUserData, updateUserData } from '@/lib/firebase';
-import { Loader2, Upload, User, Scissors, Eye as EyeIcon, Twitter, Github, Globe } from 'lucide-react';
+import { Loader2, Upload, User, Scissors, Eye as EyeIcon, Twitter, Github, Globe, Calendar as CalendarIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ResponsiveModal, ResponsiveModalContent, ResponsiveModalHeader, ResponsiveModalTitle, ResponsiveModalFooter, ResponsiveModalTrigger } from '@/components/ResponsiveModal';
 import ReactCrop, { type Crop, type PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
@@ -19,6 +19,11 @@ import 'react-image-crop/dist/ReactCrop.css';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Textarea } from '@/components/ui/textarea';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format, parseISO } from 'date-fns';
+import { CountrySelect } from '@/components/country-select';
+import type { UserData } from '../admin/types';
 
 
 async function uploadToImgBB(imageFile: File | Blob): Promise<string | null> {
@@ -94,19 +99,14 @@ function getCroppedImg(image: HTMLImageElement, crop: PixelCrop): Promise<Blob |
 
 
 export default function ProfilePage() {
-  const { user, loading } = useAuth();
+  const { user, loading, userData: initialUserData } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   
-  const [displayName, setDisplayName] = useState('');
-  const [username, setUsername] = useState('');
-  const [photoURL, setPhotoURL] = useState('');
-  const [bio, setBio] = useState('');
-  const [twitter, setTwitter] = useState('');
-  const [github, setGithub] = useState('');
-  const [website, setWebsite] = useState('');
+  const [profileData, setProfileData] = useState<Partial<UserData>>({});
   const [isSaving, setIsSaving] = useState(false);
-  
+  const [pageLoading, setPageLoading] = useState(true);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   
@@ -115,7 +115,6 @@ export default function ProfilePage() {
   const [imgSrc, setImgSrc] = useState('');
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
   
-  
   useEffect(() => {
     if (loading) return;
     if (!user) {
@@ -123,24 +122,32 @@ export default function ProfilePage() {
       return;
     }
     
-    // Always fetch fresh data when user object is available or changes
-    const fetchUserData = async () => {
-        setDisplayName(user.displayName || '');
-        setPhotoURL(user.photoURL || ''); // Set initial basic info
+    // Set initial data from AuthContext
+    setProfileData({
+        name: user.displayName || '',
+        email: user.email || '',
+        photoURL: user.photoURL || '',
+        ...initialUserData
+    });
+    setPageLoading(false);
 
-        const data = await getUserData(user.uid);
-        if (data) {
-            setUsername(data.username || '');
-            setPhotoURL(data.photoURL || user.photoURL || '');
-            setBio(data.bio || '');
-            setTwitter(data.social?.twitter || '');
-            setGithub(data.social?.github || '');
-            setWebsite(data.social?.website || '');
-        }
-    };
+  }, [user, loading, router, initialUserData]);
 
-    fetchUserData();
-  }, [user, loading, router]);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { id, value } = e.target;
+      setProfileData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSocialChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { id, value } = e.target;
+      setProfileData(prev => ({
+          ...prev,
+          social: {
+              ...prev.social,
+              [id]: value
+          }
+      }));
+  };
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
@@ -177,7 +184,7 @@ export default function ProfilePage() {
         if (uploadedUrl) {
             await updateUserProfile(user, { photoURL: uploadedUrl });
             await updateUserData(user.uid, { photoURL: uploadedUrl });
-            setPhotoURL(uploadedUrl);
+            setProfileData(prev => ({ ...prev, photoURL: uploadedUrl }));
             toast({ title: "Profile picture updated!" });
         } else {
             throw new Error("Image upload failed.");
@@ -199,16 +206,14 @@ export default function ProfilePage() {
 
     setIsSaving(true);
     try {
-      await updateUserProfile(user, { displayName });
-      const socialLinks = {
-          twitter: twitter,
-          github: github,
-          website: website,
-      };
+      await updateUserProfile(user, { displayName: profileData.name });
       await updateUserData(user.uid, { 
-          name: displayName, 
-          bio,
-          social: socialLinks,
+          name: profileData.name, 
+          bio: profileData.bio,
+          phone: profileData.phone,
+          dob: profileData.dob ? format(new Date(profileData.dob), 'yyyy-MM-dd') : null,
+          country: profileData.country,
+          social: profileData.social,
       });
       toast({ title: 'Profile saved successfully!' });
     } catch (error: any) {
@@ -222,7 +227,7 @@ export default function ProfilePage() {
     }
   };
   
-  if (loading || !user) {
+  if (pageLoading || loading || !user) {
     return (
       <div className="container mx-auto px-4 py-12 flex-grow flex items-center justify-center">
         <Card className="max-w-2xl w-full mx-auto">
@@ -258,12 +263,12 @@ export default function ProfilePage() {
                     <CardTitle>Your Profile</CardTitle>
                     <CardDescription>Update your personal information and profile picture.</CardDescription>
                 </div>
-                {username && (
+                {profileData.username && (
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button asChild variant="outline" size="icon">
-                            <Link href={`/u/${username}`}>
+                            <Link href={`/u/${profileData.username}`}>
                                 <EyeIcon className="h-4 w-4"/>
                                 <span className="sr-only">View Public Profile</span>
                             </Link>
@@ -282,9 +287,9 @@ export default function ProfilePage() {
             <div className="flex flex-col items-center space-y-4">
               <div className="relative">
                 <Avatar className="h-24 w-24">
-                  <AvatarImage src={photoURL} alt={displayName} />
+                  <AvatarImage src={profileData.photoURL} alt={profileData.name} />
                   <AvatarFallback className="text-3xl">
-                    {displayName ? displayName.charAt(0).toUpperCase() : <User />}
+                    {profileData.name ? profileData.name.charAt(0).toUpperCase() : <User />}
                   </AvatarFallback>
                 </Avatar>
                 <Button 
@@ -301,64 +306,77 @@ export default function ProfilePage() {
                 <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden"/>
               </div>
             </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Display Name</Label>
+                  <Input id="name" value={profileData.name || ''} onChange={handleInputChange} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="username">Username</Label>
+                  <Input id="username" value={profileData.username || ''} disabled className="cursor-not-allowed bg-muted" />
+                </div>
+            </div>
 
             <div className="space-y-2">
-              <Label htmlFor="displayName">Display Name</Label>
-              <Input
-                id="displayName"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="Your full name"
-                required
-              />
+              <Label htmlFor="email">Email Address</Label>
+              <Input id="email" type="email" value={profileData.email || ''} disabled className="cursor-not-allowed bg-muted" />
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                value={username}
-                disabled
-                className="cursor-not-allowed bg-muted"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input id="phone" value={profileData.phone || ''} onChange={handleInputChange} placeholder="+1 234 567 890" />
+                </div>
+                 <div className="space-y-2">
+                    <Label>Date of Birth</Label>
+                     <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="outline" className="w-full justify-start font-normal">
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {profileData.dob ? format(new Date(profileData.dob), 'PPP') : 'Select date'}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                            <Calendar
+                                mode="single"
+                                selected={profileData.dob ? new Date(profileData.dob) : undefined}
+                                onSelect={(date) => setProfileData(p => ({ ...p, dob: date?.toISOString() }))}
+                                disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                                initialFocus
+                            />
+                        </PopoverContent>
+                    </Popover>
+                 </div>
             </div>
 
              <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                value={user.email || ''}
-                disabled
-                className="cursor-not-allowed bg-muted"
-              />
+                <Label htmlFor="country">Country</Label>
+                <CountrySelect 
+                    defaultValue={profileData.country}
+                    onValueChange={(value) => setProfileData(p => ({ ...p, country: value }))} 
+                />
             </div>
-
+            
             <div className="space-y-2">
               <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                placeholder="Tell us a little about yourself"
-                maxLength={160}
-              />
-               <p className="text-xs text-muted-foreground text-right">{bio.length}/160</p>
+              <Textarea id="bio" value={profileData.bio || ''} onChange={handleInputChange} placeholder="Tell us about yourself" maxLength={160}/>
+              <p className="text-xs text-muted-foreground text-right">{(profileData.bio || '').length}/160</p>
             </div>
 
             <div className="space-y-4">
                 <h3 className="text-base font-medium">Social Links</h3>
                 <div className="relative">
                     <Github className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input value={github} onChange={(e) => setGithub(e.target.value)} placeholder="github.com/username" className="pl-10" />
+                    <Input id="github" value={profileData.social?.github || ''} onChange={handleSocialChange} placeholder="github.com/username" className="pl-10" />
                 </div>
                 <div className="relative">
                     <Twitter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input value={twitter} onChange={(e) => setTwitter(e.target.value)} placeholder="twitter.com/username" className="pl-10" />
+                    <Input id="twitter" value={profileData.social?.twitter || ''} onChange={handleSocialChange} placeholder="twitter.com/username" className="pl-10" />
                 </div>
                 <div className="relative">
                     <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="your-website.com" className="pl-10" />
+                    <Input id="website" value={profileData.social?.website || ''} onChange={handleSocialChange} placeholder="your-website.com" className="pl-10" />
                 </div>
             </div>
 

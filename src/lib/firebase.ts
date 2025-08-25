@@ -21,7 +21,7 @@ import {
 } from "firebase/auth";
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
-import type { Comment, Reply, Tool, VipRequest, PaymentMethod } from "@/app/admin/types";
+import type { Comment, Reply, Tool, VipRequest, PaymentMethod, UserData } from "@/app/admin/types";
 import { ALL_TOOLS as STATIC_TOOLS_FROM_FILE } from "./tools";
 import { subMonths, format, startOfMonth } from 'date-fns';
 
@@ -261,7 +261,7 @@ export const saveUserToDatabase = async (user: User) => {
     }
 };
 
-export const getUserData = async (uid: string) => {
+export const getUserData = async (uid: string): Promise<UserData | null> => {
     if (!db) return null;
     const userRef = ref(db, `users/${uid}`);
     const snapshot = await get(userRef);
@@ -291,11 +291,20 @@ export const subscribeToAllUsers = (callback: (users: any[]) => void) => {
 };
 
 
-export const updateUserData = (uid: string, data: object) => {
+export const updateUserData = (uid: string, data: Partial<UserData>) => {
     if (!db) return;
     const userRef = ref(db, `users/${uid}`);
-    return update(userRef, data);
+    // Create a new object with only the fields to be updated, excluding undefined ones.
+    const updates: { [key: string]: any } = {};
+    Object.keys(data).forEach(key => {
+        const dataKey = key as keyof UserData;
+        if (data[dataKey] !== undefined) {
+            updates[key] = data[dataKey];
+        }
+    });
+    return update(userRef, updates);
 };
+
 
 export const saveSearchQuery = (userId: string, query: string) => {
     if(!db) return;

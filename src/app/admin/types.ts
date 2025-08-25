@@ -1,12 +1,24 @@
 
 
+
 export interface UserData {
     uid: string;
     name: string;
+    username: string;
     email: string;
     role?: 'admin' | 'user' | 'vip';
     lastLogin: string;
     createdAt: string;
+    photoURL?: string;
+    bio?: string;
+    phone?: string;
+    country?: string;
+    dob?: string;
+    social?: {
+        twitter?: string;
+        github?: string;
+        website?: string;
+    };
 }
 
 export interface Notification {
