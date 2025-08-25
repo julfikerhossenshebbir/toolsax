@@ -57,20 +57,24 @@ export default function ToolActions({ tool }: ToolActionsProps) {
   };
 
   const handleNativeShare = async () => {
+    const shareData = {
+      title: tool.name,
+      text: tool.description,
+      url: window.location.href,
+    };
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: tool.name,
-          text: tool.description,
-          url: window.location.href,
-        });
+        await navigator.share(shareData);
       } catch (error) {
         console.error('Error sharing:', error);
-        toast({
-          variant: 'destructive',
-          title: 'Could not share',
-          description: 'An error occurred while trying to share.',
-        });
+        // Fallback to copying link if sharing is cancelled or fails
+        if ((error as DOMException).name !== 'AbortError') {
+          navigator.clipboard.writeText(window.location.href);
+          toast({
+            title: 'Link Copied!',
+            description: 'Sharing was unsuccessful, so the link has been copied to your clipboard.',
+          });
+        }
       }
     } else {
         navigator.clipboard.writeText(window.location.href);
