@@ -100,7 +100,6 @@ export default function ProfilePage() {
   
   const [displayName, setDisplayName] = useState('');
   const [username, setUsername] = useState('');
-  const [contactNumber, setContactNumber] = useState('');
   const [photoURL, setPhotoURL] = useState('');
   const [bio, setBio] = useState('');
   const [twitter, setTwitter] = useState('');
@@ -132,7 +131,6 @@ export default function ProfilePage() {
         const data = await getUserData(user.uid);
         if (data) {
             setUsername(data.username || '');
-            setContactNumber(data.contactNumber || '');
             setPhotoURL(data.photoURL || user.photoURL || '');
             setBio(data.bio || '');
             setTwitter(data.social?.twitter || '');
@@ -209,7 +207,6 @@ export default function ProfilePage() {
       };
       await updateUserData(user.uid, { 
           name: displayName, 
-          contactNumber,
           bio,
           social: socialLinks,
       });
