@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { signInWithEmail, signInWithGoogle, signInWithGithub, signInWithFacebook } from '@/lib/firebase';
+import { signInWithEmail, signInWithGoogle, signInWithGithub, signInWithFacebook, getUserData } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -66,10 +66,21 @@ export default function LoginPage() {
         if(provider === 'github') authPromise = signInWithGithub();
         if(provider === 'facebook') authPromise = signInWithFacebook();
         
-        await authPromise;
-        
-        toast({ title: 'Login Successful', description: `Welcome!` });
-        router.push('/profile');
+        const result = await authPromise;
+        const user = result.user;
+
+        // Check if user exists in the database
+        const userData = await getUserData(user.uid);
+
+        if (!userData || !userData.username) {
+             // New user or incomplete profile, redirect to signup to complete profile
+            toast({ title: 'Welcome! Please complete your profile.' });
+            router.push('/signup');
+        } else {
+             // Existing user, redirect to profile
+            toast({ title: 'Login Successful', description: `Welcome back, ${user.displayName}!` });
+            router.push('/profile');
+        }
         
       } catch (error: any) {
          toast({ variant: 'destructive', title: 'Login Failed', description: error.message });
