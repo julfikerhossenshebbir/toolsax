@@ -11,7 +11,7 @@ const Header = () => {
             <SvgOne />
         </div>
         <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tighter text-foreground">
-            From Search to Solution — Instantly.
+           From Search to Solution — Instantly.
         </h1>
         <p className="mt-4 max-w-2xl mx-auto text-base sm:text-lg leading-7 text-muted-foreground">
             An expanding collection of essential utilities to streamline your workflow. Fast, reliable, and easy to use.
