@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { updateUserProfile, getUserData, updateUserData } from '@/lib/firebase';
-import { Loader2, Upload, User, Scissors, Eye as EyeIcon, Twitter, Github, Globe, Calendar as CalendarIcon } from 'lucide-react';
+import { Loader2, Upload, User, Scissors, Eye as EyeIcon, Twitter, Github, Globe } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ResponsiveModal, ResponsiveModalContent, ResponsiveModalHeader, ResponsiveModalTitle, ResponsiveModalFooter, ResponsiveModalTrigger } from '@/components/ResponsiveModal';
 import ReactCrop, { type Crop, type PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
@@ -19,9 +19,7 @@ import 'react-image-crop/dist/ReactCrop.css';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Textarea } from '@/components/ui/textarea';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { format, parseISO } from 'date-fns';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CountrySelect } from '@/components/country-select';
 import type { UserData } from '../admin/types';
 
@@ -114,6 +112,9 @@ export default function ProfilePage() {
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [imgSrc, setImgSrc] = useState('');
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+
+  const [dob, setDob] = useState<{ day?: string; month?: string; year?: string }>({});
+
   
   useEffect(() => {
     if (loading) return;
@@ -123,12 +124,19 @@ export default function ProfilePage() {
     }
     
     // Set initial data from AuthContext
-    setProfileData({
+    const fullProfileData = {
         name: user.displayName || '',
         email: user.email || '',
         photoURL: user.photoURL || '',
         ...initialUserData
-    });
+    };
+    setProfileData(fullProfileData);
+    
+    if (fullProfileData.dob) {
+        const [year, month, day] = fullProfileData.dob.split('-');
+        setDob({ year, month, day });
+    }
+
     setPageLoading(false);
 
   }, [user, loading, router, initialUserData]);
@@ -206,12 +214,15 @@ export default function ProfilePage() {
 
     setIsSaving(true);
     try {
+      const { day, month, year } = dob;
+      const dobString = year && month && day ? `${year}-${month}-${day}` : null;
+      
       await updateUserProfile(user, { displayName: profileData.name });
       await updateUserData(user.uid, { 
           name: profileData.name, 
           bio: profileData.bio,
           phone: profileData.phone,
-          dob: profileData.dob ? format(new Date(profileData.dob), 'yyyy-MM-dd') : null,
+          dob: dobString,
           country: profileData.country,
           social: profileData.social,
       });
@@ -252,6 +263,11 @@ export default function ProfilePage() {
       </div>
     );
   }
+
+  const days = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0'));
+  const months = Array.from({ length: 12 }, (_, i) => ({ value: String(i + 1).padStart(2, '0'), label: new Date(0, i).toLocaleString('default', { month: 'long' }) }));
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 100 }, (_, i) => String(currentYear - i));
 
   return (
     <>
@@ -328,25 +344,22 @@ export default function ProfilePage() {
                     <Label htmlFor="phone">Phone Number</Label>
                     <Input id="phone" value={profileData.phone || ''} onChange={handleInputChange} placeholder="+1 234 567 890" />
                 </div>
-                 <div className="space-y-2">
+                <div className="space-y-2">
                     <Label>Date of Birth</Label>
-                     <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" className="w-full justify-start font-normal">
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {profileData.dob ? format(new Date(profileData.dob), 'PPP') : 'Select date'}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                            <Calendar
-                                mode="single"
-                                selected={profileData.dob ? new Date(profileData.dob) : undefined}
-                                onSelect={(date) => setProfileData(p => ({ ...p, dob: date?.toISOString() }))}
-                                disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                                initialFocus
-                            />
-                        </PopoverContent>
-                    </Popover>
+                    <div className="grid grid-cols-3 gap-2">
+                        <Select value={dob.day} onValueChange={(value) => setDob(prev => ({...prev, day: value}))}>
+                            <SelectTrigger><SelectValue placeholder="Day" /></SelectTrigger>
+                            <SelectContent>{days.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+                        </Select>
+                        <Select value={dob.month} onValueChange={(value) => setDob(prev => ({...prev, month: value}))}>
+                            <SelectTrigger><SelectValue placeholder="Month" /></SelectTrigger>
+                            <SelectContent>{months.map(m => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
+                        </Select>
+                        <Select value={dob.year} onValueChange={(value) => setDob(prev => ({...prev, year: value}))}>
+                            <SelectTrigger><SelectValue placeholder="Year" /></SelectTrigger>
+                            <SelectContent>{years.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
+                        </Select>
+                    </div>
                  </div>
             </div>
 
@@ -415,3 +428,4 @@ export default function ProfilePage() {
     </>
   );
 }
+
