@@ -19,6 +19,7 @@ export interface UserData {
         github?: string;
         website?: string;
     };
+    favorites?: string[];
 }
 
 export interface Notification {
@@ -57,4 +58,17 @@ export interface PaymentMethod {
   paymentLink?: string;
   isLink: boolean;
   order: number;
+}
+
+export interface BugReport {
+    id: string;
+    tool: string;
+    description: string;
+    status: 'new' | 'in-progress' | 'resolved';
+    timestamp: any;
+    reportedBy: {
+        uid: string;
+        name: string;
+        email: string;
+    };
 }

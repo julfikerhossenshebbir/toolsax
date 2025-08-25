@@ -1,22 +1,34 @@
 
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import type { Metadata } from 'next';
 import { Tool } from '@/lib/types';
 import ReportBugForm from './ReportBugForm';
 import { ALL_TOOLS } from '@/lib/tools';
+import { useEffect, useState } from 'react';
+import { getTools } from '@/lib/firebase';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
-export const metadata: Metadata = {
-    title: 'Report a Bug | Toolsax',
-    description: 'Report an issue with one of our tools.',
-};
+export default function ReportBugPage() {
+    const [tools, setTools] = useState<Tool[]>([]);
+    const [loading, setLoading] = useState(true);
+    const { user } = useAuth();
+    const router = useRouter();
 
-async function getTools(): Promise<Tool[]> {
-  return ALL_TOOLS;
-}
+    useEffect(() => {
+        if (!user) {
+           router.push('/login?redirect=/report-a-bug');
+        } else {
+            const unsubscribe = getTools((loadedTools) => {
+                setTools(loadedTools);
+                setLoading(false);
+            });
+            return () => unsubscribe();
+        }
+    }, [user, router]);
 
-
-export default async function ReportBugPage() {
-    const tools = await getTools();
 
     return (
         <div className="container mx-auto px-4 py-12">
@@ -28,7 +40,11 @@ export default async function ReportBugPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <ReportBugForm tools={tools} />
+                    {loading ? (
+                       <p>Loading tools...</p>
+                    ) : (
+                       <ReportBugForm tools={tools} />
+                    )}
                 </CardContent>
             </Card>
         </div>

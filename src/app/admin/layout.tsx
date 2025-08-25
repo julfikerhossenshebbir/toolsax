@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getUserData } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Loader2, LayoutDashboard, Wrench, Users, Bell, PanelLeft, Crown, WalletCards } from 'lucide-react';
+import { Loader2, LayoutDashboard, Wrench, Users, Bell, PanelLeft, Crown, WalletCards, Bug } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';

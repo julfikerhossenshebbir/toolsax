@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,11 +9,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Tool } from '@/lib/types';
-import { sendTelegramMessage } from './actions';
+import { Tool, UserData } from '@/lib/types';
+import { submitBugReportAction } from '@/app/admin/dashboard/actions';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+
 
 const formSchema = z.object({
   tool: z.string().min(1, { message: 'Please select a tool.' }),
@@ -24,6 +27,7 @@ export default function ReportBugForm({ tools }: { tools: Tool[] }) {
   const defaultTool = searchParams.get('tool') || '';
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -34,8 +38,20 @@ export default function ReportBugForm({ tools }: { tools: Tool[] }) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Authentication Error', description: 'You must be logged in to submit a bug report.'});
+        return;
+    }
+
     setIsSubmitting(true);
-    const result = await sendTelegramMessage(values);
+    const result = await submitBugReportAction({
+        ...values,
+        user: {
+            uid: user.uid,
+            name: user.displayName || 'Anonymous',
+            email: user.email || 'No email'
+        }
+    });
 
     if (result.success) {
       toast({

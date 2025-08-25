@@ -12,6 +12,12 @@ export interface Tool {
   isPremium?: boolean; // New field for VIP tools
 }
 
+export interface UserData {
+    uid: string;
+    name: string;
+    email: string;
+}
+
 export interface ToolStat {
   views: number;
   users: number;
