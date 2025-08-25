@@ -74,7 +74,7 @@ export default function MobileBottomNav() {
             <Tooltip>
                 <TooltipTrigger asChild>
                     <a
-                      href="https://www.buymeacoffee.com/anaroul"
+                      href="https://www.buymeacoffee.com/helloanaroul"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex flex-col items-center justify-center text-muted-foreground w-full h-full p-0 rounded-none hover:bg-transparent"

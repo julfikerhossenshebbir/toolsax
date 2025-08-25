@@ -79,7 +79,7 @@ const AppSidebar = forwardRef<HTMLDivElement, AppSidebarProps>(({ open, onOpenCh
               <Separator className="my-4" />
           </div>
           <div className="p-4 border-t">
-              <a href="https://www.buymeacoffee.com/anaroul" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.buymeacoffee.com/helloanaroul" target="_blank" rel="noopener noreferrer">
                    <Button className="w-full bg-yellow-400 text-black hover:bg-yellow-500">
                      <Coffee className="h-4 w-4 mr-2" />
                      Buy me a coffee
