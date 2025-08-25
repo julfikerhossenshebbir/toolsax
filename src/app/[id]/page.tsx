@@ -2,22 +2,11 @@
 export const runtime = 'edge';
 import { notFound } from 'next/navigation';
 import type { Tool } from '@/lib/types';
-import { getTools } from '@/lib/firebase';
+import { getTools, initializeApp, getApps, firebaseConfig } from '@/lib/firebase';
 import ToolPageClient from '@/components/ToolPageClient';
 import type { Metadata, ResolvingMetadata } from 'next';
 import { get, ref, getDatabase } from 'firebase/database';
-import { initializeApp, getApps } from 'firebase/app';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCGyVqbVZhp9rqEQYZ_vrcUYCXXk-6p37w",
-  authDomain: "toolsaxdb.firebaseapp.com",
-  databaseURL: "https://toolsaxdb-default-rtdb.firebaseio.com",
-  projectId: "toolsaxdb",
-  storageBucket: "toolsaxdb.appspot.com",
-  messagingSenderId: "521841849034",
-  appId: "1:521841849034:web:5be88041b20b3d6435fa33",
-  measurementId: "G-J0SGP2CFQH"
-};
 
 async function getAllToolsServerSide(): Promise<Tool[]> {
     try {
@@ -58,7 +47,7 @@ async function getTool(id: string): Promise<{ tool: Tool | undefined, allTools: 
 
 // Generate metadata for the page
 export async function generateMetadata(
-  { params }: Props,
+  { params }: { params: { id: string } },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
     const { tool } = await getTool(params.id);

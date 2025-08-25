@@ -1,39 +1,30 @@
 
 import { MetadataRoute } from 'next'
 import type { Tool } from '@/lib/types';
-import { getTools } from '@/lib/firebase';
+import { getTools, initializeApp, getApps, firebaseConfig } from '@/lib/firebase';
+import { get, ref, getDatabase } from 'firebase/database';
+
 
 async function getAllToolsServerSide(): Promise<Tool[]> {
-    return new Promise((resolve) => {
-        // Since getTools uses onValue, we need to adapt it for a one-time fetch.
-        // A more robust solution would be to use the Firebase Admin SDK for server-side fetches.
-        let resolved = false;
-        
-        const callback = (loadedTools: Tool[]) => {
-            if (!resolved) {
-                resolve(loadedTools);
-                resolved = true;
-                // Unsubscribe after the first fetch
-                if (unsubscribe) {
-                    unsubscribe();
-                }
-            }
-        };
-
-        const unsubscribe = getTools(callback);
-        
-        // Timeout to prevent hanging during build if Firebase is slow
-        setTimeout(() => {
-            if (!resolved) {
-                console.warn("Sitemap tool fetch timed out.");
-                resolve([]);
-                resolved = true;
-                 if (unsubscribe) {
-                    unsubscribe();
-                }
-            }
-        }, 5000); // Increased timeout for reliability
-    });
+    try {
+        if (!getApps().length) {
+            initializeApp(firebaseConfig);
+        }
+        const db = getDatabase();
+        const toolsRef = ref(db, 'tools');
+        const snapshot = await get(toolsRef);
+        if (snapshot.exists()) {
+            const toolsData = snapshot.val();
+            return Object.keys(toolsData).map(key => ({
+                id: key,
+                ...toolsData[key]
+            }));
+        }
+        return [];
+    } catch (error) {
+        console.error("Error fetching tools server-side for sitemap:", error);
+        return [];
+    }
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

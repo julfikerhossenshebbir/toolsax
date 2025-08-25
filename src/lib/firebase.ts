@@ -35,7 +35,7 @@ export interface Notification {
     icon: string;
 }
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyCGyVqbVZhp9rqEQYZ_vrcUYCXXk-6p37w",
   authDomain: "toolsaxdb.firebaseapp.com",
   databaseURL: "https://toolsaxdb-default-rtdb.firebaseio.com",
@@ -106,7 +106,7 @@ export const logout = () => {
 };
 
 export const getAuthInstance = () => auth;
-export { onAuthStateChanged };
+export { onAuthStateChanged, getApps, initializeApp };
 
 export const updateUserProfile = (user: User, profile: { displayName?: string, photoURL?: string }) => {
     return updateProfile(user, profile);
