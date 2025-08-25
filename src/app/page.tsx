@@ -1,3 +1,4 @@
+
 'use client';
 
 import HomePageClient from '@/components/HomePageClient';
@@ -11,17 +12,20 @@ import SectionDivider from '@/components/SectionDivider';
 const ToolGridSkeleton = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 9 }).map((_, i) => (
-            <div key={i} className="flex flex-col gap-2 p-4 border rounded-lg h-24">
-                <div className="flex items-center gap-4">
-                    <Skeleton className="w-10 h-10 rounded-lg" />
-                    <div className="flex-1 space-y-2">
-                        <Skeleton className="h-4 w-3/4" />
-                        <Skeleton className="h-3 w-full" />
+            <div key={i} className="h-full">
+                <div className="h-full flex flex-col p-4 border rounded-lg">
+                    <div className="flex items-center gap-4 flex-grow">
+                        <Skeleton className="w-10 h-10 flex-shrink-0 rounded-lg" />
+                        <div className="flex-1 min-w-0 space-y-2">
+                            <Skeleton className="h-5 w-3/4" />
+                            <Skeleton className="h-3 w-full" />
+                            <Skeleton className="h-3 w-1/2" />
+                        </div>
+                        <div className="flex-shrink-0 self-start">
+                             <Skeleton className="h-4 w-10" />
+                        </div>
                     </div>
                 </div>
-                 <div className="flex justify-end">
-                     <Skeleton className="h-5 w-10" />
-                 </div>
             </div>
         ))}
     </div>
