@@ -20,7 +20,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
 import { Progress } from '@/components/ui/progress';
 import { CountrySelect } from '@/components/country-select';
 import { Loader2, Eye, EyeOff, Check, X, ArrowLeft, PartyPopper, Calendar as CalendarIcon, Upload, Scissors, User as UserIcon, Github, Facebook, RefreshCw } from 'lucide-react';
@@ -32,6 +31,7 @@ import 'react-image-crop/dist/ReactCrop.css';
 import Link from 'next/link';
 import type { User } from 'firebase/auth';
 import { useAuth } from '@/contexts/AuthContext';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 
 // --- Helper Functions & Schemas ---
@@ -57,7 +57,7 @@ const stepThreeSchema = z.object({
 const stepFourSchema = z.object({
   phone: z.string().optional(),
   country: z.string().optional(),
-  dob: z.date().optional(),
+  dob: z.string().optional(), // We'll construct the date string from day, month, year
 });
 
 function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: number) {
@@ -454,55 +454,62 @@ function StepThree({ onNext, defaultValues }: { onNext: (data: any) => void; def
 
 function StepFour({ onFinalSubmit }: { onFinalSubmit: (data: any) => void; }) {
   const [isLoading, setIsLoading] = useState(false);
-  const form = useForm<z.infer<typeof stepFourSchema>>({
-    resolver: zodResolver(stepFourSchema),
-    defaultValues: { phone: '', country: '', dob: undefined },
-  });
+  const [dob, setDob] = useState({ day: '', month: '', year: '' });
+  const [country, setCountry] = useState('');
+  const [phone, setPhone] = useState('');
   
-  const handleSubmit = async (data: z.infer<typeof stepFourSchema>) => {
-      setIsLoading(true);
-      await onFinalSubmit(data);
-      setIsLoading(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const { day, month, year } = dob;
+    const dobString = year && month && day ? `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}` : undefined;
+    await onFinalSubmit({ phone, country, dob: dobString });
+    setIsLoading(false);
   }
   
   const handleSkip = async () => {
-      setIsLoading(true);
-      await onFinalSubmit({});
-      setIsLoading(false);
+    setIsLoading(true);
+    await onFinalSubmit({});
+    setIsLoading(false);
   }
 
+  const days = Array.from({ length: 31 }, (_, i) => String(i + 1));
+  const months = Array.from({ length: 12 }, (_, i) => ({ value: String(i + 1), label: new Date(0, i).toLocaleString('default', { month: 'long' }) }));
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 100 }, (_, i) => String(currentYear - i));
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 pt-4">
-        <FormField control={form.control} name="phone" render={({ field }) => (
-          <FormItem><Label>Phone Number (Optional)</Label><FormControl><Input type="tel" placeholder="+1234567890" {...field} /></FormControl><FormMessage /></FormItem>
-        )} />
-        <FormField control={form.control} name="dob" render={({ field }) => (
-          <FormItem className="flex flex-col"><Label>Date of birth (Optional)</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <FormControl>
-                  <Button variant="outline" className={!field.value && "text-muted-foreground"}>
-                    {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                  </Button>
-                </FormControl>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date > new Date() || date < new Date("1900-01-01")} initialFocus />
-              </PopoverContent>
-            </Popover>
-          <FormMessage /></FormItem>
-        )} />
-        <FormField control={form.control} name="country" render={({ field }) => (
-          <FormItem><Label>Country (Optional)</Label><CountrySelect onValueChange={field.onChange} defaultValue={field.value} /><FormMessage /></FormItem>
-        )} />
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Finish Sign Up'}
-        </Button>
-        <Button type="button" variant="link" className="w-full" onClick={handleSkip} disabled={isLoading}>Skip for now</Button>
-      </form>
-    </Form>
+    <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+      <div className="space-y-2">
+        <Label>Phone Number (Optional)</Label>
+        <Input type="tel" placeholder="+1234567890" value={phone} onChange={(e) => setPhone(e.target.value)} />
+      </div>
+      <div className="space-y-2">
+        <Label>Date of birth (Optional)</Label>
+        <div className="grid grid-cols-3 gap-2">
+            <Select value={dob.day} onValueChange={(value) => setDob(prev => ({...prev, day: value}))}>
+                <SelectTrigger><SelectValue placeholder="Day" /></SelectTrigger>
+                <SelectContent>{days.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+            </Select>
+            <Select value={dob.month} onValueChange={(value) => setDob(prev => ({...prev, month: value}))}>
+                <SelectTrigger><SelectValue placeholder="Month" /></SelectTrigger>
+                <SelectContent>{months.map(m => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
+            </Select>
+            <Select value={dob.year} onValueChange={(value) => setDob(prev => ({...prev, year: value}))}>
+                <SelectTrigger><SelectValue placeholder="Year" /></SelectTrigger>
+                <SelectContent>{years.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
+            </Select>
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label>Country (Optional)</Label>
+        <CountrySelect onValueChange={setCountry} defaultValue={country} />
+      </div>
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Finish Sign Up'}
+      </Button>
+      <Button type="button" variant="link" className="w-full" onClick={handleSkip} disabled={isLoading}>Skip for now</Button>
+    </form>
   );
 }
 
@@ -520,3 +527,5 @@ function SuccessStep({ onFinish }: { onFinish: () => void }) {
         </div>
     )
 }
+
+    
