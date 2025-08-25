@@ -67,6 +67,7 @@ export default function AdminLayout({
     const [isAdmin, setIsAdmin] = useState(false);
     const [isChecking, setIsChecking] = useState(true);
     const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
+    const pathname = usePathname();
 
     useEffect(() => {
         const checkAdminStatus = async () => {
@@ -93,7 +94,7 @@ export default function AdminLayout({
 
     if (isChecking || loading) {
         return (
-            <div className="flex h-screen w-full items-center justify-center">
+            <div className="flex h-screen w-full items-center justify-center bg-background">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
         )
@@ -103,28 +104,38 @@ export default function AdminLayout({
         // This is a fallback, though the redirect should have already happened.
         return null;
     }
+    
+    const currentPage = navLinks.find(link => pathname.startsWith(link.href));
 
     return (
-        <div className="flex min-h-screen">
-            <div className="hidden md:block w-64 border-r">
+        <div className="flex min-h-screen bg-muted/40">
+            <div className="hidden md:block w-64 border-r bg-background">
                 <AdminSidebar />
             </div>
-            <main className="flex-1 p-4 md:p-8 bg-muted/40">
-                <div className="md:hidden flex justify-between items-center mb-4">
-                     <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
+            <div className="flex flex-col flex-1">
+                <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+                    <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
                         <SheetTrigger asChild>
-                            <Button variant="outline" size="icon">
+                             <Button size="icon" variant="outline" className="sm:hidden">
                                 <PanelLeft className="h-5 w-5" />
+                                <span className="sr-only">Toggle Menu</span>
                             </Button>
                         </SheetTrigger>
                         <SheetContent side="left" className="p-0 w-[300px]">
                            <AdminSidebar onLinkClick={() => setIsMobileSheetOpen(false)} />
                         </SheetContent>
                     </Sheet>
-                    <UserAvatar />
-                </div>
-                {children}
-            </main>
+                    <div className="flex-1">
+                       <h1 className="font-semibold text-lg">{currentPage?.label || 'Dashboard'}</h1>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <UserAvatar />
+                    </div>
+                </header>
+                <main className="flex-1 p-4 sm:px-6 sm:py-0 md:gap-8">
+                    {children}
+                </main>
+            </div>
         </div>
     );
 }
