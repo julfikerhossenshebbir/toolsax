@@ -15,7 +15,7 @@ export default function AdminDashboardPage() {
 
     useEffect(() => {
         getStats(false).then(s => {
-          setStats(s)
+          setStats(s || { users: 0, tool_clicks: 0, views: 0, vip_users: 0 });
           setLoading(false);
         });
     }, []);
@@ -26,7 +26,7 @@ export default function AdminDashboardPage() {
                 <StatCard title="Total Users" value={stats.users.toLocaleString()} isLoading={loading}>
                     <Users />
                 </StatCard>
-                 <StatCard title="VIP Users" value={stats.vip_users.toLocaleString()} isLoading={loading}>
+                 <StatCard title="VIP Users" value={(stats.vip_users || 0).toLocaleString()} isLoading={loading}>
                     <Crown />
                 </StatCard>
                 <StatCard title="Total Tool Clicks" value={stats.tool_clicks.toLocaleString()} isLoading={loading}>
