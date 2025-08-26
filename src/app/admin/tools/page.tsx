@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getTools } from '@/lib/firebase';
+import { listenToTools } from '@/lib/firebase';
 import type { Tool } from '../types';
 import ToolsManagement from '../dashboard/ToolsManagement';
 
@@ -10,7 +10,7 @@ export default function AdminToolsPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const unsubscribe = getTools((loadedTools) => {
+        const unsubscribe = listenToTools((loadedTools) => {
             setTools(loadedTools);
             setLoading(false);
         });

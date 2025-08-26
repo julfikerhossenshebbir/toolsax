@@ -1,32 +1,20 @@
 
-export const runtime = 'edge';
 import { notFound } from 'next/navigation';
 import type { Tool } from '@/lib/types';
 import { initializeAppOnce, getTools } from '@/lib/firebase';
 import ToolPageClient from '@/components/ToolPageClient';
 import type { Metadata, ResolvingMetadata } from 'next';
 
-
 async function getAllToolsServerSide(): Promise<Tool[]> {
     initializeAppOnce();
-    return new Promise((resolve) => {
-        const unsubscribe = getTools((loadedTools) => {
-            resolve(loadedTools);
-            if (typeof unsubscribe === 'function') {
-                unsubscribe();
-            }
-        });
-    });
+    return getTools();
 }
 
-
-// Fetch tool data on the server
 async function getTool(id: string): Promise<{ tool: Tool | undefined, allTools: Tool[], index: number }> {
   const allTools = await getAllToolsServerSide();
   const toolIndex = allTools.findIndex((tool) => tool.id === id);
   const tool = toolIndex !== -1 ? allTools[toolIndex] : undefined;
 
-  // If the tool is not found or disabled, treat as not found
   if (!tool || !tool.isEnabled) {
     return { tool: undefined, allTools: [], index: -1 };
   }
@@ -34,7 +22,6 @@ async function getTool(id: string): Promise<{ tool: Tool | undefined, allTools: 
   return { tool, allTools, index: toolIndex };
 }
 
-// Generate metadata for the page
 export async function generateMetadata(
   { params }: { params: { id: string } },
   parent: ResolvingMetadata
@@ -58,7 +45,6 @@ export async function generateMetadata(
     }
 }
 
-// This is now a Server Component
 export default async function ToolPage({ params }: { params: { id: string }}) {
   const { id } = params;
   const { tool, allTools, index } = await getTool(id);

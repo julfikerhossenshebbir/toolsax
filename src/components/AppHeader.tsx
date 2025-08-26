@@ -8,7 +8,7 @@ import { SettingsPanel } from './SettingsPanel';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { useEffect, useState, useMemo } from 'react';
-import { getNotificationMessage, Notification, isConfigured as isFirebaseConfigured, getTools } from '@/lib/firebase';
+import { getNotificationMessage, Notification, isConfigured as isFirebaseConfigured, listenToTools } from '@/lib/firebase';
 import type { Tool } from '@/lib/types';
 import Icon from './Icon';
 import AppSidebar from './AppSidebar';
@@ -134,7 +134,7 @@ const HeaderSearch = () => {
     const [debouncedQuery] = useDebounce(inputValue, 300);
 
     useEffect(() => {
-        const unsubscribe = getTools((loadedTools) => {
+        const unsubscribe = listenToTools((loadedTools) => {
             setAllTools(loadedTools);
         });
         return () => unsubscribe();

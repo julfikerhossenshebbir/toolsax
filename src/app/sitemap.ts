@@ -6,14 +6,7 @@ import { initializeAppOnce, getTools } from '@/lib/firebase';
 
 async function getAllToolsServerSide(): Promise<Tool[]> {
     initializeAppOnce();
-    return new Promise((resolve) => {
-        const unsubscribe = getTools((loadedTools) => {
-            resolve(loadedTools);
-            if (typeof unsubscribe === 'function') {
-                unsubscribe();
-            }
-        });
-    });
+    return getTools();
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

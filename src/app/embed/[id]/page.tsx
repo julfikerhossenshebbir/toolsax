@@ -1,33 +1,14 @@
 
-export const runtime = 'edge';
-
 import { notFound } from 'next/navigation';
 import type { Tool } from '@/lib/types';
 import { get, ref, getDatabase } from 'firebase/database';
 import { initializeApp, getApps } from 'firebase/app';
 import ToolCard from '@/components/ToolCard';
-import { firebaseConfig, getTools } from '@/lib/firebase';
+import { firebaseConfig, getTools, initializeAppOnce } from '@/lib/firebase';
 
 async function getAllToolsServerSide(): Promise<Tool[]> {
-    try {
-        if (!getApps().length) {
-            initializeApp(firebaseConfig);
-        }
-        const db = getDatabase();
-        const toolsRef = ref(db, 'tools');
-        const snapshot = await get(toolsRef);
-        if (snapshot.exists()) {
-            const toolsData = snapshot.val();
-            return Object.keys(toolsData).map(key => ({
-                id: key,
-                ...toolsData[key]
-            }));
-        }
-        return [];
-    } catch (error) {
-        console.error("Error fetching tools server-side:", error);
-        return [];
-    }
+    initializeAppOnce();
+    return getTools();
 }
 
 async function getToolForEmbed(id: string): Promise<{ tool: Tool | undefined, index: number }> {

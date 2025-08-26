@@ -7,7 +7,7 @@ import { Tool } from '@/lib/types';
 import ReportBugForm from './ReportBugForm';
 import { ALL_TOOLS } from '@/lib/tools';
 import { useEffect, useState } from 'react';
-import { getTools } from '@/lib/firebase';
+import { listenToTools } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 
@@ -21,7 +21,7 @@ export default function ReportBugPage() {
         if (!user) {
            router.push('/login?redirect=/report-a-bug');
         } else {
-            const unsubscribe = getTools((loadedTools) => {
+            const unsubscribe = listenToTools((loadedTools) => {
                 setTools(loadedTools);
                 setLoading(false);
             });

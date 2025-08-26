@@ -1,7 +1,5 @@
 
-export const runtime = 'edge';
-
-import { getUserPublicProfile, getTools } from '@/lib/firebase';
+import { getUserPublicProfile, getTools, initializeAppOnce } from '@/lib/firebase';
 import { notFound } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -19,22 +17,8 @@ type Props = {
 };
 
 async function getAllToolsServerSide(): Promise<Tool[]> {
-    return new Promise((resolve) => {
-        let resolved = false;
-        const mockCallback = (loadedTools: Tool[]) => {
-            if (!resolved) {
-                resolve(loadedTools);
-                resolved = true;
-            }
-        };
-        const unsubscribe = getTools(mockCallback);
-        setTimeout(() => {
-            if (!resolved) {
-                resolve([]);
-                resolved = true;
-            }
-        }, 3000);
-    });
+    initializeAppOnce();
+    return getTools();
 }
 
 export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {

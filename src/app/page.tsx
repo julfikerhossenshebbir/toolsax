@@ -4,7 +4,7 @@
 import HomePageClient from '@/components/HomePageClient';
 import { useEffect, useState } from 'react';
 import type { Tool } from '@/lib/types';
-import { getTools } from '@/lib/firebase';
+import { listenToTools } from '@/lib/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 import Header from '@/components/Header';
 import SectionDivider from '@/components/SectionDivider';
@@ -36,8 +36,7 @@ export default function Home() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const unsubscribe = getTools((loadedTools) => {
-            // Only show enabled tools to the public
+        const unsubscribe = listenToTools((loadedTools) => {
             const enabledTools = loadedTools.filter(tool => tool.isEnabled);
             setTools(enabledTools);
             setIsLoading(false);

@@ -1,8 +1,4 @@
 
-// This is a placeholder for Firebase configuration.
-// To enable Firebase features, you need to set up a Firebase project and
-// add your configuration here.
-
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { getDatabase, ref, runTransaction, onValue, get, set, type Database, serverTimestamp, push, child, update, remove, query, orderByChild, equalTo, limitToLast, orderByValue } from "firebase/database";
 import { 
@@ -52,66 +48,80 @@ let auth: Auth | undefined;
 
 const isFirebaseEnabled = true;
 
-// Check if all necessary config values are present
 export const isConfigured =
   firebaseConfig.apiKey &&
   firebaseConfig.databaseURL &&
   firebaseConfig.projectId;
 
 export function initializeAppOnce() {
-    if (isConfigured && isFirebaseEnabled && getApps().length === 0) {
-        try {
+    if (isConfigured && isFirebaseEnabled) {
+        if (getApps().length === 0) {
             app = initializeApp(firebaseConfig);
-            db = getDatabase(app);
-            auth = getAuth(app);
-        } catch (error) {
-            console.error("Firebase initialization error:", error);
+        } else {
+            app = getApps()[0];
         }
+        db = getDatabase(app);
+        auth = getAuth(app);
+        return { app, db, auth };
     }
+    return {};
 }
 
-// Call initialization on load
-initializeAppOnce();
+const getFirebaseInstances = () => {
+    if (!db || !auth) {
+        const instances = initializeAppOnce();
+        db = instances.db;
+        auth = instances.auth;
+    }
+    return { db, auth };
+};
 
-
-// --- Auth Functions ---
 const googleProvider = auth ? new GoogleAuthProvider() : undefined;
 const githubProvider = auth ? new GithubAuthProvider() : undefined;
 const facebookProvider = auth ? new FacebookAuthProvider() : undefined;
 
 
 export const signInWithGoogle = () => {
+    const { auth } = getFirebaseInstances();
     if (!auth || !googleProvider) throw new Error("Firebase not configured for Google Sign-In.");
     return signInWithPopup(auth, googleProvider);
 };
 
 export const signInWithGithub = () => {
+    const { auth } = getFirebaseInstances();
     if (!auth || !githubProvider) throw new Error("Firebase not configured for GitHub Sign-In.");
     return signInWithPopup(auth, githubProvider);
 };
 
 export const signInWithFacebook = () => {
+    const { auth } = getFirebaseInstances();
     if (!auth || !facebookProvider) throw new Error("Firebase not configured for Facebook Sign-In.");
     return signInWithPopup(auth, facebookProvider);
 };
 
 
 export const signUpWithEmail = (email: string, pass: string) => {
+    const { auth } = getFirebaseInstances();
     if (!auth) throw new Error("Firebase not configured for Email Sign-Up.");
     return createUserWithEmailAndPassword(auth, email, pass);
 };
 
 export const signInWithEmail = (email: string, pass: string) => {
+    const { auth } = getFirebaseInstances();
     if (!auth) throw new Error("Firebase not configured for Email Sign-In.");
     return signInWithEmailAndPassword(auth, email, pass);
 };
 
 export const logout = () => {
+    const { auth } = getFirebaseInstances();
     if (!auth) throw new Error("Firebase not configured for Sign-Out.");
     return signOut(auth);
 };
 
-export const getAuthInstance = () => auth;
+export const getAuthInstance = () => {
+    const { auth } = getFirebaseInstances();
+    return auth;
+};
 export const onAuthStateChanged = onFirebaseAuthStateChanged;
 
 export const updateUserProfile = (user: User, profile: { displayName?: string, photoURL?: string }) => {
@@ -119,7 +129,6 @@ export const updateUserProfile = (user: User, profile: { displayName?: string, p
 };
 
 
-// --- User Management & Database Functions ---
 const getAnonymousUserId = (): string => {
   if (typeof window === 'undefined') return '';
   let userId = localStorage.getItem('toolsax_anonymous_user_id');
@@ -131,6 +140,7 @@ const getAnonymousUserId = (): string => {
 };
 
 export const initializeUser = () => {
+    const { db } = getFirebaseInstances();
     if (!db || typeof window === 'undefined') return;
 
     const userId = getAnonymousUserId();
@@ -146,6 +156,7 @@ export const initializeUser = () => {
 };
 
 export const isUsernameAvailable = async (username: string): Promise<boolean> => {
+    const { db } = getFirebaseInstances();
     if (!db) return false;
     const usernameRef = ref(db, `usernames/${username.toLowerCase()}`);
     const snapshot = await get(usernameRef);
@@ -153,6 +164,7 @@ export const isUsernameAvailable = async (username: string): Promise<boolean> =>
 }
 
 export const getUidByUsername = async (username: string): Promise<string | null> => {
+    const { db } = getFirebaseInstances();
     if (!db) return null;
     const usernameRef = ref(db, `usernames/${username.toLowerCase()}`);
     const snapshot = await get(usernameRef);
@@ -160,6 +172,7 @@ export const getUidByUsername = async (username: string): Promise<string | null>
 };
 
 export const getUserPublicProfile = async (username: string) => {
+    initializeAppOnce();
     const uid = await getUidByUsername(username);
     if (!uid) return null;
     const data = await getUserData(uid);
@@ -189,6 +202,7 @@ export const checkAndCreateUser = async (data: {
     dob?: string, 
     country?: string 
 }) => {
+    const { auth, db } = getFirebaseInstances();
     if (!auth || !db) throw new Error("Firebase not configured.");
     
     const usernameAvailable = await isUsernameAvailable(data.username);
@@ -200,14 +214,12 @@ export const checkAndCreateUser = async (data: {
     let isNewUser = false;
 
     if (data.isSocial && data.uid) {
-        // Social sign-up flow for a user who needs to complete their profile
         const existingUser = auth.currentUser;
         if (!existingUser || existingUser.uid !== data.uid) {
             throw new Error("Mismatched user session. Please try signing in again.");
         }
         user = existingUser;
     } else if (data.password) {
-        // Email sign-up flow
         const userCredential = await signUpWithEmail(data.email, data.password);
         user = userCredential.user;
         isNewUser = true;
@@ -215,12 +227,10 @@ export const checkAndCreateUser = async (data: {
         throw new Error("Invalid sign-up data. Password or social provider info is missing.");
     }
 
-    // Update Firebase Auth profile
     await updateProfile(user, { displayName: data.name, photoURL: data.photoURL });
 
     const userRef = ref(db, `users/${user.uid}`);
     
-    // Construct the data to be saved to the database.
     const userData: any = {
         name: data.name,
         username: data.username.toLowerCase(),
@@ -230,27 +240,24 @@ export const checkAndCreateUser = async (data: {
         role: 'user',
     };
 
-    // Add optional fields if they exist
     if (data.phone) userData.phone = data.phone;
     if (data.dob) userData.dob = data.dob;
     if (data.country) userData.country = data.country;
 
-    // For new email users, set createdAt
     if (isNewUser) {
         userData.createdAt = serverTimestamp();
         await set(userRef, userData);
     } else {
-        // For social users completing their profile, update existing record
         await update(userRef, userData);
     }
 
-    // Save the username for easy lookup
     const usernameRef = ref(db, `usernames/${data.username.toLowerCase()}`);
     await set(usernameRef, user.uid);
 };
 
 
 export const saveUserToDatabase = async (user: User) => {
+    const { db } = getFirebaseInstances();
     if (!db) return;
     const userRef = ref(db, `users/${user.uid}`);
     const snapshot = await get(userRef);
@@ -275,6 +282,7 @@ export const saveUserToDatabase = async (user: User) => {
 };
 
 export const getUserData = async (uid: string): Promise<UserData | null> => {
+    const { db } = getFirebaseInstances();
     if (!db) return null;
     const userRef = ref(db, `users/${uid}`);
     const snapshot = await get(userRef);
@@ -282,9 +290,10 @@ export const getUserData = async (uid: string): Promise<UserData | null> => {
 };
 
 export const subscribeToAllUsers = (callback: (users: any[]) => void) => {
+    const { db } = getFirebaseInstances();
     if (!db) {
         callback([]);
-        return () => {}; // Return an empty unsubscribe function
+        return () => {};
     }
     const usersRef = ref(db, 'users');
     const unsubscribe = onValue(usersRef, (snapshot) => {
@@ -300,14 +309,14 @@ export const subscribeToAllUsers = (callback: (users: any[]) => void) => {
         }
     });
 
-    return unsubscribe; // Return the unsubscribe function from onValue
+    return unsubscribe;
 };
 
 
 export const updateUserData = (uid: string, data: Partial<UserData>) => {
+    const { db } = getFirebaseInstances();
     if (!db) return;
     const userRef = ref(db, `users/${uid}`);
-    // Create a new object with only the fields to be updated, excluding undefined ones.
     const updates: { [key: string]: any } = {};
     Object.keys(data).forEach(key => {
         const dataKey = key as keyof UserData;
@@ -320,6 +329,7 @@ export const updateUserData = (uid: string, data: Partial<UserData>) => {
 
 
 export const saveSearchQuery = (userId: string, query: string) => {
+    const { db } = getFirebaseInstances();
     if(!db) return;
     const searchHistoryRef = ref(db, `users/${userId}/searchHistory`);
     const newSearchRef = push(searchHistoryRef);
@@ -330,12 +340,14 @@ export const saveSearchQuery = (userId: string, query: string) => {
 };
 
 export const saveUserThemeSettings = (uid: string, settings: object) => {
+    const { db } = getFirebaseInstances();
     if (!db) return;
     const themeRef = ref(db, `users/${uid}/themeSettings`);
     return update(themeRef, settings);
 };
 
 export const getUserThemeSettings = async (uid: string) => {
+    const { db } = getFirebaseInstances();
     if (!db) return null;
     const themeRef = ref(db, `users/${uid}/themeSettings`);
     const snapshot = await get(themeRef);
@@ -343,8 +355,8 @@ export const getUserThemeSettings = async (uid: string) => {
 };
 
 
-// --- General Database Functions ---
 const incrementCounter = (path: string) => {
+  const { db } = getFirebaseInstances();
   if (!db) return;
   const counterRef = ref(db, path);
   runTransaction(counterRef, (currentValue) => (currentValue || 0) + 1);
@@ -356,12 +368,14 @@ export const incrementViews = () => {
 };
 
 export const incrementClicks = (toolId: string) => {
+  const { db } = getFirebaseInstances();
   if (!db) return;
   incrementCounter('stats/tool_clicks');
   incrementCounter(`tool_stats/${toolId}/clicks`);
 };
 
 export const toggleFavoriteInDb = async (userId: string, toolId: string): Promise<boolean> => {
+    const { db } = getFirebaseInstances();
     if (!db) return false;
     const favoritesRef = ref(db, `users/${userId}/favorites`);
     const snapshot = await get(favoritesRef);
@@ -379,6 +393,7 @@ export const toggleFavoriteInDb = async (userId: string, toolId: string): Promis
 };
 
 export const getUserFavorites = (userId: string, callback: (favorites: string[]) => void) => {
+    const { db } = getFirebaseInstances();
     if (!db) {
         callback([]);
         return () => {};
@@ -390,6 +405,7 @@ export const getUserFavorites = (userId: string, callback: (favorites: string[])
 };
 
 export const getStats = (subscribe: boolean = true, callback?: (stats: { views: number; tool_clicks: number; users: number, vip_users: number }) => void) => {
+  const { db } = getFirebaseInstances();
   if (!db) {
     if(callback) callback({ views: 0, tool_clicks: 0, users: 0, vip_users: 0 });
     return () => {};
@@ -410,6 +426,7 @@ export const getStats = (subscribe: boolean = true, callback?: (stats: { views: 
 
 
 export const getToolStats = (toolId: string, callback: (stats: { clicks: number }) => void) => {
+  const { db } = getFirebaseInstances();
   if (!db) {
     callback({ clicks: 0 });
     return () => {};
@@ -431,6 +448,7 @@ export const getNotificationMessage = (subscribe: boolean = true, callback?: (me
     { message: "Customize your theme in settings.", icon: "Settings" },
   ];
   
+  const { db } = getFirebaseInstances();
   if (!db) {
     if(callback) callback(defaultMessages);
     return () => {};
@@ -456,6 +474,7 @@ export const getNotificationMessage = (subscribe: boolean = true, callback?: (me
 }
 
 export const updateGlobalNotifications = (notifications: Notification[]) => {
+    const { db } = getFirebaseInstances();
     if (!db) throw new Error("Firebase not configured.");
     const notificationRef = ref(db, 'notif');
     return set(notificationRef, notifications);
@@ -464,6 +483,7 @@ export const updateGlobalNotifications = (notifications: Notification[]) => {
 // --- Dashboard Chart Data ---
 
 export const getMonthlyUserGrowth = async (): Promise<{ name: string; total: number }[]> => {
+    const { db } = getFirebaseInstances();
     if (!db) return [];
     
     const now = new Date();
@@ -517,6 +537,7 @@ export const getMonthlyUserGrowth = async (): Promise<{ name: string; total: num
 
 
 export const getTopToolsByClicks = async (limit: number = 7): Promise<{ name: string; clicks: number }[]> => {
+    const { db } = getFirebaseInstances();
     if (!db) return [];
 
     const toolsRef = ref(db, 'tools');
@@ -557,6 +578,7 @@ export const getTopToolsByClicks = async (limit: number = 7): Promise<{ name: st
 // --- Comments System ---
 
 export const postComment = async (toolId: string, text: string, user: User) => {
+    const { db } = getFirebaseInstances();
     if (!db) throw new Error("Firebase not configured.");
     const commentsRef = ref(db, `comments/${toolId}`);
     const newCommentRef = push(commentsRef);
@@ -572,6 +594,7 @@ export const postComment = async (toolId: string, text: string, user: User) => {
 }
 
 export const postReply = async (toolId: string, commentId: string, text: string, user: User) => {
+    const { db } = getFirebaseInstances();
     if (!db) throw new Error("Firebase not configured.");
     const repliesRef = ref(db, `comments/${toolId}/${commentId}/replies`);
     const newReplyRef = push(repliesRef);
@@ -587,6 +610,7 @@ export const postReply = async (toolId: string, commentId: string, text: string,
 }
 
 export const updateComment = async (toolId: string, commentId: string, text: string, user: User) => {
+    const { db } = getFirebaseInstances();
     if (!db) throw new Error("Firebase not configured.");
     const commentRef = ref(db, `comments/${toolId}/${commentId}`);
     const snapshot = await get(commentRef);
@@ -598,6 +622,7 @@ export const updateComment = async (toolId: string, commentId: string, text: str
 };
 
 export const deleteComment = async (toolId: string, commentId: string) => {
+    const { db } = getFirebaseInstances();
     if (!db) throw new Error("Firebase not configured.");
     const commentRef = ref(db, `comments/${toolId}/${commentId}`);
     await remove(commentRef);
@@ -605,6 +630,7 @@ export const deleteComment = async (toolId: string, commentId: string) => {
 
 
 export const updateReply = async (toolId: string, commentId: string, replyId: string, text: string, user: User) => {
+    const { db } = getFirebaseInstances();
     if (!db) throw new Error("Firebase not configured.");
     const replyRef = ref(db, `comments/${toolId}/${commentId}/replies/${replyId}`);
     const snapshot = await get(replyRef);
@@ -616,6 +642,7 @@ export const updateReply = async (toolId: string, commentId: string, replyId: st
 };
 
 export const deleteReply = async (toolId: string, commentId: string, replyId: string) => {
+    const { db } = getFirebaseInstances();
     if (!db) throw new Error("Firebase not configured.");
     const replyRef = ref(db, `comments/${toolId}/${commentId}/replies/${replyId}`);
     await remove(replyRef);
@@ -623,6 +650,7 @@ export const deleteReply = async (toolId: string, commentId: string, replyId: st
 
 
 export const getComments = (toolId: string, callback: (comments: Comment[]) => void) => {
+    const { db } = getFirebaseInstances();
     if (!db) {
         callback([]);
         return () => {};
@@ -645,7 +673,6 @@ export const getComments = (toolId: string, callback: (comments: Comment[]) => v
                     replies: replies
                 };
             });
-            // Reverse to show newest comments first
             callback(commentsList.reverse());
         } else {
             callback([]);
@@ -653,8 +680,39 @@ export const getComments = (toolId: string, callback: (comments: Comment[]) => v
     });
 };
 
-// --- Tools Management ---
-export const getTools = (callback: (tools: Tool[]) => void) => {
+export const getTools = async (): Promise<Tool[]> => {
+    const { db } = getFirebaseInstances();
+    if (!db) {
+        console.warn("Firebase not configured. Falling back to static tools.");
+        return Promise.resolve(STATIC_TOOLS);
+    }
+    
+    const toolsRef = query(ref(db, 'tools'), orderByChild('order'));
+    const snapshot = await get(toolsRef);
+    
+    if (snapshot.exists()) {
+        const toolsData = snapshot.val();
+        const toolsList: Tool[] = Object.keys(toolsData).map(key => ({
+            ...toolsData[key],
+            id: key,
+        })).sort((a, b) => a.order - b.order);
+        return toolsList;
+    } else {
+        console.log("No tools found in Firebase, populating with static tools.");
+        const initialTools = STATIC_TOOLS.reduce((acc, tool, index) => {
+            const newTool: Omit<Tool, 'id'> & { id?: string } = { ...tool, isEnabled: true, order: index };
+            delete newTool.id;
+            acc[tool.id] = newTool;
+            return acc;
+        }, {} as { [key: string]: Omit<Tool, 'id'> });
+        
+        await set(ref(db, 'tools'), initialTools);
+        return STATIC_TOOLS.sort((a,b) => a.order - b.order);
+    }
+};
+
+export const listenToTools = (callback: (tools: Tool[]) => void) => {
+    const { db } = getFirebaseInstances();
     if (!db) {
         console.warn("Firebase not configured. Falling back to static tools.");
         callback(STATIC_TOOLS);
@@ -673,7 +731,6 @@ export const getTools = (callback: (tools: Tool[]) => void) => {
             callback(toolsList);
         } else {
             // If no tools in DB, populate with static tools
-            console.log("No tools found in Firebase, populating with static tools.");
             const initialTools = STATIC_TOOLS.reduce((acc, tool, index) => {
                 const newTool: Omit<Tool, 'id'> & { id?: string } = { ...tool, isEnabled: true, order: index };
                 delete newTool.id;
@@ -693,11 +750,11 @@ export const getTools = (callback: (tools: Tool[]) => void) => {
 
 
 export const saveTool = (tool: Omit<Tool, 'id'> & { id?: string }) => {
+    const { db } = getFirebaseInstances();
     if (!db) throw new Error("Firebase not configured.");
     const id = tool.id || uuidv4();
     const toolRef = ref(db, `tools/${id}`);
     
-    // Ensure data is clean before saving
     const dataToSave = { ...tool };
     delete dataToSave.id;
 
@@ -706,12 +763,14 @@ export const saveTool = (tool: Omit<Tool, 'id'> & { id?: string }) => {
 
 
 export const deleteTool = (toolId: string) => {
+    const { db } = getFirebaseInstances();
     if (!db) throw new Error("Firebase not configured.");
     const toolRef = ref(db, `tools/${toolId}`);
     return remove(toolRef);
 };
 
 export const updateToolsOrder = (tools: Tool[]) => {
+    const { db } = getFirebaseInstances();
     if (!db) throw new Error("Firebase not configured.");
     const updates: { [key: string]: any } = {};
     tools.forEach((tool, index) => {
@@ -720,8 +779,6 @@ export const updateToolsOrder = (tools: Tool[]) => {
     return update(ref(db), updates);
 };
 
-
-// --- Payment Methods Management ---
 
 const STATIC_PAYMENT_METHODS: PaymentMethod[] = [
     { id: 'bkash', name: 'bKash', icon: 'https://paylogo.pages.dev/bkash.png', accountNumber: '01964638683', isLink: false, order: 0 },
@@ -733,6 +790,7 @@ const STATIC_PAYMENT_METHODS: PaymentMethod[] = [
 ];
 
 export const getPaymentMethods = (callback: (methods: PaymentMethod[]) => void) => {
+    const { db } = getFirebaseInstances();
     if (!db) {
         console.warn("Firebase not configured. Falling back to static payment methods.");
         callback(STATIC_PAYMENT_METHODS);
@@ -749,7 +807,6 @@ export const getPaymentMethods = (callback: (methods: PaymentMethod[]) => void) 
             })).sort((a, b) => a.order - b.order);
             callback(methodsList);
         } else {
-            // Populate with static methods if DB is empty
             const initialMethods = STATIC_PAYMENT_METHODS.reduce((acc, method) => {
                  const newMethod: Omit<PaymentMethod, 'id'> & { id?: string } = { ...method };
                  delete newMethod.id;
@@ -764,6 +821,7 @@ export const getPaymentMethods = (callback: (methods: PaymentMethod[]) => void) 
 };
 
 export const savePaymentMethod = (method: Omit<PaymentMethod, 'id'> & { id?: string }) => {
+    const { db } = getFirebaseInstances();
     if (!db) throw new Error("Firebase not configured.");
     const id = method.id || uuidv4();
     const methodRef = ref(db, `payment_methods/${id}`);
@@ -775,14 +833,15 @@ export const savePaymentMethod = (method: Omit<PaymentMethod, 'id'> & { id?: str
 };
 
 export const deletePaymentMethod = (methodId: string) => {
+    const { db } = getFirebaseInstances();
     if (!db) throw new Error("Firebase not configured.");
     const methodRef = ref(db, `payment_methods/${methodId}`);
     return remove(methodRef);
 };
 
 
-// --- VIP System ---
 export const submitVipRequest = async (requestData: Omit<VipRequest, 'status' | 'timestamp'>) => {
+    const { db } = getFirebaseInstances();
     if (!db) throw new Error("Firebase not configured.");
     const requestRef = ref(db, `vip_requests/${requestData.uid}`);
     const snapshot = await get(requestRef);
@@ -803,6 +862,7 @@ export const submitVipRequest = async (requestData: Omit<VipRequest, 'status' | 
 };
 
 export const getVipRequestStatus = async (uid: string): Promise<VipRequest['status'] | null> => {
+    const { db } = getFirebaseInstances();
     if (!db) return null;
     const requestRef = ref(db, `vip_requests/${uid}`);
     const snapshot = await get(requestRef);
@@ -810,6 +870,7 @@ export const getVipRequestStatus = async (uid: string): Promise<VipRequest['stat
 };
 
 export const getVipRequests = (callback: (requests: VipRequest[]) => void) => {
+    const { db } = getFirebaseInstances();
     if (!db) {
         callback([]);
         return () => {};
@@ -831,6 +892,7 @@ export const getVipRequests = (callback: (requests: VipRequest[]) => void) => {
 };
 
 export const approveVipRequest = async (uid: string) => {
+    const { db } = getFirebaseInstances();
     if (!db) throw new Error("Firebase not configured.");
     const userRef = ref(db, `users/${uid}`);
     const requestRef = ref(db, `vip_requests/${uid}`);
@@ -843,14 +905,15 @@ export const approveVipRequest = async (uid: string) => {
 };
 
 export const rejectVipRequest = async (uid: string) => {
+    const { db } = getFirebaseInstances();
     if (!db) throw new Error("Firebase not configured.");
     const requestRef = ref(db, `vip_requests/${uid}`);
     return update(requestRef, { status: 'rejected' });
 };
 
 
-// --- File Upload ---
 export async function uploadFile(file: File, path: string): Promise<string> {
+    const { app } = getFirebaseInstances();
     if (!app) throw new Error("Firebase not configured.");
     const storage = getStorage(app);
     const fileName = `${path}/${uuidv4()}-${file.name}`;

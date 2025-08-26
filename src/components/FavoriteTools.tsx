@@ -10,7 +10,7 @@ import type { Tool } from '@/lib/types';
 import Icon from './Icon';
 import { getColorByIndex } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
-import { getUserFavorites, getTools } from '@/lib/firebase';
+import { getUserFavorites, listenToTools } from '@/lib/firebase';
 import { Skeleton } from './ui/skeleton';
 
 export default function FavoriteTools() {
@@ -20,7 +20,7 @@ export default function FavoriteTools() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const unsubscribeTools = getTools((loadedTools) => {
+        const unsubscribeTools = listenToTools((loadedTools) => {
             setAllTools(loadedTools);
             setIsLoading(false);
         });
