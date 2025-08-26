@@ -6,18 +6,7 @@ import type { Tool } from '@/lib/types';
 import { get, ref, getDatabase } from 'firebase/database';
 import { initializeApp, getApps } from 'firebase/app';
 import ToolCard from '@/components/ToolCard';
-import { getTools } from '@/lib/firebase';
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCGyVqbVZhp9rqEQYZ_vrcUYCXXk-6p37w",
-  authDomain: "toolsaxdb.firebaseapp.com",
-  databaseURL: "https://toolsaxdb-default-rtdb.firebaseio.com",
-  projectId: "toolsaxdb",
-  storageBucket: "toolsaxdb.appspot.com",
-  messagingSenderId: "521841849034",
-  appId: "1:521841849034:web:5be88041b20b3d6435fa33",
-  measurementId: "G-J0SGP2CFQH"
-};
+import { firebaseConfig, getTools } from '@/lib/firebase';
 
 async function getAllToolsServerSide(): Promise<Tool[]> {
     try {

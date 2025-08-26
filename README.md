@@ -4,9 +4,9 @@ A Next.js application to discover and explore various tools.
 
 ---
 
-## How to Deploy to Cloudflare Pages via GitHub
+## How to Deploy to Vercel via GitHub
 
-Follow these step-by-step instructions to deploy this application.
+Follow these step-by-step instructions to deploy this application to Vercel.
 
 ### Step 1: Push Your Code to a GitHub Repository
 
@@ -26,33 +26,22 @@ First, make sure all your code is in a GitHub repository.
 
     *Remember to replace `YOUR_USERNAME` and `YOUR_REPOSITORY_NAME` with your actual GitHub details.*
 
-### Step 2: Create a Cloudflare Pages Project
+### Step 2: Create a Vercel Project
 
-Next, connect your GitHub repository to Cloudflare.
+Next, connect your GitHub repository to Vercel.
 
-1.  Log in to your **Cloudflare dashboard**.
-2.  Navigate to **Workers & Pages** > **Create application**.
-3.  Select the **Pages** tab and click on **Connect to Git**.
-4.  Choose the GitHub repository you just created and click **Begin setup**.
+1.  Log in to your **Vercel dashboard**.
+2.  Click the **Add New...** button and select **Project**.
+3.  Under **Import Git Repository**, find your GitHub repository and click **Import**.
+4.  Vercel will automatically detect that it's a Next.js project and configure the build settings for you. You typically don't need to change anything here.
 
-### Step 3: Configure Build Settings
-
-Cloudflare will ask for build settings. It should automatically detect Next.js, but ensure the settings are correct:
-
--   **Project name:** Choose a name for your project.
--   **Production branch:** `main`
--   **Framework preset:** `Next.js`
--   **Build command:** `npm run build`
--   **Build output directory:** `.next`
-
-Leave the **Root Directory** blank unless your project is in a subfolder.
-
-### Step 4: Set Environment Variables
+### Step 3: Set Environment Variables
 
 This is a critical step to connect your application to external services like Firebase, Gemini, and Telegram.
 
-1.  In the same setup screen, scroll down to **Environment variables (advanced)**.
-2.  Click **+ Add variable** for each of the following variables and enter their corresponding values.
+1.  In the project setup screen, expand the **Environment Variables** section.
+2.  Copy the contents of the `.env.example` file in this repository.
+3.  Click **Add** for each variable, paste the name and its corresponding value.
 
     | Variable Name                          | Description                                         | Example Value                          |
     | -------------------------------------- | --------------------------------------------------- | -------------------------------------- |
@@ -69,12 +58,12 @@ This is a critical step to connect your application to external services like Fi
     | `TELEGRAM_CHAT_ID`                     | Your Telegram Chat ID for receiving reports         | `-100...`                              |
     | `IMGBB_API_KEY`                        | Your ImgBB API key for image uploads                | `a1b2c3...`                            |
 
-    **Note:** For local development, create a `.env` file in the root of your project and add these variables there.
+    **Note:** For local development, create a `.env.local` file in the root of your project and add these variables there.
 
-### Step 5: Save and Deploy
+### Step 4: Deploy
 
-1.  Once all environment variables are added, click the **Save and Deploy** button.
-2.  Cloudflare will now start building and deploying your application. You can watch the progress in the deployment logs.
-3.  When it's finished, you'll get a unique `.pages.dev` URL where your live application can be viewed.
+1.  Once all environment variables are added, click the **Deploy** button.
+2.  Vercel will now start building and deploying your application. You can watch the progress in the build logs.
+3.  When it's finished, you'll get a unique `.vercel.app` URL where your live application can be viewed.
 
-Congratulations, your Toolsax application is now live on Cloudflare Pages!
+Congratulations, your Toolsax application is now live on Vercel!
